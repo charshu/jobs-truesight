@@ -26,16 +26,6 @@ module.exports = function makeWebpackConfig() {
    */
   var config = {};
 
-
-  config.devServer = {
-    proxy: {
-      '/api/**': {
-        target: 'http://localhost:3000',
-        secure: false
-      }
-    }
-  }
-
   /**
    * Devtool
    * Reference: http://webpack.github.io/docs/configuration.html#devtool
@@ -271,6 +261,12 @@ module.exports = function makeWebpackConfig() {
     contentBase: './src/public',
     historyApiFallback: true,
     quiet: true,
+    proxy: {
+      '/api/**': {
+        target: 'http://localhost:3000',
+        secure: false
+      }
+    },
     stats: 'minimal' // none (or false), errors-only, minimal, normal (or true) and verbose
   };
 

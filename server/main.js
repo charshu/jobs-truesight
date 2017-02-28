@@ -8,7 +8,7 @@ const app = express();
 const IS_DEV = process.env.NODE_ENV !== 'production';
 
 app.get('/api/handshake', function(req, res) {
-  res.send('ok');
+  res.send('Node server /api/handshake');
 });
 
 if(IS_DEV) {
