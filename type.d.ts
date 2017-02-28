@@ -12,7 +12,7 @@ export type User = {
 // in application
 export type Survay = {
   title: string;
-  question: question[]
+  question: Question[]
 }
 
 export type Question = {
