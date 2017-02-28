@@ -16,7 +16,6 @@ mongoose
     process.exit();
   });
 
-
 module.exports = function connect() {
   // connect to mongoDB
   const MONGO_URI = process.env.MONGOURI;
