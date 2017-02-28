@@ -1,0 +1,17 @@
+{
+  "name": "jobsmeter",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/zapkub/jobsmeter",
+  "author": "Rungsikorn Rungsikavanich <rungsikorn@me.com>",
+  "license": "MIT",
+  "dependencies": {
+    "babel-core": "^6.23.1",
+    "express": "^4.14.1",
+    "mocha": "^3.2.0",
+    "mongoose": "^4.8.5",
+    "passport": "^0.3.2",
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.4.1"
+  }
+}

@@ -2,6 +2,11 @@
 logs
 *.log
 npm-debug.log*
+.vscode
+build
+dist
+.dist
+db
 
 # Runtime data
 pids
