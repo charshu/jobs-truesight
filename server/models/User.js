@@ -3,17 +3,28 @@ const mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    createdAt: Date,
-    age: Number,
-    firstName: String,
-    lastName: String,
+    email: {
+        type: String,
+        unique: true
+    },
+    password: String,
+    facebook: String,
+    tokens: Array,
+    profile: {
+        name: String,
+        gender: String,
+        location: String,
+        website: String,
+        picture: String
+    },
+    createdAt: Date
 });
 
 userSchema.methods.createNewUser = (userDataJSON) => {
     // implement create new user
+    console.log(userDataJSON);
 }
 
 const User = mongoose.model('User', userSchema);
 
-exports.schema = userSchema;
-exports.model = User;
+module.exports = User;
