@@ -2,8 +2,8 @@
 // add passport as middleware
 
 const express = require('express');
-
 const routes = express.Router();
+const graph = require('fbgraph');
 const passport = require('passport');
 const passportConfig = require('./../middlewares/authentication');
 // TODO :setup public routes

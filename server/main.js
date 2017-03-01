@@ -6,7 +6,9 @@ const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const errorHandler = require('errorhandler');
-
+const flash = require('express-flash');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 const cookieParser = require('cookie-parser');
 
 /**
@@ -31,8 +33,18 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
+app.use(session({
+  resave: true,
+  saveUninitialized: true,
+  secret: 'mysecret',
+  store: new MongoStore({
+    url: 'mongodb://localhost:27017/test2',
+    autoReconnect: true
+  })
+}));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 app.use(require('./routes'));
 app.use(errorHandler());
 
