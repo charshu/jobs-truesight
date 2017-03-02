@@ -28,7 +28,7 @@ routes.get('/api/handshake', function(req, res) {
 routes.get('/', (req, res)=>{
   res.send('hello world!');
 });
-routes.get('/login', userController.getLogin);
+routes.get('/login',passport.authenticate('local') ,userController.getLogin);
 routes.post('/login', userController.postLogin);
 routes.get('/logout', userController.logout);
 routes.get('/forgot', userController.getForgot);

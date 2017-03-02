@@ -12,7 +12,6 @@ const userSchema = new Schema({
     },
     password: String,
     facebook: String,
-    tokens: Array,
     profile: {
         name: String,
         gender: String,
@@ -26,7 +25,7 @@ const userSchema = new Schema({
 
 userSchema.methods.createNewUser = (userDataJSON) => {
     // implement create new user
-   
+
 }
 /**
  * Password hash middleware.

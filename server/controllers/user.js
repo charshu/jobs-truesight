@@ -12,7 +12,10 @@ exports.getLogin = (req, res) => {
 //   if (req.user) {
 //     return res.redirect('/');
 //   }
-  res.send('login page');
+  res.json({
+    token: '',
+    user: req.user
+  });
 };
 
 /**
@@ -30,7 +33,7 @@ exports.postLogin = (req, res, next) => {
     req.flash('errors', errors);
     return res.redirect('/login');
   }
- 
+
   passport.authenticate('local', (err, user, info) => {
     //custom callback function after authen in authentication.js
     if (err) { return next(err); }
