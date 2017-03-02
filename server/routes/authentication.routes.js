@@ -1,6 +1,5 @@
 
-module.exports = function({ User }) {
-
+module.exports = ({ User }) => {
   const passport = require('passport');
   const privateRouter = require('express').Router();
   const publicRouter = require('express').Router();
@@ -15,11 +14,11 @@ module.exports = function({ User }) {
   // private route
   privateRouter.use((req, res, next) => {
       // reject if no user
-      if (!req.user) {
-        res.send(401).end();
-      } else {
-        next()
-      }
+    if (!req.user) {
+      res.send(401).end();
+    } else {
+      next();
+    }
   });
   privateRouter.get('/info', UserController.info);
   privateRouter.delete('/', UserController.remove);

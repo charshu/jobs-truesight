@@ -1,9 +1,8 @@
 
-module.exports = function( { User } ) {
-
+module.exports = function ({ User }) {
   const login = (req, res) => {
-      console.log("=== done login ===")
-      res.json(req.user);
+    console.log('=== done login ===');
+    res.json(req.user);
   };
 
   const register = async (req, res) => {
@@ -13,30 +12,30 @@ module.exports = function( { User } ) {
       res.json({
         id: newUser._id,
       });
-    } catch (e){
-      console.log(e);
+    } catch (e) {
       res.status(500).end();
     }
-  }
+  };
 
   const info = async (req, res) => {
-    console.log(req.user);
     res.json(req.user);
-  }
+  };
 
   const remove = async (req, res) => {
     try {
-      await User.remove({_id: req.user._id});
-      res.status(200).send('Removed').end();
-    } catch(e) {
+      await User.remove({ _id: req.user._id });
+      res.status(200)
+      .send('Removed')
+      .end();
+    } catch (e) {
       res.status(500).send(e.toString());
     }
-  }
+  };
 
   return {
     login,
     register,
     info,
-    remove
-  }
-}
+    remove,
+  };
+};
