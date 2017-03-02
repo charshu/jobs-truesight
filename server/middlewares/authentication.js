@@ -40,12 +40,23 @@ passport.use(new LocalStrategy({
       }
       if (isMatch) {
         //sent user obj back to callback in ../controllers/user.js
+
+        // TODO: put a fucking token here
+        // and create session to db
+        // token = someTokenGen();
+        // const session = new Session({user: ObjectId(user.id), token: token})
+        // await session.save();
+        // user.token = token;
+
         return done(null, user);
       }
       return done(null, false, {msg: 'Invalid email or password.'});
     });
   });
 }));
+
+
+
 
 passport.use(new FacebookStrategy({
   clientID: '1744234895905318',
