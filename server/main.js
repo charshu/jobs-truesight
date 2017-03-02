@@ -17,6 +17,10 @@ const authenticationRoute = require('./routes/authentication.routes');
 // import models
 const User = require('./models/User');
 
+const Models = {
+  User,
+}
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -29,11 +33,11 @@ app.use(require('express-session')({
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.use(new LocalStrategy({ usernameField: 'email' }, AuthMiddlewareHandler.LocalStrategyHandler(User)));
-passport.serializeUser(AuthMiddlewareHandler.serializeUser(User));
-passport.deserializeUser(AuthMiddlewareHandler.deserializeUser(User));
+passport.use(new LocalStrategy({ usernameField: 'email' }, AuthMiddlewareHandler.LocalStrategyHandler(Models)));
+passport.serializeUser(AuthMiddlewareHandler.serializeUser(Models));
+passport.deserializeUser(AuthMiddlewareHandler.deserializeUser(Models));
 
-app.use('/auth', authenticationRoute({User}));
+app.use('/auth', authenticationRoute(Models));
 
 
 app.listen(3000, function(){
