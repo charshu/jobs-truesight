@@ -14,6 +14,9 @@ dbConnection();
 const AuthMiddlewareHandler = require('./middlewares/authentication');
 const authenticationRoute = require('./routes/authentication.routes');
 
+// import models
+const User = require('./models/User');
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -26,11 +29,11 @@ app.use(require('express-session')({
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.use(new LocalStrategy({ usernameField: 'email' },AuthMiddlewareHandler.LocalStrategyHandler));
-passport.serializeUser(AuthMiddlewareHandler.serializeUser);
-passport.deserializeUser(AuthMiddlewareHandler.deserializeUser);
+passport.use(new LocalStrategy({ usernameField: 'email' }, AuthMiddlewareHandler.LocalStrategyHandler(User)));
+passport.serializeUser(AuthMiddlewareHandler.serializeUser(User));
+passport.deserializeUser(AuthMiddlewareHandler.deserializeUser(User));
 
-app.use('/auth', authenticationRoute);
+app.use('/auth', authenticationRoute({User}));
 
 
 app.listen(3000, function(){

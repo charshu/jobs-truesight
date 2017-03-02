@@ -1,15 +1,14 @@
 // @flow
-const User = require('../models/User');
 
 // How to store information to session
-exports.serializeUser = function(user, done) {
+exports.serializeUser = (User) => (user, done) => {
   console.log("== SerializeUser to session ==");
   console.log(`session information is ${user._id}`)
   done(null, user._id);
 }
 
 // How to get req.user from session
-exports.deserializeUser = async function(id, done) {
+exports.deserializeUser = (User) => async function(id, done) {
   console.log("== DeserializeUser from session ==");
   console.log(`session information is ${id}`)
   try {
@@ -22,7 +21,7 @@ exports.deserializeUser = async function(id, done) {
 }
 
 // How to authentication with email
-exports.LocalStrategyHandler = async function(username, password, done) {
+exports.LocalStrategyHandler = (User) => async function(username, password, done) {
   console.log('=== start authtentication ===')
   try{
     const user = await User.findOne({email: username});
