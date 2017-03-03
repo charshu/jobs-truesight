@@ -8,10 +8,12 @@ module.exports = function ({ User }) {
 
   const register = async (req, res) => {
     try {
+
       const newUser = new User({
-        email: req.body.username,
+        email: req.body.email,
         password: req.body.password
       });
+      console.log('=== save new user ===');
       await newUser.save();
       res.json({
         id: newUser._id,
@@ -22,11 +24,13 @@ module.exports = function ({ User }) {
   };
 
   const info = async (req, res) => {
+    console.log('=== response info ===');
     res.json(req.user);
   };
 
   const remove = async (req, res) => {
     try {
+      console.log('=== remove user ===');
       await User.remove({ _id: req.user._id });
       res.status(200)
       .send('Removed')
@@ -35,11 +39,19 @@ module.exports = function ({ User }) {
       res.status(500).send(e.toString());
     }
   };
+  const logout = async (req, res) => {
+      console.log('=== done logout ===');
+      req.logout();
+      res.status(200)
+      .send('Logout')
+      .end();
+  }
 
   return {
     login,
     register,
     info,
     remove,
+    logout 
   };
 };

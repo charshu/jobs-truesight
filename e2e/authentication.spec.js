@@ -16,7 +16,7 @@ describe('Authentication test', function() {
 
   // TODO: fix all case
   it('should POST /auth/login avaliable', function(){
-    return chakram.post(endpoint('/auth/login'))
+    return chakram.post(endpoint('/auth/login'), header)
       .then(function(response) {
         expect(response).to.have.status(400);
       });
@@ -37,6 +37,17 @@ describe('Authentication test', function() {
     });
   });
 
+  const wrongUserData = {
+    email: testingUserData.email,
+    password: 'xxxxxxxxx'
+  }
+  it('should POST /auth/login can login with username and *wrong password', function(){
+    return chakram.post(endpoint('/auth/login'), wrongUserData, header)
+    .then(function(response){
+      expect(response).to.have.status(401);
+    });
+  });
+
   it('should GET /auth/info can receive infomation', function(){
     return chakram.get(endpoint('/auth/info'), header)
     .then(function(response){
@@ -46,6 +57,29 @@ describe('Authentication test', function() {
     })
   })
 
+
+  it('should GET /logout delete user data from request', function(){
+    return chakram.get(endpoint('/auth/logout'), header)
+    .then(function(response){
+      expect(response.body).to.be.eql('Logout');
+      expect(response).to.have.status(200);
+    });
+  })
+
+  it('should GET /auth/info can not receive infomation after logout', function(){
+    return chakram.get(endpoint('/auth/info'), header)
+    .then(function(response){
+      expect(response).to.have.status(401);
+    })
+  })
+
+  it('should POST /auth/login can login after logout user', function() {
+    return chakram.post(endpoint('/auth/login'), testingUserData, header)
+    .then(function(response){
+      expect(response).to.have.status(200);
+    });
+  })
+  
   it('should DELETE /auth remove user from DB', function() {
     return chakram.delete(endpoint('/auth'), header)
     .then(function(response){
@@ -61,10 +95,13 @@ describe('Authentication test', function() {
     });
   })
 
-
   // TODO: implement more test case
-  // it('should POST /user return 403 unauthorize if no token in request header')
-  // it('should POST /user send user information back')
+  // it('should POST /user return 403 unauthorize if no token in request header',function(){
+  //   return chakram.post(endpoint('auth/user'))
+
+
+  // })
+  
   // it('should POST /verifyToken will verify token if expired or not');
   // it('should POST and GET /logout with token will remove token from session');
   // it('should POST /user with token will return 403 authorize after remove token from session db');

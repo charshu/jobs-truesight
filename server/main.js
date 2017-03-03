@@ -4,7 +4,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const LocalStrategy = require('passport-local').Strategy;
-
+const FacebookStrategy = require('passport-facebook').Strategy;
 // setup mongoose
 const dbConnection = require('../common/dbConnection');
 
@@ -31,7 +31,17 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Setup passport
+const fbStrategyConfig = {
+  clientID: '1744234895905318',
+  clientSecret: '337508e13131ff63bcaaba43052c5722',
+  callbackURL: '/auth/facebook/callback',
+  profileFields: [
+    'name', 'email', 'link', 'locale', 'timezone'
+  ],
+  passReqToCallback: true
+}
 passport.use(new LocalStrategy({ usernameField: 'email' }, AuthMiddlewareHandler.LocalStrategyHandler(Models)));
+passport.use(new FacebookStrategy(fbStrategyConfig, AuthMiddlewareHandler.FacebookStrategyHandler(Models)));
 passport.serializeUser(AuthMiddlewareHandler.serializeUser(Models));
 passport.deserializeUser(AuthMiddlewareHandler.deserializeUser(Models));
 

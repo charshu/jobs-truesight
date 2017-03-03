@@ -9,19 +9,21 @@ module.exports = ({ User }) => {
   // public authentication route
   publicRouter.post('/login', passport.authenticate('local'), UserController.login);
   publicRouter.post('/register', UserController.register);
-
-
+  publicRouter.post('/facebook', passport.authenticate('facebook'));
+  
   // private route
   privateRouter.use((req, res, next) => {
       // reject if no user
     if (!req.user) {
-      res.send(401).end();
+      res.status(401).end();
     } else {
       next();
     }
   });
   privateRouter.get('/info', UserController.info);
+  privateRouter.get('/logout', UserController.logout);
   privateRouter.delete('/', UserController.remove);
+  
 
 
   // merge route
