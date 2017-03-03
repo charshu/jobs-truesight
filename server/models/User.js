@@ -42,6 +42,17 @@ userSchema.pre('save', function save(next) {
     });
   });
 });
+/**
+ * Helper method for validating user's password.
+ */
+userSchema.methods.comparePassword = function comparePassword(candidatePassword){
+  return new Promise((resolve,reject) => {
+        bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
+            if(err)reject(err)
+            else resolve(isMatch)
+        });
+  })
+};
 
 const User = mongoose.model('User', userSchema);
 

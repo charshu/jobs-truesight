@@ -2,12 +2,16 @@
 module.exports = function ({ User }) {
   const login = (req, res) => {
     console.log('=== done login ===');
+    //passport local setup req.user while authentication process
     res.json(req.user);
   };
 
   const register = async (req, res) => {
     try {
-      const newUser = new User(req.body);
+      const newUser = new User({
+        email: req.body.username,
+        password: req.body.password
+      });
       await newUser.save();
       res.json({
         id: newUser._id,
