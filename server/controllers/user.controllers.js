@@ -1,17 +1,16 @@
 
-module.exports = function ({ User }) {
+module.exports = () => {
   const login = (req, res) => {
     console.log('=== done login ===');
-    //passport local setup req.user while authentication process
+    // passport local setup req.user while authentication process
     res.json(req.user);
   };
 
   const register = async (req, res) => {
     try {
-
-      const newUser = new User({
+      const newUser = new req.context.User({
         email: req.body.email,
-        password: req.body.password
+        password: req.body.password,
       });
       console.log('=== save new user ===');
       await newUser.save();
@@ -31,7 +30,7 @@ module.exports = function ({ User }) {
   const remove = async (req, res) => {
     try {
       console.log('=== remove user ===');
-      await User.remove({ _id: req.user._id });
+      await req.context.User.remove({ _id: req.user._id });
       res.status(200)
       .send('Removed')
       .end();
@@ -40,18 +39,18 @@ module.exports = function ({ User }) {
     }
   };
   const logout = async (req, res) => {
-      console.log('=== done logout ===');
-      req.logout();
-      res.status(200)
+    console.log('=== done logout ===');
+    req.logout();
+    res.status(200)
       .send('Logout')
       .end();
-  }
+  };
 
   return {
     login,
     register,
     info,
     remove,
-    logout 
+    logout,
   };
 };

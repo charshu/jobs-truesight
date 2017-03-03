@@ -30,14 +30,14 @@ exports.LocalStrategyHandler = ({ User }) => async (username, password, done) =>
     } else if (user) {
       // check password here
       console.log('Compare user password...');
-      console.log('input password is ' + password);
-      console.log('hash password is ' + user.password);
+      console.log(`input password is ${password}`);
+      console.log(`hash password is ${user.password}`);
       const isMatch = await user.comparePassword(password);
       if (isMatch) {
-        console.log('password match',chalk.green('✓'));
+        console.log('password match', chalk.green('✓'));
         done(null, user);
       } else {
-        console.log('wrong password',chalk.red('x'));
+        console.log('wrong password', chalk.red('x'));
         done(null, false);
       }
     }
