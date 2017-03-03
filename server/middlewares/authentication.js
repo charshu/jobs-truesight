@@ -30,14 +30,14 @@ exports.LocalStrategyHandler = ({ User }) => async (username, password, done) =>
     } else if (user) {
       // check password here
       console.log('Compare user password...');
-      console.log('input password is ' + password);
-      console.log('hash password is ' + user.password);
+      console.log(`input password is ${password}`);
+      console.log(`hash password is ${user.password}`);
       const isMatch = await user.comparePassword(password);
       if (isMatch) {
-        console.log('password match',chalk.green('✓'));
+        console.log('password match', chalk.green('✓'));
         done(null, user);
       } else {
-        console.log('wrong password',chalk.red('x'));
+        console.log('wrong password', chalk.red('x'));
         done(null, false);
       }
     }
@@ -46,19 +46,19 @@ exports.LocalStrategyHandler = ({ User }) => async (username, password, done) =>
   }
 };
 
-exports.FacebookStrategyHandler = ({User}) => async (accessToken, refreshToken, profile, done) => {
+exports.FacebookStrategyHandler = ({ User }) => async (accessToken, refreshToken, profile, done) => {
   console.log('=== start Facebook authtentication ===');
-  try{
+  try {
     const user = await User.findOrCreate({ facebook: profile.id });
-    done(null,user);
-  }catch(e){
+    done(null, user);
+  } catch (e) {
     done(e);
   }
-  
+
 
   // try{
   //   console.log('');
-  //   //check if there are duplicated facebook.id 
+  //   //check if there are duplicated facebook.id
   //   const existingUser =  await User.findOne({
   //     facebook: profile.id
   //   })
@@ -84,8 +84,8 @@ exports.FacebookStrategyHandler = ({User}) => async (accessToken, refreshToken, 
   //   user.profile.location = (profile._json.location)? profile._json.location.name: '';
   //   await user.save();
   //   done(null,user);
-    
+
   // }catch(e){
   //   done(e);
   // }
-}
+};

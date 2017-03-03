@@ -9,15 +9,19 @@ const FacebookStrategy = require('passport-facebook').Strategy;
 const dbConnection = require('../common/dbConnection');
 
 dbConnection();
+
+const app = express();
 const AuthMiddlewareHandler = require('./middlewares/authentication');
+const ContextMiddlewareHandler = require('./middlewares/context.middleware');
 const User = require('./models/User');
-// import models
-const Models = {
+
+const context = {
   User,
 };
+app.use(ContextMiddlewareHandler(context));
 
 // Setup express
-const app = express();
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -26,6 +30,7 @@ app.use(require('express-session')({
   resave: false,
   saveUninitialized: false,
 }));
+
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -36,17 +41,17 @@ const fbStrategyConfig = {
   clientSecret: '337508e13131ff63bcaaba43052c5722',
   callbackURL: '/auth/facebook/callback',
   profileFields: [
-    'name', 'email', 'link', 'locale', 'timezone'
+    'name', 'email', 'link', 'locale', 'timezone',
   ],
-  passReqToCallback: true
-}
-passport.use(new LocalStrategy({ usernameField: 'email' }, AuthMiddlewareHandler.LocalStrategyHandler(Models)));
-passport.use(new FacebookStrategy(fbStrategyConfig, AuthMiddlewareHandler.FacebookStrategyHandler(Models)));
-passport.serializeUser(AuthMiddlewareHandler.serializeUser(Models));
-passport.deserializeUser(AuthMiddlewareHandler.deserializeUser(Models));
+  passReqToCallback: true,
+};
+passport.use(new LocalStrategy({ usernameField: 'email' }, AuthMiddlewareHandler.LocalStrategyHandler(context)));
+passport.use(new FacebookStrategy(fbStrategyConfig, AuthMiddlewareHandler.FacebookStrategyHandler(context)));
+passport.serializeUser(AuthMiddlewareHandler.serializeUser(context));
+passport.deserializeUser(AuthMiddlewareHandler.deserializeUser(context));
 
 // import routes
-app.use(require('./routes')(Models));
+app.use(require('./routes')());
 
 
 app.listen(3000, () => {
