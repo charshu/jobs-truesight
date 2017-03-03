@@ -49,33 +49,43 @@ exports.LocalStrategyHandler = ({ User }) => async (username, password, done) =>
 exports.FacebookStrategyHandler = ({User}) => async (accessToken, refreshToken, profile, done) => {
   console.log('=== start Facebook authtentication ===');
   try{
-    //check if there are duplicated facebook.id 
-    const existingUser =  await User.findOne({
-      facebook: profile.id
-    })
-    if(existUser){
-      done(null,existingUser);
-    }
-    //check if user email is the same as facebook email
-    const existingEmail = await User.findOne({
-      email: profile._json.email
-    });
-    if(existingEmail){
-      done(null,existingEmail);
-    }
-    //create new user
-    const user = new User();
-    user.email = profile._json.email;
-    user.facebook = profile.id;
-    user.tokens.push({kind: 'facebook', accessToken});
-    user.profile.name = `${profile.name.givenName} ${profile.name.familyName}`;
-    user.profile.gender = profile._json.gender;
-    user.profile.picture = `https://graph.facebook.com/${profile.id}/picture?type=large`;
-    user.profile.location = (profile._json.location)? profile._json.location.name: '';
-    await user.save();
+    const user = await User.findOrCreate({ facebook: profile.id });
     done(null,user);
-    
   }catch(e){
     done(e);
   }
+  
+
+  // try{
+  //   console.log('');
+  //   //check if there are duplicated facebook.id 
+  //   const existingUser =  await User.findOne({
+  //     facebook: profile.id
+  //   })
+  //   if(existUser){
+  //     done(null,existingUser);
+  //   }
+  //   //check if user email is the same as facebook email
+  //   const existingEmail = await User.findOne({
+  //     email: profile._json.email
+  //   });
+  //   if(existingEmail){
+  //     done(null,existingEmail);
+  //   }
+  //   //create new user
+  //   console.log('=== save Facebook user ===');
+  //   const user = new User();
+  //   user.email = profile._json.email;
+  //   user.facebook = profile.id;
+  //   user.tokens.push({kind: 'facebook', accessToken});
+  //   user.profile.name = `${profile.name.givenName} ${profile.name.familyName}`;
+  //   user.profile.gender = profile._json.gender;
+  //   user.profile.picture = `https://graph.facebook.com/${profile.id}/picture?type=large`;
+  //   user.profile.location = (profile._json.location)? profile._json.location.name: '';
+  //   await user.save();
+  //   done(null,user);
+    
+  // }catch(e){
+  //   done(e);
+  // }
 }
