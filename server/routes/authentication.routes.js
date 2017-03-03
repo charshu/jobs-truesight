@@ -9,8 +9,8 @@ module.exports = ({ User }) => {
   // public authentication route
   publicRouter.post('/login', passport.authenticate('local'), UserController.login);
   publicRouter.post('/register', UserController.register);
-  publicRouter.get('/facebook', passport.authenticate('facebook',{scope: ['email', 'public_profile'] }));
-  publicRouter.get('/facebook/callback', passport.authenticate('facebook'),UserController.login);
+  publicRouter.get('/facebook', passport.authenticate('facebook',{scope: ['email', 'public_profile', 'user_location'] }));
+  publicRouter.get('/facebook/callback', passport.authenticate('facebook'), UserController.login);
   // private route
   privateRouter.use((req, res, next) => {
       // reject if no user

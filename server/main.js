@@ -36,12 +36,12 @@ const fbStrategyConfig = {
   clientSecret: '337508e13131ff63bcaaba43052c5722',
   callbackURL: '/auth/facebook/callback',
   profileFields: [
-    'name', 'email', 'link', 'locale', 'timezone'
+    'name', 'email','location','gender','age_range'
   ],
   passReqToCallback: true
 }
 passport.use(new LocalStrategy({ usernameField: 'email' }, AuthMiddlewareHandler.LocalStrategyHandler(Models)));
-passport.use(new FacebookStrategy(fbStrategyConfig, AuthMiddlewareHandler.FacebookStrategyHandler(Models)));
+passport.use(new FacebookStrategy( fbStrategyConfig, AuthMiddlewareHandler.FacebookStrategyHandler(Models)));
 passport.serializeUser(AuthMiddlewareHandler.serializeUser(Models));
 passport.deserializeUser(AuthMiddlewareHandler.deserializeUser(Models));
 
