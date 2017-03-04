@@ -1,12 +1,14 @@
 
 module.exports = () => {
   const login = (req, res) => {
+    const console = req.context.Logger({ prefix: 'user/login controller' });
     console.log('=== done login ===');
     // passport local setup req.user while authentication process
     res.json(req.user);
   };
 
   const register = async (req, res) => {
+    const console = req.context.Logger({ prefix: 'user/register controller' });
     try {
       const newUser = new req.context.User({
         email: req.body.email,
@@ -23,11 +25,13 @@ module.exports = () => {
   };
 
   const info = async (req, res) => {
+    const console = req.context.Logger({ prefix: 'user/info controller' });
     console.log('=== response info ===');
     res.json(req.user);
   };
 
   const remove = async (req, res) => {
+    const console = req.context.Logger({ prefix: 'user/remove controller' });
     try {
       console.log('=== remove user ===');
       await req.context.User.remove({ _id: req.user._id });
@@ -39,6 +43,7 @@ module.exports = () => {
     }
   };
   const logout = async (req, res) => {
+    const console = req.context.Logger({ prefix: 'user/logout controller' });
     console.log('=== done logout ===');
     req.logout();
     res.status(200)
