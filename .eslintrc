@@ -52,6 +52,9 @@
         "flowtype"
     ],
   "rules": {
+     "comma-dangle": ["error", {
+       "functions": "never"
+     }],
     "global-require": "off",
     "no-multi-assign": "error",
     "react/prop-types": "off",
