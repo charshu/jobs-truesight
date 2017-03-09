@@ -4,6 +4,8 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const Logger = require('../common/logger');
+const { graphqlExpress, graphiqlExpress } = require('graphql-server-express');
+const schema = require('../schema');
 
 // setup mongoose
 const dbConnection = require('../common/dbConnection');
@@ -17,7 +19,7 @@ const User = require('./models/User');
 
 const context = {
   User,
-  Logger,
+  Logger
 };
 app.use(ContextMiddlewareHandler(context));
 
@@ -28,7 +30,7 @@ app.use(cookieParser());
 app.use(require('express-session')({
   secret: 'keyboard cat',
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: false
 }));
 
 
@@ -45,6 +47,13 @@ passport.deserializeUser(AuthMiddlewareHandler.deserializeUser(context));
 // import routes
 app.use(require('./routes')());
 
+app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
+app.use('/graphql', graphqlExpress(req => ({
+  schema,
+  context: {
+    req
+  }
+})));
 
 app.listen(3000, () => {
   Logger('app is start on 3000');

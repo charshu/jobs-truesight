@@ -7,22 +7,22 @@ const Schema = mongoose.Schema;
 
 
 const userSchema = new Schema({
-    email: {
-        type: String,
-        unique: true
-    },
-    password: String,
-    facebook: String,
-    tokens:Array,
-    profile: {
-        name: String,
-        gender: String,
-        age_range: Number,
-        location: String,
-        website: String,
-        picture: String
-    },
-    createdAt: Date
+  email: {
+    type: String,
+    unique: true
+  },
+  password: String,
+  facebook: String,
+  tokens: Array,
+  profile: {
+    name: String,
+    gender: String,
+    age_range: Number,
+    location: String,
+    website: String,
+    picture: String
+  },
+  createdAt: Date
 });
 
 
