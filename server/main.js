@@ -20,8 +20,21 @@ const context = {
   Logger,
 };
 app.use(ContextMiddlewareHandler(context));
-
+app.all('/*', (req, res, next) => {
+    // res.header("Access-Control-Allow-Origin", "*");
+  console.log(`origin ${req.headers.origin}`);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With, Content-type');
+  next();
+});
 // Setup express
+app.all('/', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With');
+  next();
+});
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -29,6 +42,7 @@ app.use(require('express-session')({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: false,
+
 }));
 
 
