@@ -4,8 +4,10 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const Logger = require('../common/logger');
+
 const { graphqlExpress, graphiqlExpress } = require('graphql-server-express');
 const schema = require('../schema');
+
 
 // setup mongoose
 const dbConnection = require('../common/dbConnection');
@@ -20,10 +22,26 @@ const User = require('./models/User');
 const context = {
   User,
   Logger
+
 };
 app.use(ContextMiddlewareHandler(context));
-
+app.all('/*', (req, res, next) => {
+    // res.header("Access-Control-Allow-Origin", "*");
+  console.log(`origin ${req.headers.origin}`);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With, Content-type');
+  next();
+});
 // Setup express
+
+app.all('/', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With');
+  next();
+});
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());

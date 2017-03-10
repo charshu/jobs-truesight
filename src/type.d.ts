@@ -4,8 +4,8 @@
 
 export type User = {
   id: string;
-  firstname: string;
-  lastname: string
+  email: string;
+  password: string
 }
 
 // TODO: add and design more type

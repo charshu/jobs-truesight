@@ -21,9 +21,8 @@ const userSchema = new Schema({
     location: String,
     website: String,
     picture: String
-  },
-  createdAt: Date
-});
+  }
+}, { timestamps: true });
 
 
 userSchema.methods.createNewUser = (userDataJSON) => {

@@ -24,6 +24,7 @@ exports.deserializeUser = ({ User, Logger }) => async (id, done) => {
 // How to authentication with email
 exports.LocalStrategyMiddleware = ({ User, Logger }) => new LocalStrategy({ usernameField: 'email' }, async (username, password, done) => {
   const console = Logger({ prefix: 'Email login' });
+  console.log('=== start local authtentication ===');
   try {
     const user = await User.findOne({ email: username });
     if (!user) {
@@ -58,27 +59,30 @@ const facebookAuthConfig = {
   clientSecret: process.env.FACEBOOK_SECRET,
   callbackURL: '/auth/facebook/callback',
   profileFields: [
-    'name', 'email', 'location', 'gender', 'age_range',
+    'name', 'email', 'location', 'gender', 'age_range'
   ],
-  passReqToCallback: true,
+  passReqToCallback: true
 };
 exports.FacebookStrategyHandler = ({ User, Logger }) => new FacebookStrategy(facebookAuthConfig,
  async (req, accessToken, refreshToken, profile, done) => {
    const console = Logger({});
-   console.log(`=== start Facebook authtentication ===${JSON.stringify(profile)}`);
+
+   console.log('=== start Facebook authtentication ===');
    try {
     // check if there are duplicated facebook.id
      const existingUser = await User.findOne({ facebook: profile.id });
-     const existingEmail = await User.findOne({ email: profile._json.email });
+     const existingEmailUser = await User.findOne({ email: profile._json.email });
      if (existingUser) {
        console.log('=== existing user ===');
        done(null, existingUser);
-     } else if (existingEmail) {
-      // check if user email is the same as facebook email
+     } else if (existingEmailUser) {
+        /**  msg: 'There is already an account using this email address. Sign in to that account an' +
+          'd link it with Facebook manually from Account Settings.'
+        **/
        console.log('=== existing email ===');
-       done(null, existingEmail);
+       done(null, false);
      } else {
-    // create new user
+        // create new user
        console.log('=== save Facebook user ===');
        const user = new User();
        user.email = profile._json.email;
