@@ -13,13 +13,22 @@ import { InfoComponent } from './info/info.component';
 import { LoginComponent } from './login/login.component';
 
 import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
+import { ApolloClient } from 'apollo-client';
+import { ApolloModule } from 'apollo-angular';
+// by default, this client will send queries to `/graphql` (relative to the URL of your app)
+const client = new ApolloClient();
+export function provideClient(): ApolloClient {
+  return client;
+}
+
 
 @NgModule({
   imports: [
     BrowserModule,
     HttpModule,
     FormsModule,
-    routing
+    routing,
+    ApolloModule.forRoot(provideClient)
   ],
   declarations: [
     AppComponent,

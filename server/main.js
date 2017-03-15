@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const Logger = require('../common/logger');
 
 const { graphqlExpress, graphiqlExpress } = require('graphql-server-express');
-const schema = require('../schema');
+const schema = require('./schema');
 
 
 // setup mongoose
@@ -25,6 +25,9 @@ const context = {
 
 };
 app.use(ContextMiddlewareHandler(context));
+
+// Setup express
+
 app.all('/*', (req, res, next) => {
     // res.header("Access-Control-Allow-Origin", "*");
   console.log(`origin ${req.headers.origin}`);
@@ -32,13 +35,6 @@ app.all('/*', (req, res, next) => {
   res.header('Access-Control-Allow-Origin', req.headers.origin);
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Headers', 'X-Requested-With, Content-type');
-  next();
-});
-// Setup express
-
-app.all('/', (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'X-Requested-With');
   next();
 });
 
@@ -65,12 +61,14 @@ passport.deserializeUser(AuthMiddlewareHandler.deserializeUser(context));
 // import routes
 app.use(require('./routes')());
 
+const root = {
+  hello: () => 'Hello world!'
+};
 app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
 app.use('/graphql', graphqlExpress(req => ({
   schema,
-  context: {
-    req
-  }
+  rootValue: root,
+  context: Object.assign({ user: req.user }, req.context)
 })));
 
 app.listen(3000, () => {

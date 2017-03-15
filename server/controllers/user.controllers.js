@@ -15,12 +15,12 @@ module.exports = () => {
     try {
       const newUser = new req.context.User({
         email: req.body.email,
-        password: req.body.password,
+        password: req.body.password
       });
       console.log('=== save new user ===');
       await newUser.save();
       res.json({
-        id: newUser._id,
+        id: newUser._id
       });
     } catch (e) {
       res.status(500).end();
@@ -59,6 +59,6 @@ module.exports = () => {
     register,
     info,
     remove,
-    logout,
+    logout
   };
 };
