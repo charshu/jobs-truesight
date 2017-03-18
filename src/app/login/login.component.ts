@@ -15,8 +15,8 @@ export class LoginComponent implements OnInit {
 
     constructor(
         private router: Router,
-        private userService:UserService) { }
-        
+        private userService: UserService) { }
+
     ngOnInit() {
         // TODO: reset login status
 
@@ -24,15 +24,14 @@ export class LoginComponent implements OnInit {
 
     login() {
         this.loading = true;
-        this.userService.login(this.model.email, this.model.password)
-            .subscribe(res => {
-                if (res.status === 200) {
-                    this.userService.loadCurrentUser();
-                    this.router.navigate(['/info']);
-                } else {
-                    this.error = 'Email or password is incorrect';
-                    this.loading = false;
-                }
-            });
+        this.userService.login(this.model.email, this.model.password).then((isLoginSuccess) => {
+            if (isLoginSuccess) {
+                this.router.navigate(['/info']);
+            } else {
+                this.error = 'Email or password is incorrect';
+                this.loading = false;
+            }
+        });
+
     }
 }
