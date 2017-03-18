@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { UserService } from '../shared';
+
 
 @Component({
   selector: 'my-home',
@@ -7,8 +9,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() {
+  constructor(private userService : UserService) {
     // Do stuff
+    
   }
 
   ngOnInit() {

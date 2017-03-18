@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { AuthenticationService } from '../shared';
+import { UserService } from '../shared';
 
 @Component({
 
@@ -15,8 +15,8 @@ export class LoginComponent implements OnInit {
 
     constructor(
         private router: Router,
-        private authenticationService: AuthenticationService) { }
-
+        private userService:UserService) { }
+        
     ngOnInit() {
         // TODO: reset login status
 
@@ -24,9 +24,10 @@ export class LoginComponent implements OnInit {
 
     login() {
         this.loading = true;
-        this.authenticationService.login(this.model.email, this.model.password)
-            .subscribe(result => {
-                if (result === true) {
+        this.userService.login(this.model.email, this.model.password)
+            .subscribe(res => {
+                if (res.status === 200) {
+                    this.userService.loadCurrentUser();
                     this.router.navigate(['/info']);
                 } else {
                     this.error = 'Email or password is incorrect';

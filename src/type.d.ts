@@ -3,9 +3,8 @@
 
 
 export type User = {
-  id: string;
   email: string;
-  password: string
+  profile: any
 }
 
 // TODO: add and design more type

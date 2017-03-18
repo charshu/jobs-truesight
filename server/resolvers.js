@@ -19,10 +19,13 @@ const resolveFunctions = {
     author(_, { id }) {
       return find(authors, { id });
     },
-    user(_, { id }, ct) {
-      return ct.User.findOne({ _id: id }).then(
-        user => new ct.User(user)
-      );
+    currentUser(_, params, ct) {
+      if (ct.user !== undefined && ct.user !== null) {
+        return ct.User.findOne({ _id: ct.user.id }).then(
+          user => new ct.User(user)
+        );
+      }
+      return undefined;
     }
   },
   Mutation: {

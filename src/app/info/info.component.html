@@ -1,3 +1,4 @@
-<div>
-    {{user | json}}
+<div *ngIf="currentUser">
+   email : {{currentUser.email | json}}
+   profile : {{currentUser.profile | json}}
 </div>

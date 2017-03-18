@@ -1,24 +1,31 @@
 import { Component, OnInit } from '@angular/core';
+import { UserService } from '../shared';
 
-import { User } from '../../type.d';
-import { UserService } from '../shared/user.service';
 
+// We use the gql tag to parse our query string into a query document
 @Component({
-    
     templateUrl: 'info.component.html'
 })
 
 export class InfoComponent implements OnInit {
-    user: User;
+    loaded: boolean;
+    currentUser: any;
 
-    constructor(private userService: UserService) { }
+    constructor(
+        private userService : UserService
+    ){
+        this.userService.currentUser.subscribe(currentUser => {
+            if(currentUser !== null){
+                this.currentUser = currentUser;
+            }
+            this.loaded = true;
+        });
+    }
 
     ngOnInit() {
-        // get users from secure api end point
-        this.userService.getUserInfo()
-            .subscribe(user => {
-                this.user = user;
-            });
-    }
+
+       
+  }
+    
 
 }

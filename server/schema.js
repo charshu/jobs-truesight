@@ -25,14 +25,13 @@ type Profile {
     gender: String
     age_range: Int
     location: String
-    website: String
     picture: String
 }
 
 type Query {
   posts: [Post]
   author(id: Int!): Author
-  user(id: String!): User
+  currentUser: User
 }
 
 type Mutation {

@@ -27,16 +27,23 @@ const context = {
 app.use(ContextMiddlewareHandler(context));
 
 // Setup express
-
-app.all('/*', (req, res, next) => {
-    // res.header("Access-Control-Allow-Origin", "*");
-  console.log(`origin ${req.headers.origin}`);
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.header('Access-Control-Allow-Origin', req.headers.origin);
-  res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Headers', 'X-Requested-With, Content-type');
-  next();
-});
+app.use(require('cors')({
+  origin: 'http://localhost:8080',
+  credentials: true,
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  preflightContinue: false,
+  allowedHeaders: ['Content-type', 'X-Requested-With'],
+  optionsSuccessStatus: 204
+}));
+// app.all('/*', (req, res, next) => {
+//     // res.header("Access-Control-Allow-Origin", "*");
+//   console.log(`origin ${req.headers.origin}`);
+//   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//   res.header('Access-Control-Allow-Origin', req.headers.origin);
+//   res.header('Access-Control-Allow-Credentials', true);
+//   res.header('Access-Control-Allow-Headers', 'X-Requested-With, Content-type');
+//   next();
+// });
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -65,7 +72,7 @@ const root = {
   hello: () => 'Hello world!'
 };
 app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
-app.use('/graphql', graphqlExpress(req => ({
+app.use('/graphql', bodyParser.json(), graphqlExpress(req => ({
   schema,
   rootValue: root,
   context: Object.assign({ user: req.user }, req.context)

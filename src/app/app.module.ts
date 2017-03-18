@@ -11,12 +11,19 @@ import { UserService } from './shared/user.service';
 
 import { InfoComponent } from './info/info.component';
 import { LoginComponent } from './login/login.component';
-
+import { NavbarComponent } from './navbar/navbar.component'
 import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
-import { ApolloClient } from 'apollo-client';
+import { ApolloClient, createNetworkInterface } from 'apollo-client';
 import { ApolloModule } from 'apollo-angular';
 // by default, this client will send queries to `/graphql` (relative to the URL of your app)
-const client = new ApolloClient();
+const client = new ApolloClient({
+  networkInterface: createNetworkInterface({
+    uri: 'http://localhost:3000/graphql',
+    opts: {
+      credentials: 'include'
+    }
+  }),
+});
 export function provideClient(): ApolloClient {
   return client;
 }
@@ -34,7 +41,8 @@ export function provideClient(): ApolloClient {
     AppComponent,
     HomeComponent,
     LoginComponent,
-    InfoComponent
+    InfoComponent,
+    NavbarComponent
   ],
   providers: [
     UserService,
