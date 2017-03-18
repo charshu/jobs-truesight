@@ -48,7 +48,8 @@ export class UserService implements OnInit {
         const response = await this.http.post('http://localhost:3000/auth/login', body, options)
         .toPromise();
         if (response.status === 200) {
-            this.loadCurrentUser();
+            await this.loadCurrentUser();
+            console.log('currentUser is loaded');
             return true;
         }
         return false;
@@ -70,11 +71,11 @@ export class UserService implements OnInit {
 
   public async loadCurrentUser() {
       console.log('loading current user');
-      const currentUser = await this.apollo.watchQuery<QueryResponse>({
+      const currentUser = await this.apollo.query<QueryResponse>({
             query: CurrentUserProfile
         }).map(({data}) => data.currentUser).toPromise();
+      console.log(currentUser);
       this._currentUser.next(currentUser);
-
   }
 
   ngOnInit(){
