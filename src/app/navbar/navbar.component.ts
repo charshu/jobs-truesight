@@ -25,22 +25,21 @@ export class NavbarComponent implements OnInit {
         });
     }
 
-    public logout() {
-        this.userService.logout().then((isLogout) => {
+    public async logout() {
+        try {
+            const isLogout = await this.userService.logout();
             console.log(isLogout);
             if (isLogout) {
                 this.currentUser = undefined;
                 this.router.navigate(['/home']);
             }
-
-        }, (error) => {
-            console.log(error);
-        });
-
+        }catch (e) {
+            console.log(e);
+        }
     }
 
     ngOnInit() {
-       this.userService.loadCurrentUser();
+        this.userService.loadCurrentUser();
 
   }
 

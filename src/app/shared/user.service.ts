@@ -31,6 +31,7 @@ interface QueryResponse {
 export class UserService implements OnInit {
   private _currentUser: BehaviorSubject<User> = new BehaviorSubject<User>(null);
   public currentUser: Observable<User> = this._currentUser.asObservable();
+
   constructor(private apollo: Apollo, private http: Http) {
 
   }
@@ -48,9 +49,11 @@ export class UserService implements OnInit {
         const response = await this.http.post('http://localhost:3000/auth/login', body, options)
         .toPromise();
         if (response.status === 200) {
-            await this.loadCurrentUser();
-            console.log('currentUser is loaded');
-            return true;
+            console.log('login successfully');
+            const loaded = await this.loadCurrentUser();
+            if (loaded) {
+                return true;
+            }
         }
         return false;
 
@@ -64,21 +67,33 @@ export class UserService implements OnInit {
         const response = await this.http.get('http://localhost:3000/auth/logout', options)
         .toPromise();
         if (response.status === 200) {
+            this._currentUser.next(null);
             return true;
         }
         return false;
     }
 
-  public async loadCurrentUser() {
-      console.log('loading current user');
-      const currentUser = await this.apollo.query<QueryResponse>({
-            query: CurrentUserProfile
-        }).map(({data}) => data.currentUser).toPromise();
-      console.log(currentUser);
-      this._currentUser.next(currentUser);
+  public async loadCurrentUser(): Promise<boolean> {
+    console.log('loading current user');
+    try {
+        const query = this.apollo.query<QueryResponse>({
+          query: CurrentUserProfile,
+          forceFetch: true
+        }).map(({data}) => data.currentUser);
+        const currentUser = await query.toPromise();
+        console.log('currentUser: ' + currentUser);
+        if (currentUser !== null) {
+            this._currentUser.next(currentUser);
+            console.log('currentUser is loaded');
+            return true;
+        }
+        return false;
+  } catch (e) {
+      console.log(e);
   }
+}
 
-  ngOnInit(){
+  ngOnInit() {
 
   }
 

@@ -22,18 +22,21 @@ export class LoginComponent implements OnInit {
 
     }
 
-    login() {
+    public async login() {
         this.loading = true;
-        this.userService.login(this.model.email, this.model.password).then((isLoginSuccess) => {
+        try {
+            const isLoginSuccess = await this.userService.login(this.model.email, this.model.password);
             if (isLoginSuccess) {
                 this.router.navigate(['/info']);
             } else {
                 this.error = 'Email or password is incorrect';
                 this.loading = false;
             }
-        }, (err) => {
-            console.log(err);
-        });
+        }catch (e) {
+            console.log(e);
+        }
 
-    }
+        };
+
+    };
 }

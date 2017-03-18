@@ -12,20 +12,15 @@ export class InfoComponent implements OnInit {
     currentUser: any;
 
     constructor(
-        private userService : UserService
-    ){
-        this.userService.currentUser.subscribe(currentUser => {
-            if(currentUser !== null){
+        private userService: UserService
+    ) {
+        this.userService.currentUser.subscribe( (currentUser) => {
+            if (currentUser !== null) {
                 this.currentUser = currentUser;
             }
             this.loaded = true;
         });
     }
 
-    ngOnInit() {
-
-       
-  }
-    
-
+    ngOnInit() {}
 }
