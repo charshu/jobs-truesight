@@ -14,3 +14,5 @@ import '@angularclass/hmr';
 // You can import js, ts, css, sass, ...
 import 'jquery';
 import 'bootstrap/dist/js/bootstrap';
+import 'bootstrap-social/bootstrap-social.css';
+import 'font-awesome/css/font-awesome.css';

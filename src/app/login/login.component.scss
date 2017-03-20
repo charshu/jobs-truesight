@@ -1,0 +1,29 @@
+
+#login-section{
+    margin-top: 80px;
+}
+.round-container{
+    padding: 20px;
+    border-radius: 5px;
+    border:1px solid #CCC;
+    background-color: white;
+}
+.title{
+    text-align: center;
+}
+
+.btn:hover{
+    color:white;
+}
+hr{
+    width: 45%;
+    display: inline-block;
+}
+hr + span{
+    margin:0 10px;
+    position: relative;
+    top: -15px;
+}
+#btn-continue{
+    height: 50px;
+}

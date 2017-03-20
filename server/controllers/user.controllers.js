@@ -4,10 +4,15 @@ module.exports = () => {
     const console = req.context.Logger({ prefix: 'user/login controller' });
     console.log('=== done login ===');
     // passport local setup req.user while authentication process
-
-    res.status(200)
-    .send('Login')
+    if (req.user) {
+      res.status(200)
+    .send('Success')
     .end();
+    } else {
+      res.status(401)
+    .send('Unauthorized1')
+    .end();
+    }
   };
 
   const register = async (req, res) => {
@@ -23,6 +28,7 @@ module.exports = () => {
         id: newUser._id
       });
     } catch (e) {
+      console.log(e);
       res.status(500).end();
     }
   };

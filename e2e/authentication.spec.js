@@ -9,7 +9,7 @@ chakram.setRequestDefaults({ jar: true });
 describe('Authentication test', () => {
   const testingUserData = {
     email: 'apitest@user.com',
-    password: 'test123',
+    password: 'test123'
   };
   let header;
   beforeEach(() => {
@@ -35,7 +35,7 @@ describe('Authentication test', () => {
 
   const wrongUserData = {
     email: testingUserData.email,
-    password: 'xxxxxxxxx',
+    password: 'xxxxxxxxx'
   };
   it('should POST /auth/login can not login with username and *wrong password', () => chakram.post(endpoint('/auth/login'), wrongUserData, header)
     .then((response) => {

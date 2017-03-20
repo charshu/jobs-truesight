@@ -1,28 +1,41 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, Inject  } from '@angular/core';
+import { DOCUMENT } from '@angular/platform-browser';
 import { UserService } from '../shared';
 import { Router } from '@angular/router';
 
 // We use the gql tag to parse our query string into a query document
 @Component({
     selector : 'navbar',
+    styleUrls: ['navbar.component.scss'],
     templateUrl: 'navbar.component.html'
 })
 
 export class NavbarComponent implements OnInit {
     loaded: boolean;
-    currentUser: any;
-
+    user: any;
+    public navOpaque: boolean = true;
+    currentRoute: any;
     constructor(
         private router: Router,
-        private userService: UserService
+        private userService: UserService,
+        @Inject(DOCUMENT) private document: Document
     ) {
         this.userService.currentUser.subscribe((currentUser) => {
             console.log(currentUser);
             if (currentUser !== null) {
-                this.currentUser = currentUser;
+                this.user = currentUser;
             }
             this.loaded = true;
         });
+        router.events.subscribe((val) => {
+        this.currentRoute = val.url;
+        // instantly detect scroll when route change one time
+        if (this.document.body.scrollTop === 0 && this.currentRoute === '/home') {
+            this.navOpaque = false;
+        } else {
+            this.navOpaque = true;
+        }
+    });
     }
 
     public async logout() {
@@ -30,7 +43,7 @@ export class NavbarComponent implements OnInit {
             const isLogout = await this.userService.logout();
             console.log(isLogout);
             if (isLogout) {
-                this.currentUser = undefined;
+                this.user = undefined;
                 this.router.navigate(['/home']);
             }
         }catch (e) {
@@ -39,7 +52,22 @@ export class NavbarComponent implements OnInit {
     }
 
     ngOnInit() {
+        if (window.location.hash && window.location.hash === '#_=_') {
+        window.location.hash = '';
+        }
         this.userService.loadCurrentUser();
+    }
+    // tslint:disable-next-line:member-access
+    @HostListener('window:scroll', [])
+    onWindowScroll() {
+        let scrollPos = this.document.body.scrollTop;
+        if (scrollPos === 0 && this.currentRoute === '/home') {
+        this.navOpaque = false;
+        } else if (scrollPos > 10 && this.currentRoute === '/home') {
+        this.navOpaque = true;
+        } else {
+        this.navOpaque = true;
+        }
 
   }
 

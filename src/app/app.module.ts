@@ -9,7 +9,7 @@ import { routing } from './app.routing';
 import { AuthenticationService } from './shared/authentication.service';
 import { UserService } from './shared/user.service';
 
-import { InfoComponent } from './info/info.component';
+import { ProfileComponent } from './profile/profile.component';
 import { LoginComponent } from './login/login.component';
 import { NavbarComponent } from './navbar/navbar.component'
 import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
@@ -41,7 +41,7 @@ export function provideClient(): ApolloClient {
     AppComponent,
     HomeComponent,
     LoginComponent,
-    InfoComponent,
+    ProfileComponent,
     NavbarComponent
   ],
   providers: [

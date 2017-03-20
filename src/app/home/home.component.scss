@@ -1,11 +1,40 @@
+$coverHeight:500px;
 .cover-full{
     position: relative;
     width: 100%;
 }
 
-img#input-bg{
-    height: 450px;
+img#cover-bg{
+    position: absolute;
+    height: $coverHeight;
     width: 100%;
     object-fit: cover;
     object-position: center;
+}
+
+#cover-content{
+    padding-top: 150px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 10;
+}
+#cover-content .input-group{
+    width: 100%;
+}
+#cover-content .input-group-btn{
+    width: 50px;
+}
+#cover-content h1{
+    font-size: 50px;
+    font-weight: 700;
+    text-align: center;
+    color: white;
+    text-shadow: 1px 1px 2px black;
+}
+.justify-content-center{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }

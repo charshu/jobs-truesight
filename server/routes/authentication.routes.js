@@ -11,7 +11,11 @@ module.exports = () => {
   publicRouter.post('/login', passport.authenticate('local'), UserController.login);
   publicRouter.post('/register', UserController.register);
   publicRouter.all('/facebook', passport.authenticate('facebook', { scope: ['email', 'public_profile', 'user_location'] }));
-  publicRouter.all('/facebook/callback', passport.authenticate('facebook'), UserController.login);
+  publicRouter.all('/facebook/callback', passport.authenticate('facebook', { failureRedirect: 'http://localhost:8080/login' }),
+  (req, res) => {
+    // Successful authentication, redirect home.
+    res.redirect('http://localhost:8080/home');
+  });
 
   // private route
   privateRouter.use((req, res, next) => {

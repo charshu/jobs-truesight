@@ -2,7 +2,9 @@
 :host {
   display: block;
 }
+navbar{
 
+}
 header {
   background-color: #fff;
   padding: 16px;
@@ -15,7 +17,8 @@ header {
 
 main {
   font-family: Arial, Helvetica, sans-serif;
-  margin-top: 50px;
+  //margin-top: 50px;
+  min-height: 1000px;
 }
 
 footer {

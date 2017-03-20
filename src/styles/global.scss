@@ -2,4 +2,10 @@
 @import url('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css');
 body {
   margin: 0;
+  background-color: #F9F9F9;
+}
+.justify-content-center{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }

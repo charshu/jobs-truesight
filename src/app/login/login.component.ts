@@ -4,8 +4,8 @@ import { Router } from '@angular/router';
 import { UserService } from '../shared';
 
 @Component({
-
-    templateUrl: 'login.component.html'
+    templateUrl: 'login.component.html',
+    styleUrls: ['./login.component.scss']
 })
 
 export class LoginComponent implements OnInit {
@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
         try {
             const isLoginSuccess = await this.userService.login(this.model.email, this.model.password);
             if (isLoginSuccess) {
-                this.router.navigate(['/info']);
+                this.router.navigate(['/profile']);
             } else {
                 this.error = 'Email or password is incorrect';
                 this.loading = false;
@@ -36,7 +36,21 @@ export class LoginComponent implements OnInit {
             console.log(e);
         }
 
-        };
+    };
+    public async facebookLogin() {
+        this.loading = true;
+        try {
+            const isLoginSuccess = await this.userService.facebookLogin();
+            if (isLoginSuccess) {
+                this.router.navigate(['/profile']);
+            } else {
+                this.error = 'There are some problems with social login';
+                this.loading = false;
+            }
+        }catch (e) {
+            console.log(e);
+        }
 
     };
-}
+
+    };

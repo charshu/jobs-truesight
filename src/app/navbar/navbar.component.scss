@@ -1,0 +1,24 @@
+.navbar{
+    transition: all 0.2s ease-in-out;
+}
+.navbar-default{
+    background-color: white;
+    box-shadow: 0 -1px 4px rgba(0,0,0,.1);
+}
+.navbar-transparent{
+    background-color: transparent;
+    border: 0px;
+    box-shadow: 0 0px 0px rgba(0,0,0,.1);
+
+}
+.navbar-transparent .navbar-brand
+,.navbar-transparent ul:not(.dropdown-menu)>li:not(.active)>a{
+    color: white;
+    transition: all 0.2s ease-in-out;
+}
+.navbar .account-menu .picture{
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+
+}

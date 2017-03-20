@@ -45,7 +45,8 @@ exports.LocalStrategyMiddleware = ({ User, Logger }) => new LocalStrategy({ user
       }
     }
   } catch (e) {
-    done(e);
+    console.log(e);
+    done(null, false);
   }
 });
 

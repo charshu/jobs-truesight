@@ -58,6 +58,19 @@ export class UserService implements OnInit {
         return false;
 
     }
+     public async facebookLogin(): Promise<boolean> {
+        const response = await this.http.get('http://localhost:3000/auth/facebook')
+        .toPromise();
+        if (response.status === 200) {
+            console.log('login facebook successfully');
+            const loaded = await this.loadCurrentUser();
+            if (loaded) {
+                return true;
+            }
+        }
+        return false;
+
+    }
     public async logout(): Promise<boolean> {
         let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded'});
         let options = new RequestOptions({
