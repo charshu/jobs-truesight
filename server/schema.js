@@ -16,10 +16,27 @@ type Post {
   votes: Int
 }
 type User {
+  id:String
   email: String!
   profile: Profile
 
 }
+type Test { 
+  id: String!
+  title: String
+  questions: [Question]
+}
+type Question {
+  id: String!
+  title: String!
+  factor: String
+  choices: [Choice]
+}
+type Choice{
+  title: String
+  value: Int
+}
+
 type Profile {
     name: String
     gender: String
@@ -32,6 +49,7 @@ type Query {
   posts: [Post]
   author(id: Int!): Author
   currentUser: User
+  test(uid:String!): Test
 }
 
 type Mutation {

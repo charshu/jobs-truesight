@@ -18,9 +18,13 @@ const app = express();
 const AuthMiddlewareHandler = require('./middlewares/authentication.middleware');
 const ContextMiddlewareHandler = require('./middlewares/context.middleware');
 const User = require('./models/User');
+const { TestSheet, ChoicePreset, Question } = require('./models/Test');
 
 const context = {
   User,
+  ChoicePreset,
+  Question,
+  TestSheet,
   Logger
 
 };

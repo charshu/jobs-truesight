@@ -1,18 +1,38 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../shared';
+import { UserService, TestService } from '../shared';
 import { jobs } from './../shared/job';
+import { Router, ActivatedRoute } from '@angular/router';
 
 declare var google: any;
 @Component({
-  selector: 'my-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  selector: 'my-test',
+  templateUrl: './test.component.html',
+  styleUrls: ['./test.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class TestComponent implements OnInit {
   jobs: String[];
+  sub: any;
+  testSheet: any;
+  testSheetUid: String;
+  JobId: String;
+  workPlaceId: String;
 
   constructor(
-    private userService: UserService) {}
+    private userService: UserService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private testService: TestService ) {
+
+      this.sub = this.route.params.subscribe((params) => {
+          console.log(params['uid']);
+          this.testSheetUid = params['uid'];
+      });
+    }
+  initTest(){
+    console.log(this.JobId);
+    console.log(this.workPlaceId);
+    this.testService.createAnswerSheet(this.JobId, this.workPlaceId, this.testSheetUid);
+  }
 
   ngOnInit() {
     // Initialize the search box and autocomplete
@@ -36,11 +56,12 @@ export class HomeComponent implements OnInit {
       // this.placeChanged(lat, lng, address);
       console.log(lat, lng, address, place);
       searchBox.value = place.name;
+      this.workPlaceId = place.id;
     });
-
+    // load jobs list
     this.jobs = jobs.split('\n');
-    console.log(this.jobs);
-
+    // load test data
+    this.testSheet = this.testService.loadTestSheet(this.testSheetUid);
   }
 
 }

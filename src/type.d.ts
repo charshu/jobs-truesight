@@ -3,18 +3,37 @@
 
 
 export type User = {
-  email: string;
+  id: String,
+  email: String,
   profile: any
 }
 
 // TODO: add and design more type
 // in application
-export type Survay = {
-  title: string;
+export type TestSheet = {
+  id: Number,
+  title: String,
   question: Question[]
 }
 
 export type Question = {
-  name: string;
-  value: string;
+  id: Number,
+  title: String,
+  factor: String,
+  choices: Choice[]
+}
+export type Choice = {
+  title: String,
+  value: Number
+}
+export type AnswerSheet = {
+  id: Number,
+  testUid: String,
+  jobId: Number,
+  workPlaceId: String,
+  answers: Answer[]
+}
+export type Answer = {
+  questionId: Number,
+  selectChoice: Choice
 }

@@ -11,6 +11,7 @@ import gql from 'graphql-tag';
 const CurrentUserProfile = gql`
 {
     currentUser {
+        id
         email
         profile {
         name
@@ -20,7 +21,7 @@ const CurrentUserProfile = gql`
         picture
         }
     }
-    }
+}
     
 `;
 interface QueryResponse {
@@ -36,7 +37,7 @@ export class UserService implements OnInit {
 
   }
 
-  public async login(email: string, password: string): Promise<boolean> {
+    public async login(email: string, password: string): Promise<boolean> {
         let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded'});
         let options = new RequestOptions({
             headers,
@@ -46,31 +47,25 @@ export class UserService implements OnInit {
         urlSearchParams.append('email', email);
         urlSearchParams.append('password', password);
         let body = urlSearchParams.toString();
-        const response = await this.http.post('http://localhost:3000/auth/login', body, options)
-        .toPromise();
-        if (response.status === 200) {
-            console.log('login successfully');
-            const loaded = await this.loadCurrentUser();
-            if (loaded) {
-                return true;
+        try {
+            const response = await this.http.post('http://localhost:3000/auth/login', body, options)
+            .toPromise();
+            if (response.status === 200) {
+                console.log('login successfully');
+                const found = await this.loadCurrentUser();
+                if (found) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
+        } catch (err) {
+            console.log(err);
+            return false;
         }
-        return false;
 
     }
-     public async facebookLogin(): Promise<boolean> {
-        const response = await this.http.get('http://localhost:3000/auth/facebook')
-        .toPromise();
-        if (response.status === 200) {
-            console.log('login facebook successfully');
-            const loaded = await this.loadCurrentUser();
-            if (loaded) {
-                return true;
-            }
-        }
-        return false;
 
-    }
     public async logout(): Promise<boolean> {
         let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded'});
         let options = new RequestOptions({
@@ -86,28 +81,34 @@ export class UserService implements OnInit {
         return false;
     }
 
-  public async loadCurrentUser(): Promise<boolean> {
-    console.log('loading current user');
-    try {
-        const query = this.apollo.query<QueryResponse>({
-          query: CurrentUserProfile,
-          forceFetch: true
-        }).map(({data}) => data.currentUser);
-        const currentUser = await query.toPromise();
-        console.log('currentUser: ' + currentUser);
-        if (currentUser !== null) {
-            this._currentUser.next(currentUser);
-            console.log('currentUser is loaded');
-            return true;
+    public async loadCurrentUser(): Promise<boolean> {
+        console.log('loading current user');
+        try {
+            const query = this.apollo.query<QueryResponse>({
+            query: CurrentUserProfile,
+            forceFetch: true
+            }).map(({data}) => data.currentUser);
+            const currentUser = await query.toPromise();
+            // found user
+            if (currentUser !== null) {
+                console.log('currentUser: ' + currentUser);
+                this._currentUser.next(currentUser);
+                return true;
+            }
+            // no user
+            console.log('no user!');
+            return false;
+        } catch (err) {
+            console.log(err);
+            return false;
         }
-        return false;
-  } catch (e) {
-      console.log(e);
-  }
-}
+    }
+    public getUserId(): String {
+        return this._currentUser.value.id;
+    }
 
-  ngOnInit() {
+    ngOnInit() {
 
-  }
+    }
 
 }

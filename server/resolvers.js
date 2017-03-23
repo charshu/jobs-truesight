@@ -26,6 +26,11 @@ const resolveFunctions = {
         );
       }
       return undefined;
+    },
+    test(_, params, ct) {
+      return ct.Test.findOne({ uid: params.uid }).then(
+        test => new ct.Test(test)
+      );
     }
   },
   Mutation: {
@@ -54,9 +59,23 @@ const resolveFunctions = {
     }
   },
   User: {
+    id(user) {
+      return user._id;
+    },
     email(user) {
       console.log(user.email);
       return user.email;
+    }
+  },
+  Test: {
+    questions(test, params, ct) {
+      return ct.Question.find({ testId: test.id }, null, { sort: { id: 1 } });
+    }
+
+  },
+  Question: {
+    choices(question) {
+      return question.choices;
     }
   }
 };

@@ -37,20 +37,4 @@ export class LoginComponent implements OnInit {
         }
 
     };
-    public async facebookLogin() {
-        this.loading = true;
-        try {
-            const isLoginSuccess = await this.userService.facebookLogin();
-            if (isLoginSuccess) {
-                this.router.navigate(['/profile']);
-            } else {
-                this.error = 'There are some problems with social login';
-                this.loading = false;
-            }
-        }catch (e) {
-            console.log(e);
-        }
-
-    };
-
-    };
+};
