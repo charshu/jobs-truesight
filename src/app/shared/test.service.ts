@@ -59,9 +59,9 @@ export class TestService implements OnInit {
       console.log(e);
   }
 }
-public async createAnswerSheet(jobId, workPlaceId, uid) {
+public async createAnswerSheet(jobId, workPlaceId, testSheetUid) {
     let answerData = {
-        testUid: uid,
+        testSheetUid,
         jobId,
         workPlaceId,
         answers: []
@@ -72,7 +72,7 @@ public async createAnswerSheet(jobId, workPlaceId, uid) {
             withCredentials: true
         });
     try {
-        const response = await this.http.post('http://localhost:3000/answer',
+        const response = await this.http.post('http://localhost:3000/test/answer',
         JSON.stringify(answerData), options).toPromise();
         return response.status === 200;
     } catch (err) {

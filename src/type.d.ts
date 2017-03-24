@@ -28,7 +28,8 @@ export type Choice = {
 }
 export type AnswerSheet = {
   id: Number,
-  testUid: String,
+  testSheetUid: String,
+  userId: String,
   jobId: Number,
   workPlaceId: String,
   answers: Answer[]

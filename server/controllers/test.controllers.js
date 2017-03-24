@@ -12,7 +12,7 @@ module.exports = () => {
 
       async.each(req.body.questions, (question, next) => {
         const temp = new req.context.Question({
-          testId: newTest.id,
+          testId: newTestSheet.id,
           title: question.title,
           factor: question.factor,
           choices: question.choices
@@ -26,10 +26,10 @@ module.exports = () => {
 
       console.log('=== successfully save new test===');
       res.json({
-        id: newTest.id
+        id: newTestSheet.id
       });
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      console.log(err);
       res.status(500).end();
     }
   };
@@ -37,9 +37,20 @@ module.exports = () => {
   const createAnswerSheet = async (req, res) => {
     const console = req.context.Logger({ prefix: 'answer/create controller' });
     try {
-      const newAnswerSheet = 
-    }catch (err) {
-
+      const newAnswerSheet = new req.context.AnswerSheet({
+        testSheetUid: req.body.testSheetUid,
+        userId: req.body.userId,
+        jobId: req.body.jobId,
+        workPlaceId: req.body.workPlaceId,
+        answers: []
+      });
+      await newAnswerSheet.save();
+      res.json({
+        id: newAnswerSheet.id
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).end();
     }
   };
 

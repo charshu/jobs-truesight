@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { counter } = require('./Counter');
-const Schema = mongoose.Schema;
 
+const Schema = mongoose.Schema;
 
 const choicePresetSchema = new Schema({
   id: {
@@ -40,20 +40,27 @@ const testSheetSchema = new Schema({
   title: String
 }, { timestamps: true });
 
+const answerSchema = new Schema({
+  questionId: Number,
+  selectChoice: [choiceSchema]
+}, { timestamps: true });
+
 const answerSheetSchema = new Schema({
   id: {
     type: Number,
     unique: true
   },
-  testUid: String,
+  testSheetUid: String,
+  userId: String,
   jobId: Number,
-  workPlaceId: String
+  workPlaceId: String,
+  answers: [answerSchema]
 
 }, { timestamps: true });
 
 testSheetSchema.pre('save', function (next) {
   const doc = this;
-  counter.findByIdAndUpdate({ _id: 'testId' }, { $inc: { seq: 1 } }, (error, counter) => {
+  counter.findByIdAndUpdate({ _id: 'testSheetId' }, { $inc: { seq: 1 } }, (error, counter) => {
     if (error) { return next(error); }
     console.log(counter.seq);
     doc.id = counter.seq;
@@ -63,6 +70,15 @@ testSheetSchema.pre('save', function (next) {
 questionSchema.pre('save', function (next) {
   const doc = this;
   counter.findByIdAndUpdate({ _id: 'questionId' }, { $inc: { seq: 1 } }, (error, counter) => {
+    if (error) { return next(error); }
+    console.log(counter.seq);
+    doc.id = counter.seq;
+    next();
+  });
+});
+answerSheetSchema.pre('save', function (next) {
+  const doc = this;
+  counter.findByIdAndUpdate({ _id: 'answerSheetId' }, { $inc: { seq: 1 } }, (error, counter) => {
     if (error) { return next(error); }
     console.log(counter.seq);
     doc.id = counter.seq;
