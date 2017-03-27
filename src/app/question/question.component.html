@@ -1,38 +1,16 @@
-<div id="test-section" class="container">
+<div class="container-fluid question">
     <div class="row justify-content-center">
-        <div class="col-md-11">
-            <div class="round-container">
-                <div class="title">
-                    <h1>ทดสอบบริบทการทำงาน</h1>
-                    <p>Tracking your test results! <i class="fa fa-line-chart" aria-hidden="true"></i></p>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-6 pull-right">
-                        <div class="input-group input-group-lg">
-                            <select class="form-control" name="" required>
-                            <option value="" disabled selected>เลือกอาชีพของคุณ</option>
-                            <option *ngFor="let job of jobs" [value]="job">
-                                {{job}}
-                            </option>
-                         </select>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="input-group input-group-lg">
-                            <input id="search-box" class="form-control" placeholder="คุณทำงานที่ไหน" type="text" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-12 text-center">
-                        <button class="btn btn-lg btn-success" type="submit">เริ่มทดสอบ</button>
-                    </div>
+        <div class="col-md-10 question-title">
+            {{number+'. '+question.title}}
+            <div *ngFor="let choice of question.choices;let i = index" class="row justify-content-center">
+                <div class="col-md-10 question-choice" (click)="emitNewAnswer(question.id,choice.id)" [ngClass]="{'active':answer.selectedChoiceId?answer.selectedChoiceId === choice.id:false,'inactive': answer.selectedChoiceId?answer.selectedChoiceId !== choice.id:false}">
+                   <i *ngIf=" answer.selectedChoiceId === choice.id" class="fa fa-check" aria-hidden="true"></i> <span>{{choice.title}}</span>
+                   
                 </div>
 
             </div>
-
-
         </div>
 
     </div>
+
 </div>

@@ -20,7 +20,12 @@ module.exports = () => {
     try {
       const newUser = new req.context.User({
         email: req.body.email,
-        password: req.body.password
+        password: req.body.password,
+        profile: {
+          gender: req.body.gender,
+          jobId: req.body.jobId,
+          workPlaceId: req.body.workPlaceId
+        }
       });
       console.log('=== save new user ===');
       await newUser.save();

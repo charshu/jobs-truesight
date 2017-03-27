@@ -1,4 +1,4 @@
-const { find, filter } = require('lodash');
+const { find, filter, sortBy } = require('lodash');
 
 const authors = [
   { id: 1, firstName: 'Tom', lastName: 'Coleman' },
@@ -27,10 +27,54 @@ const resolveFunctions = {
       }
       return undefined;
     },
-    test(_, params, ct) {
-      return ct.Test.findOne({ uid: params.uid }).then(
-        test => new ct.Test(test)
-      );
+    getTestSheet(_, params, ct) {
+      return ct.TestSheet.find({}).then(
+          testSheet => testSheet
+        );
+    },
+    getTestSheetByUid(_, params, ct) {
+      return ct.TestSheet.findOne({ uid: params.uid }).then(
+          testSheet => testSheet
+        );
+    },
+    getAnswerSheet(_, params, ct) {
+      if (ct.user !== undefined && ct.user !== null) {
+        // return all answer sheets by user id
+        return ct.AnswerSheet.find({
+          userId: ct.user._id
+        }).then(
+            answerSheet => answerSheet
+          );
+      }
+      return undefined;
+    },
+    getAnswerSheetByUid(_, params, ct) {
+      if (!ct.user) {
+        throw new Error('You have no authorized');
+      }
+      if (params.done === true) {
+        return ct.AnswerSheet.find({
+          testSheetUid: params.testSheetUid,
+          userId: ct.user._id,
+          done: true
+        }).then(
+            answerSheet => answerSheet
+          );
+      } else if (params.done === false) {
+        return ct.AnswerSheet.find({
+          testSheetUid: params.testSheetUid,
+          userId: ct.user._id,
+          done: false
+        }).then(
+            answerSheet => answerSheet
+          );
+      }
+      return ct.AnswerSheet.find({
+        testSheetUid: params.testSheetUid,
+        userId: ct.user._id
+      }).then(
+            answerSheet => answerSheet
+          );
     }
   },
   Mutation: {
@@ -41,6 +85,47 @@ const resolveFunctions = {
       }
       post.votes += 1;
       return post;
+    },
+    saveAnswer(_, params, ct) {
+      if (!ct.user) {
+        throw new Error('You have no authorized');
+      }
+      return ct.AnswerSheet.findOneAndUpdate({
+        testSheetUid: params.testSheetUid,
+        userId: ct.user._id,
+        done: false,
+        'answers.questionId': params.questionId
+
+      }, {
+        $set: {
+          'answers.$.selectedChoiceId': params.choiceId
+        }
+      }, {
+        new: true
+      }).then(
+            (answerSheet) => {
+              if (!answerSheet) {
+                return ct.AnswerSheet.findOneAndUpdate({
+                  testSheetUid: params.testSheetUid,
+                  userId: ct.user._id,
+                  done: false
+                }, {
+                  $push: {
+                    answers: {
+                      questionId: params.questionId,
+                      selectedChoiceId: params.choiceId
+                    }
+                  }
+                }, {
+                  new: true
+                }).then((addedAnswerSheet) => {
+                  console.log('addedAnswerSheet: ', addedAnswerSheet);
+                  return addedAnswerSheet;
+                });
+              }
+              return answerSheet;
+            }
+          );
     }
   },
   Subscription: {
@@ -67,15 +152,24 @@ const resolveFunctions = {
       return user.email;
     }
   },
-  Test: {
-    questions(test, params, ct) {
-      return ct.Question.find({ testId: test.id }, null, { sort: { id: 1 } });
+  TestSheet: {
+    questions(testSheet) {
+      return sortBy(testSheet.questions, 'id');
     }
-
+  },
+  AnswerSheet: {
+    answers(answerSheet) {
+      return sortBy(answerSheet.answers, 'id');
+    }
   },
   Question: {
     choices(question) {
       return question.choices;
+    }
+  },
+  Choice: {
+    id(choice) {
+      return choice._id;
     }
   }
 };

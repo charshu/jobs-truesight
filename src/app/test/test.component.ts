@@ -1,67 +1,90 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService, TestService } from '../shared';
-import { jobs } from './../shared/job';
-import { Router, ActivatedRoute } from '@angular/router';
-
-declare var google: any;
+import { TestService } from '../shared';
+import { Observable } from 'rxjs/Observable';
+import { ActivatedRoute } from '@angular/router';
+import { AnswerSheet, TestSheet, Answer } from './../../type.d';
+import { find } from 'lodash';
 @Component({
   selector: 'my-test',
   templateUrl: './test.component.html',
   styleUrls: ['./test.component.scss']
 })
 export class TestComponent implements OnInit {
-  jobs: String[];
-  sub: any;
-  testSheet: any;
-  testSheetUid: String;
-  JobId: String;
-  workPlaceId: String;
 
+  error: String;
+  sub: any;
+  public testSheetUid: String;
+  public answerSheet: AnswerSheet;
+  _answerSheet: Observable<AnswerSheet>;
+  testSheet: TestSheet;
+  start: boolean = false;
+  loaded: boolean = false;
   constructor(
-    private userService: UserService,
     private route: ActivatedRoute,
-    private router: Router,
     private testService: TestService ) {
 
-      this.sub = this.route.params.subscribe((params) => {
-          console.log(params['uid']);
+     this.route.params.subscribe((params) => {
+          // console.log(params['uid']);
           this.testSheetUid = params['uid'];
       });
+
     }
-  initTest(){
-    console.log(this.JobId);
-    console.log(this.workPlaceId);
-    this.testService.createAnswerSheet(this.JobId, this.workPlaceId, this.testSheetUid);
+
+  public findAnswerByQid(qid: Number): Answer {
+      let answer = find(this.answerSheet.answers, {questionId: qid});
+      if (answer) {
+        return answer;
+      }
+      let newAnswer: Answer = {
+        questionId: qid,
+        selectedChoiceId: null
+      };
+      return  newAnswer;
+  }
+  public saveAnswer(answer) {
+      console.log('save answer : ', JSON.stringify(answer));
+      this.testService.saveAnswer(this.testSheetUid, answer);
   }
 
-  ngOnInit() {
-    // Initialize the search box and autocomplete
-    let searchBox: any = document.getElementById('search-box');
-    let options = {
-      types: [
-        // return only geocoding results, rather than business results.
-        'establishment'
-      ],
-      componentRestrictions: { country: 'th' }
-    };
-    let autocomplete = new google.maps.places.Autocomplete(searchBox, options);
+  public async ngOnInit() {
+    console.log('init test sheet');
+    this.start = false;
+    try {
+      this.testSheet = await this.testService.getTestSheetByUid(this.testSheetUid);
+      console.log(this.testSheet);
+      if (!this.testSheet) {
+        this.error = 'Test sheet not found';
+      }
+      // find done/in-progress answer sheet
+      let answerSheet = await this.testService.getAnswerSheetByUid(this.testSheetUid, false);
+      console.log(answerSheet);
+      if (!answerSheet) {
+        this.answerSheet = answerSheet[0];
+        let isCreated = await this.testService.createAnswerSheet(this.testSheetUid);
+        if (isCreated) {
+            this.answerSheet = await this.testService.getAnswerSheetByUid(this.testSheetUid, false)[0];
+            this.start = true;
+          } else {
+            this.start = false;
+            this.error = 'Can\'t create answer sheet';
+          }
 
-    // Add listener to the place changed event
-    autocomplete.addListener('place_changed', () => {
-      let place = autocomplete.getPlace();
-      let lat = place.geometry.location.lat();
-      let lng = place.geometry.location.lng();
-      let address = place.formatted_address;
+      } else {
+        this.answerSheet = answerSheet[0];
+        this.start = true;
+      }
 
-      // this.placeChanged(lat, lng, address);
-      console.log(lat, lng, address, place);
-      searchBox.value = place.name;
-      this.workPlaceId = place.id;
-    });
-    // load jobs list
-    this.jobs = jobs.split('\n');
-    // load test data
-    this.testSheet = this.testService.loadTestSheet(this.testSheetUid);
+      // autosave answers
+      this._answerSheet = Observable.of(this.answerSheet);
+      this.sub = this._answerSheet.subscribe( (_answerSheet) => {
+          console.log('answer changed');
+          console.log(_answerSheet);
+        });
+
+    } catch (err) {
+      console.log(err);
+
+    }
+
   }
-
 }

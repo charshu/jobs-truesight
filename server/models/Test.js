@@ -3,13 +3,6 @@ const { counter } = require('./Counter');
 
 const Schema = mongoose.Schema;
 
-const choicePresetSchema = new Schema({
-  id: {
-    type: Number,
-    unique: true
-  },
-  choices: Array
-}, { timestamps: true });
 
 const choiceSchema = new Schema({
   title: String,
@@ -21,7 +14,6 @@ const questionSchema = new Schema({
     type: Number,
     unique: true
   },
-  testId: Number,
   title: String,
   factor: String,
   choices: [choiceSchema]
@@ -37,12 +29,13 @@ const testSheetSchema = new Schema({
     type: String,
     unique: true
   },
+  questions: [questionSchema],
   title: String
 }, { timestamps: true });
 
 const answerSchema = new Schema({
   questionId: Number,
-  selectChoice: [choiceSchema]
+  selectedChoiceId: String
 }, { timestamps: true });
 
 const answerSheetSchema = new Schema({
@@ -54,6 +47,7 @@ const answerSheetSchema = new Schema({
   userId: String,
   jobId: Number,
   workPlaceId: String,
+  done: Boolean,
   answers: [answerSchema]
 
 }, { timestamps: true });
@@ -90,5 +84,5 @@ answerSheetSchema.pre('save', function (next) {
 const TestSheet = mongoose.model('TestSheet', testSheetSchema);
 const AnswerSheet = mongoose.model('AnswerSheet', answerSheetSchema);
 const Question = mongoose.model('Question', questionSchema);
-const ChoicePreset = mongoose.model('ChoicePreset', choicePresetSchema);
-module.exports = { TestSheet, Question, ChoicePreset, AnswerSheet };
+const Choice = mongoose.model('Choice', choiceSchema);
+module.exports = { TestSheet, Question, Choice, AnswerSheet };

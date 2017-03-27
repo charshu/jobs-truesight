@@ -1,8 +1,8 @@
 <nav *ngIf="loaded" class="navbar navbar-default navbar-fixed-top" [ngClass]="{'navbar-transparent':!navOpaque}">
   <div class="container">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">
-        JobsMeter
+      <a class="navbar-brand" [routerLink]="['']">
+        JobsInsider
       </a>
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
         <span class="sr-only">Toggle navigation</span>
@@ -13,8 +13,7 @@
     </div>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li [routerLinkActive]="['active']" ><a [routerLink]="['home']">ค้นหางาน</a></li>
-        <li [routerLinkActive]="['active']" ><a [routerLink]="['test','working-context']">ทดสอบงาน</a></li>
+        <li [routerLinkActive]="['active']" ><a [routerLink]="['test']">แบบทดสอบ</a></li>
         
       </ul>
 

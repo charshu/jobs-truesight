@@ -21,16 +21,18 @@ export class NavbarComponent implements OnInit {
         @Inject(DOCUMENT) private document: Document
     ) {
         this.userService.currentUser.subscribe((currentUser) => {
-            console.log(currentUser);
+            // console.log(currentUser);
             if (currentUser !== null) {
                 this.user = currentUser;
             }
             this.loaded = true;
         });
+
         router.events.subscribe((val) => {
+        // console.log('current route: ' + val.url);
         this.currentRoute = val.url;
         // instantly detect scroll when route change one time
-        if (this.document.body.scrollTop === 0 && this.currentRoute === '/home') {
+        if (this.document.body.scrollTop === 0 && this.currentRoute === '/') {
             this.navOpaque = false;
         } else {
             this.navOpaque = true;
@@ -44,7 +46,7 @@ export class NavbarComponent implements OnInit {
             console.log(isLogout);
             if (isLogout) {
                 this.user = undefined;
-                this.router.navigate(['/home']);
+                this.router.navigate(['/']);
             }
         }catch (e) {
             console.log(e);
@@ -61,9 +63,9 @@ export class NavbarComponent implements OnInit {
     @HostListener('window:scroll', [])
     onWindowScroll() {
         let scrollPos = this.document.body.scrollTop;
-        if (scrollPos === 0 && this.currentRoute === '/home') {
+        if (scrollPos <= 50 && this.currentRoute === '/') {
         this.navOpaque = false;
-        } else if (scrollPos > 10 && this.currentRoute === '/home') {
+        } else if (scrollPos > 50 && this.currentRoute === '/') {
         this.navOpaque = true;
         } else {
         this.navOpaque = true;

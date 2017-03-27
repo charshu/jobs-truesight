@@ -26,9 +26,7 @@ export class LoginComponent implements OnInit {
         this.loading = true;
         try {
             const isLoginSuccess = await this.userService.login(this.model.email, this.model.password);
-            if (isLoginSuccess) {
-                this.router.navigate(['/profile']);
-            } else {
+            if (!isLoginSuccess) {
                 this.error = 'Email or password is incorrect';
                 this.loading = false;
             }

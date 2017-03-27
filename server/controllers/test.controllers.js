@@ -4,7 +4,7 @@ module.exports = () => {
   const createTestSheet = async (req, res) => {
     const console = req.context.Logger({ prefix: 'test/save controller' });
     try {
-      const newTestSheet = new req.context.Test({
+      const newTestSheet = new req.context.TestSheet({
         uid: req.body.uid,
         title: req.body.title
       });
@@ -39,15 +39,14 @@ module.exports = () => {
     try {
       const newAnswerSheet = new req.context.AnswerSheet({
         testSheetUid: req.body.testSheetUid,
-        userId: req.body.userId,
-        jobId: req.body.jobId,
-        workPlaceId: req.body.workPlaceId,
+        userId: req.user._id,
+        jobId: req.user.profile.jobId,
+        workPlaceId: req.user.profile.workPlaceId,
+        done: false,
         answers: []
       });
       await newAnswerSheet.save();
-      res.json({
-        id: newAnswerSheet.id
-      });
+      res.json(newAnswerSheet);
     } catch (err) {
       console.log(err);
       res.status(500).end();

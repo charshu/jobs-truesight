@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { UserService, TestService } from '../shared';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core';
+import { Question, Answer } from './../../type.d';
+import { TestService } from '../shared';
 
 @Component({
   selector: 'my-question',
@@ -8,23 +8,23 @@ import { Router, ActivatedRoute } from '@angular/router';
   styleUrls: ['./question.component.scss']
 })
 export class QuestionComponent implements OnInit {
-  jobs: String[];
   sub: any;
-  test: any;
-  constructor(
-    private userService: UserService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private testService: TestService ) {
+  select: Number = -1;
+  @Input() question: Question;
+  @Input() answer: Answer;
+  @Input() number: Number;
+  @Output() clickChoice = new EventEmitter();
 
-      this.sub = this.route.params.subscribe((params) => {
-          console.log(params['qid']);
-      });
-    }
-
+  constructor(private testService: TestService){}
+  emitNewAnswer(questionId, choiceId) {
+    this.clickChoice.emit({
+      questionId,
+      choiceId
+    });
+  }
   ngOnInit() {
     // get questions from testSheet
-
+    console.log(this.answer);
   }
 
 }

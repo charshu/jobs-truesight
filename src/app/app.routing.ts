@@ -6,13 +6,13 @@ import { TestComponent } from './test/test.component';
 import { LoginComponent } from './login/login.component';
 import { ProfileComponent } from './profile/profile.component';
 import { QuestionComponent } from './question/question.component';
-
+import { TestBoardComponent } from './test-board/test-board.component';
+import { RouteGuard } from './shared';
 const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full'},
-  { path: 'home', component: HomeComponent  },
-  { path: 'test', component: TestComponent  },
-  { path: 'test/:uid', component: TestComponent  },
-  { path: 'test/:uid/:qid', component: QuestionComponent  },
+  { path: '', component: HomeComponent  },
+  { path: 'test', component: TestBoardComponent  },
+  { path: 'test/:uid', component: TestComponent, canActivate: [RouteGuard] },
+  { path: 'test/:uid/question', component: QuestionComponent  },
   { path: 'login', component: LoginComponent },
   { path: 'profile', component: ProfileComponent }
 

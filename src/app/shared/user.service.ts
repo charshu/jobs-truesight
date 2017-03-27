@@ -1,5 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
-import { Http, Headers, RequestOptions, Response, URLSearchParams } from '@angular/http';
+import { Http, Headers, RequestOptions, URLSearchParams } from '@angular/http';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 // import { AuthenticationService } from '../shared/authentication.service';
@@ -18,6 +19,8 @@ const CurrentUserProfile = gql`
         gender
         age_range
         location
+        jobId
+        workPlaceId
         picture
         }
     }
@@ -33,7 +36,9 @@ export class UserService implements OnInit {
   private _currentUser: BehaviorSubject<User> = new BehaviorSubject<User>(null);
   public currentUser: Observable<User> = this._currentUser.asObservable();
 
-  constructor(private apollo: Apollo, private http: Http) {
+  public redirectUrl: string;
+
+  constructor(private apollo: Apollo, private http: Http, private router: Router, ) {
 
   }
 
@@ -54,6 +59,11 @@ export class UserService implements OnInit {
                 console.log('login successfully');
                 const found = await this.loadCurrentUser();
                 if (found) {
+                    // redirect back where they came
+                    if (this.redirectUrl) {
+                        this.router.navigate([this.redirectUrl]);
+                        this.redirectUrl = null;
+                    }
                     return true;
                 } else {
                     return false;
@@ -106,9 +116,13 @@ export class UserService implements OnInit {
     public getUserId(): String {
         return this._currentUser.value.id;
     }
+    public async isLoggedIn(): Promise<Boolean> {
+        await this.loadCurrentUser();
+        return this._currentUser.value !== null;
+    }
 
     ngOnInit() {
-
+       
     }
 
 }

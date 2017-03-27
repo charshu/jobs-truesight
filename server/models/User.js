@@ -19,6 +19,8 @@ const userSchema = new Schema({
     gender: String,
     age_range: Number,
     location: String,
+    jobId: Number,
+    workPlaceId: String,
     website: String,
     picture: String
   }

@@ -1,0 +1,51 @@
+<div id="test-section" class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+            <div *ngIf="!start" class="round-container">
+                <form name="form" (ngSubmit)="f.form.valid && initTest()" #f="ngForm" novalidate>
+                    <div class="title">
+                        <h1>ทดสอบบริบทการทำงาน</h1>
+                        <p>กรุณากรอกข้อมูลก่อนทำแบบทดสอบ <i class="fa fa-line-chart" aria-hidden="true"></i></p>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-md-6 pull-right">
+                            <div class="input-group input-group-lg">
+                                <select [(ngModel)]="model.jobId" class="form-control" 
+                                name="job" #job="ngModel" required>
+                                <option [disabled]="true" [value]="-1">เลือกอาชีพของคุณ</option>
+                                    
+                                    <option *ngFor="let job of jobs;let i = index" [value]="i">
+                                        {{job}}
+                                    </option>
+                                </select>
+                            </div>
+                            <div *ngIf="f.submitted && (!job.valid || (job.value === -1))" class="help-block">
+                                Job is required
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <div class="input-group input-group-lg">
+                                <input id="search-box" [(ngModel)]="model.workPlace" #place="ngModel" 
+                                name="place" class="form-control" placeholder="คุณทำงานที่ไหน" type="text" required/>
+                            </div>
+                            <div *ngIf="f.submitted && !place.valid" class="help-block">
+                                Work place is required
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-md-12 text-center">
+                            <button class="btn btn-lg btn-success" type="submit" (click)="start === true" >เริ่มทดสอบ</button>
+                        </div>
+                    </div>
+                    <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+                </form>
+            </div>
+
+
+        </div>
+
+    </div>
+</div>

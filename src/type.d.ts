@@ -12,8 +12,9 @@ export type User = {
 // in application
 export type TestSheet = {
   id: Number,
+  uid : String,
   title: String,
-  question: Question[]
+  questions: Question[]
 }
 
 export type Question = {
@@ -23,6 +24,7 @@ export type Question = {
   choices: Choice[]
 }
 export type Choice = {
+  id: String
   title: String,
   value: Number
 }
@@ -32,9 +34,10 @@ export type AnswerSheet = {
   userId: String,
   jobId: Number,
   workPlaceId: String,
+  done: Boolean,
   answers: Answer[]
 }
 export type Answer = {
   questionId: Number,
-  selectChoice: Choice
+  selectedChoiceId: String
 }

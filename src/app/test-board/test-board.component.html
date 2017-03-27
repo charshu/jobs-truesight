@@ -1,0 +1,18 @@
+<div *ngIf="loaded" id="test-section" class="container">
+    <table class="table">
+        <thead>
+            <td>#</td>
+            <td>ชื่อแบบทดสอบ</td>
+            <td>ทำไปแล้ว</td>
+        </thead>
+        <tr *ngFor="let testSheet of testSheets;let i = index">
+            <td>{{i+1}}</td>
+            <td><a [routerLink]="[testSheet.uid]">{{testSheet.title}}</a></td>
+            <td>{{answerSize(testSheet.uid)+'/'+testSheet.questions.length}}</td>
+            <td>
+            <button *ngIf="!findAnswerSheet(testSheet.uid)" type="button" class="btn btn-success" [routerLink]="[testSheet.uid]">เริ่มทดสอบ</button>
+            <button *ngIf="findAnswerSheet(testSheet.uid)" type="button" class="btn btn-warning" [routerLink]="[testSheet.uid]">ทำต่อ</button>
+            </td>
+        </tr>
+    </table>
+</div>
