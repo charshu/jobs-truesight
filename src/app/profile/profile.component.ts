@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../shared';
-import { jobs } from './../shared/job';
+import { UserService, TestService } from '../shared';
+import { Job } from '../../type.d';
 declare var google: any;
 // We use the gql tag to parse our query string into a query document
 @Component({
@@ -15,23 +15,29 @@ export class ProfileComponent implements OnInit {
             jobId : -1
         }
     };
-    jobs: String[];
+    jobs: Job[];
+
     constructor(
-        private userService: UserService
+        private userService: UserService,
+        private testService: TestService
     ) {
         this.userService.currentUser.subscribe( (currentUser) => {
             if (currentUser !== null) {
+                if (!currentUser.profile.jobId) {
+                    this.userService.setJobId(-1);
+                }
                 this.user = currentUser;
-
             }
             this.loaded = true;
         });
     }
+
     public selectJob( id ) {
-    console.log(id);
-    this.user.profile.jobId = id;
-  }
-    ngOnInit() {
+        console.log(id);
+        this.user.profile.jobId = id;
+    }
+
+    public async ngOnInit() {
             // Initialize the search box and autocomplete
         let searchBox: any = document.getElementById('search-box');
         let options = {
@@ -56,6 +62,6 @@ export class ProfileComponent implements OnInit {
         this.user.profile.workPlaceId = place.id;
         });
         // load jobs list
-        this.jobs = jobs.split('\n');
+        this.jobs = await this.testService.loadJobsChoice();
         }
 }

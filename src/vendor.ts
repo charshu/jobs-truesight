@@ -9,7 +9,7 @@ import '@angular/router';
 
 import 'rxjs';
 import '@angularclass/hmr';
-
+import 'angular2-cookie/core';
 // Other vendors for example jQuery, Lodash or Bootstrap
 // You can import js, ts, css, sass, ...
 import 'jquery';

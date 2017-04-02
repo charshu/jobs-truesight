@@ -2,24 +2,11 @@ const { makeExecutableSchema } = require('graphql-tools');
 const resolvers = require('./resolvers');
 
 const schema = `
-
-type Author {
-  id: Int!
-  firstName: String
-  lastName: String
-  posts: [Post]
-}
-type Post {
-  id: Int!
-  title: String
-  author: Author
-  votes: Int
-}
+scalar Date
 type User {
   id:String
   email: String!
   profile: Profile
-
 }
 
 type Profile {
@@ -30,7 +17,6 @@ type Profile {
     picture: String
     jobId: Int
     workPlaceId: String
-
 }
 
 type TestSheet { 
@@ -49,7 +35,7 @@ type Question {
 type Choice{
   id : String
   title: String
-  value: Int
+  value: Float
 }
 type Answer {
   questionId: Int!
@@ -65,26 +51,35 @@ type AnswerSheet {
   answers: [Answer]
 }
 
+type Factor {
+  factor: String
+  value: Float
+}
+type Result {
+  testSheetUid:String
+  factors:[Factor]
+}
+
+type Job {
+  id: Int
+  name: String
+  results:[Result] 
+  answers:[Answer]
+  createdAt:Date
+  updatedAt:Date
+}
+
 type Query {
-  posts: [Post]
-  author(id: Int!): Author
   currentUser: User
   getTestSheet: [TestSheet]
   getTestSheetByUid(uid:String!): TestSheet
   getAnswerSheet: [AnswerSheet]
   getAnswerSheetByUid(testSheetUid:String!,done:Boolean): [AnswerSheet]
+  getJobsChoice: [Job]
 }
 
-type Mutation {
-  upvotePost (
-    postId: Int!
-  ): Post
-  saveAnswer (testSheetUid:String!,questionId: Int!,choiceId: String!): AnswerSheet
-}
 
-type Subscription {
-  postUpvoted: Post
-}
+
 `;
 
 module.exports = makeExecutableSchema({

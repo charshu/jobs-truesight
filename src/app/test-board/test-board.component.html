@@ -8,10 +8,9 @@
         <tr *ngFor="let testSheet of testSheets;let i = index">
             <td>{{i+1}}</td>
             <td><a [routerLink]="[testSheet.uid]">{{testSheet.title}}</a></td>
-            <td>{{answerSize(testSheet.uid)+'/'+testSheet.questions.length}}</td>
+            <td>{{getAnswerSize(testSheet.uid)+'/'+testSheet.questions.length}}</td>
             <td>
-            <button *ngIf="!findAnswerSheet(testSheet.uid)" type="button" class="btn btn-success" [routerLink]="[testSheet.uid]">เริ่มทดสอบ</button>
-            <button *ngIf="findAnswerSheet(testSheet.uid)" type="button" class="btn btn-warning" [routerLink]="[testSheet.uid]">ทำต่อ</button>
+            <button  type="button" class="btn btn-success" [routerLink]="[testSheet.uid]">เริ่มทดสอบ</button>
             </td>
         </tr>
     </table>

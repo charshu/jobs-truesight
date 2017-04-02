@@ -17,6 +17,10 @@ export class QuestionComponent implements OnInit {
 
   constructor(private testService: TestService){}
   emitNewAnswer(questionId, choiceId) {
+    if (this.answer.selectedChoiceId === choiceId) {
+      // same answer
+      return;
+    }
     this.clickChoice.emit({
       questionId,
       choiceId
@@ -24,7 +28,7 @@ export class QuestionComponent implements OnInit {
   }
   ngOnInit() {
     // get questions from testSheet
-    console.log(this.answer);
+    // console.log(this.answer);
   }
 
 }

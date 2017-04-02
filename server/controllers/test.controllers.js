@@ -34,27 +34,75 @@ module.exports = () => {
     }
   };
 
-  const createAnswerSheet = async (req, res) => {
-    const console = req.context.Logger({ prefix: 'answer/create controller' });
+  const submitAnswerSheet = async (req, res) => {
+    const console = req.context.Logger({ prefix: 'answer/submit controller' });
     try {
-      const newAnswerSheet = new req.context.AnswerSheet({
-        testSheetUid: req.body.testSheetUid,
-        userId: req.user._id,
-        jobId: req.user.profile.jobId,
-        workPlaceId: req.user.profile.workPlaceId,
-        done: false,
-        answers: []
-      });
-      await newAnswerSheet.save();
-      res.json(newAnswerSheet);
+      console.log(`${req.user._id} ${req.body.answerSheet.userId}`);
+      if (!req.user._id.equals(req.body.answerSheet.userId)) {
+        res.status(401).end();
+      } else {
+        const newAnswerSheet = new req.context.AnswerSheet(req.body.answerSheet);
+        await newAnswerSheet.save();
+      // TODO: update answer sheet id on job and workplace
+
+        await req.context.Job.findOneAndUpdate(
+        { id: req.body.answerSheet.jobId },
+          {
+            $push: {
+              answers: newAnswerSheet.id
+            }
+          });
+
+        const workPlace = await req.context.WorkPlace.findOne({
+          placeId: req.body.answerSheet.workPlaceId
+        });
+        if (!workPlace) {
+          const newWorkPlace = new req.context.WorkPlace({
+            placeId: req.body.answerSheet.workPlaceId
+          });
+          await newWorkPlace.save();
+        }
+        await req.context.WorkPlace.findOneAndUpdate(
+        { placeId: req.body.answerSheet.workPlaceId },
+          {
+            $push: {
+              answers: newAnswerSheet.id
+            }
+          });
+        res.json(newAnswerSheet);
+      }
     } catch (err) {
       console.log(err);
       res.status(500).end();
     }
   };
 
+  const createJob = async (req, res) => {
+    const console = req.context.Logger({ prefix: 'job/create controller' });
+    try {
+      console.log(req.body.jobs);
+      async.each(req.body.jobs, (job, next) => {
+        const newJob = new req.context.Job({
+          name: job
+        });
+        newJob.save((err, doc) => {
+          next();
+        });
+      }, () => {
+        console.log('all jobs are saved!');
+      });
+      const jobs = await req.context.Job.find({});
+      res.json(jobs);
+    } catch (err) {
+      console.log(err);
+      res.status(500).end();
+    }
+  };
+
+
   return {
     createTestSheet,
-    createAnswerSheet
+    submitAnswerSheet,
+    createJob
   };
 };

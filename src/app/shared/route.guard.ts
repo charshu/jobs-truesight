@@ -11,20 +11,15 @@ export class RouteGuard implements CanActivate {
     console.log("RouterGuard called");
   }
 
-   public async checkLogin(url: string): Promise<boolean> {
-    console.log('check login2');
-    if (await this.userService.isLoggedIn()) { return true; }
-    console.log('check login3');
-    // Store the attempted URL for redirecting
+  public async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    let url: string = state.url;
+    if (await this.userService.isLoggedIn()) {
+      console.log('Check user login');
+      return true;
+    }
     this.userService.redirectUrl = url;
-    // Navigate to the login page with extras
     this.router.navigate(['/login']);
     return false;
-  }
 
-  public async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    console.log('check login');
-    let url: string = state.url;
-    return await this.checkLogin(url);
   }
 }

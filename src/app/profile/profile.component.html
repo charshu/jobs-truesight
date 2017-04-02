@@ -52,11 +52,11 @@
                         <label for="job" class="col-md-2 control-label">Job</label>
                         <div class="col-md-7">
                             <div class="input-group">
-                                <select [(ngModel)]="user.profile.jobId" class="form-control" name="job" #job="ngModel" required>
+                                <select [(ngModel)]="user.profile.jobId" class="form-control" name="job" #job="ngModel" [ngClass]="{'black':user.profile.jobId >= 0}" required>
                                 <option [disabled]="true" [value]="-1">เลือกอาชีพของคุณ</option>
                                     
-                                    <option *ngFor="let job of jobs;let i = index" [value]="i">
-                                        {{job}}
+                                    <option *ngFor="let job of jobs;let i = index" [value]="job.id">
+                                        {{job.name}}
                                     </option>
                                 </select>
                             </div>

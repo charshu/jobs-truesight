@@ -19,6 +19,7 @@ const AuthMiddlewareHandler = require('./middlewares/authentication.middleware')
 const ContextMiddlewareHandler = require('./middlewares/context.middleware');
 const User = require('./models/User');
 const { TestSheet, ChoicePreset, Question, AnswerSheet, Choice } = require('./models/Test');
+const { Job, WorkPlace } = require('./models/Job');
 
 const context = {
   User,
@@ -27,6 +28,8 @@ const context = {
   Question,
   Choice,
   TestSheet,
+  Job,
+  WorkPlace,
   Logger
 
 };

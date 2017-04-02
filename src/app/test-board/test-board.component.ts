@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService, TestService } from '../shared';
+import { TestService } from '../shared';
+import { CookieService } from 'angular2-cookie/core';
 // import { Router, ActivatedRoute } from '@angular/router';
 import { TestSheet, AnswerSheet } from './../../type.d';
 import { find } from 'lodash';
@@ -11,31 +12,25 @@ import { find } from 'lodash';
 })
 export class TestBoardComponent implements OnInit {
   testSheets: TestSheet[];
-  answerSheets: AnswerSheet[];
   loaded: boolean = false;
+
   constructor(
-    private testService: TestService ) {
+    private testService: TestService,
+    private _cookieService: CookieService ) {}
 
-    }
-  public findAnswerSheet(testSheetUid) {
-    return find(this.answerSheets, { testSheetUid });
-  }
 
-  public answerSize(testSheetUid) {
-    let answerSheet = this.findAnswerSheet(testSheetUid);
+  public getAnswerSize(testSheetUid) {
+    let answerSheet: AnswerSheet = this._cookieService.getObject('answerSheet.' + testSheetUid);
     if (answerSheet) {
-      let size = this.findAnswerSheet(testSheetUid).answers.length;
-      return size > 0 ? size : 0;
+      return answerSheet.answers.length;
     }
-    return -1;
+    return 0;
   }
 
   public async ngOnInit() {
     this.loaded = false;
     // load all testSheet (no question only testSheet information)
     this.testSheets = await this.testService.getTestSheet();
-    // load answer sheet
-    this.answerSheets = await this.testService.getAnswerSheet();
 
     this.loaded = true;
   }

@@ -1,10 +1,36 @@
 <div *ngIf="start" id="test-section" class="container-fluid question-bg noise">
     <div *ngIf="error" class="alert alert-danger">{{error}}</div>
     <div class="row justify-content-center">
+        <div class="col-md-2 question-nav-wrapper">
+
+            <div class="question-nav" [ngStyle]="{'top':document.body.scrollTop+'px'}">
+                <div class="progress-wrapper">
+                    <div class="progress-counter">{{answerSheet.answers.length+'/'+testSheet.questions.length}}</div>
+                    <round-progress [current]="answerSheet.answers.length" [max]="testSheet.questions.length" [color]="'#ffffff'" [background]="'rgba(0,0,0,0.21)'"
+                        [radius]="90" [stroke]="13" [semicircle]="false" [rounded]="true" [clockwise]="true" [responsive]="false"
+                        [duration]="800" [animation]="'easeInOutQuart'" [animationDelay]="0"></round-progress>
+                </div>
+
+                <div class="number-wrapper">
+                    <div class="number" (click)="jump(i+1)" [ngClass]="{'answered':getAnswerByQid(question.id).selectedChoiceId}" *ngFor="let question of testSheet.questions;let i = index">
+                        {{i+1}}
+                    </div>
+                </div>
+                <div class="button-wrapper justify-content-center">
+                    
+                    <button type="button" (click)="submitAnswerSheet()" class="btn btn-large btn-block btn-default">ดูผลลัพธ์</button>
+                    
+                </div>
+
+            </div>
+        </div>
         <div class="col-md-8">
-            <div class="question-wrapper">
-                <my-question *ngFor="let question of testSheet.questions;let i = index" [question]="question" 
-                [answer]="findAnswerByQid(question.id)" [number]="i+1" (clickChoice)="saveAnswer($event)" ></my-question>
+            <div class="row">
+                <div class="col-md-offset-1 col-md-11">
+                    <my-question *ngFor="let question of testSheet.questions;let i = index" [attr.id]="'q'+(i+1)" [question]="question" [answer]="getAnswerByQid(question.id)"
+                    [number]="i+1" (clickChoice)="saveAnswer($event)"></my-question>
+                </div>
+                
             </div>
         </div>
 

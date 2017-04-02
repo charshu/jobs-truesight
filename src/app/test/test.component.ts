@@ -1,8 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { TestService } from '../shared';
+import { Component, OnInit, HostListener, Inject } from '@angular/core';
+import { TestService, UserService } from '../shared';
 import { Observable } from 'rxjs/Observable';
-import { ActivatedRoute } from '@angular/router';
+import { DOCUMENT } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AnswerSheet, TestSheet, Answer } from './../../type.d';
+import { CookieService } from 'angular2-cookie/core';
+import { PageScrollService, PageScrollInstance, PageScrollConfig } from 'ng2-page-scroll';
+
 import { find } from 'lodash';
 @Component({
   selector: 'my-test',
@@ -21,16 +25,40 @@ export class TestComponent implements OnInit {
   loaded: boolean = false;
   constructor(
     private route: ActivatedRoute,
-    private testService: TestService ) {
+    private router: Router,
+    private testService: TestService,
+    @Inject(DOCUMENT) private document: Document,
+    private pageScrollService: PageScrollService,
+    private _cookieService: CookieService,
+    private userService: UserService) {
 
      this.route.params.subscribe((params) => {
           // console.log(params['uid']);
           this.testSheetUid = params['uid'];
       });
-
+     PageScrollConfig.defaultDuration = 500;
+     PageScrollConfig.defaultScrollOffset = 200;
+     PageScrollConfig.defaultEasingLogic = {
+        ease: (t: number, b: number, c: number, d: number): number => {
+                // easeInOutExpo easing
+                if (t === 0) return b;
+                if (t === d) return b + c;
+                if ((t /= d / 2) < 1) return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
+                return c / 2 * (-Math.pow(2, -10 * --t) + 2) + b;
+            }
+        };
     }
+  //   @HostListener('window:scroll', [])
+  //   onWindowScroll() {
+  //       let scrollPos = this.document.body.scrollTop;
+  // }
 
-  public findAnswerByQid(qid: Number): Answer {
+  public jump(index) {
+    let pageScrollInstance: PageScrollInstance = PageScrollInstance.simpleInstance(this.document, '#q'+index);
+    this.pageScrollService.start(pageScrollInstance);
+  }
+
+  public getAnswerByQid(qid: Number): Answer {
       let answer = find(this.answerSheet.answers, {questionId: qid});
       if (answer) {
         return answer;
@@ -41,46 +69,75 @@ export class TestComponent implements OnInit {
       };
       return  newAnswer;
   }
-  public saveAnswer(answer) {
-      console.log('save answer : ', JSON.stringify(answer));
-      this.testService.saveAnswer(this.testSheetUid, answer);
+
+  public async saveAnswer(newAnswer) {
+      let answer = find(this.answerSheet.answers, { questionId: newAnswer.questionId} );
+      if (!answer) {
+        // console.log('push answer : ', JSON.stringify(newAnswer));
+        this.answerSheet.answers.push({
+          questionId: newAnswer.questionId,
+          selectedChoiceId: newAnswer.choiceId
+        });
+      } else {
+        // console.log('change choice : ', JSON.stringify(newAnswer));
+        answer.selectedChoiceId = newAnswer.choiceId;
+      }
+
+      // done flag
+      if (this.testSheet.questions.length === this.answerSheet.answers.length) {
+        this.answerSheet.done = true;
+      }
+
+      // save to cookie
+      this._cookieService.putObject('answerSheet.' + this.testSheetUid, this.answerSheet );
+
+  }
+
+  public async submitAnswerSheet() {
+    if (!this.answerSheet.done) {
+      this.error = 'Please answer every questions';
+      return false;
+    }
+    let newAnswerSheet = await this.testService.submitAnswerSheet(this.answerSheet);
+    if (newAnswerSheet) {
+      //this._cookieService.remove('answerSheet.' + this.testSheetUid);
+      this.router.navigate(['/result', this.testSheetUid]);
+      return true;
+    }
+    this.error = 'Cannot submit your answer, please try again';
+    return false;
   }
 
   public async ngOnInit() {
-    console.log('init test sheet');
     this.start = false;
     try {
+
+      // load test sheet
       this.testSheet = await this.testService.getTestSheetByUid(this.testSheetUid);
-      console.log(this.testSheet);
       if (!this.testSheet) {
         this.error = 'Test sheet not found';
       }
-      // find done/in-progress answer sheet
-      let answerSheet = await this.testService.getAnswerSheetByUid(this.testSheetUid, false);
-      console.log(answerSheet);
-      if (!answerSheet) {
-        this.answerSheet = answerSheet[0];
-        let isCreated = await this.testService.createAnswerSheet(this.testSheetUid);
-        if (isCreated) {
-            this.answerSheet = await this.testService.getAnswerSheetByUid(this.testSheetUid, false)[0];
-            this.start = true;
-          } else {
-            this.start = false;
-            this.error = 'Can\'t create answer sheet';
-          }
 
+      // find done/in-progress answer sheet in cookie
+      let answerSheet = this._cookieService.getObject('answerSheet.' + this.testSheetUid);
+      if (!answerSheet) {
+          answerSheet = {
+            testSheetUid: this.testSheetUid,
+            userId: await this.userService.getUserId(),
+            jobId: await this.userService.getJobId(),
+            workPlaceId: await this.userService.getWorkPlaceId(),
+            done: false,
+            answers: []
+          };
+          this._cookieService.putObject('answerSheet.' + this.testSheetUid, answerSheet );
+          this.answerSheet = answerSheet;
+          this.start = true;
+          console.log('save answersheet to cookie : ' + JSON.stringify(answerSheet));
       } else {
-        this.answerSheet = answerSheet[0];
+        this.answerSheet = answerSheet;
+        console.log('read answersheet from cookie : ' + JSON.stringify(answerSheet));
         this.start = true;
       }
-
-      // autosave answers
-      this._answerSheet = Observable.of(this.answerSheet);
-      this.sub = this._answerSheet.subscribe( (_answerSheet) => {
-          console.log('answer changed');
-          console.log(_answerSheet);
-        });
-
     } catch (err) {
       console.log(err);
 

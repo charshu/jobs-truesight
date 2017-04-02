@@ -1,9 +1,11 @@
-<div class="container-fluid question">
-    <div class="row justify-content-center">
-        <div class="col-md-10 question-title">
-            {{number+'. '+question.title}}
+
+        <div class="question">
+            <div class="question-title">
+                {{number+'. '+question.title}}
+            </div>
+            
             <div *ngFor="let choice of question.choices;let i = index" class="row justify-content-center">
-                <div class="col-md-10 question-choice" (click)="emitNewAnswer(question.id,choice.id)" [ngClass]="{'active':answer.selectedChoiceId?answer.selectedChoiceId === choice.id:false,'inactive': answer.selectedChoiceId?answer.selectedChoiceId !== choice.id:false}">
+                <div class="col-xs-10 col-md-10 question-choice" (click)="emitNewAnswer(question.id,choice.id)" [ngClass]="{'active':answer.selectedChoiceId?answer.selectedChoiceId === choice.id:false,'inactive': answer.selectedChoiceId?answer.selectedChoiceId !== choice.id:false}">
                    <i *ngIf=" answer.selectedChoiceId === choice.id" class="fa fa-check" aria-hidden="true"></i> <span>{{choice.title}}</span>
                    
                 </div>
@@ -11,6 +13,3 @@
             </div>
         </div>
 
-    </div>
-
-</div>

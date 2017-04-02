@@ -19,8 +19,8 @@ module.exports = () => {
       next();
     }
   });
-  privateRouter.post('/answer', TestController.createAnswerSheet);
-
+  privateRouter.post('/answer', TestController.submitAnswerSheet);
+  privateRouter.post('/job', TestController.createJob);
   // merge route
   return mergeRoutes([publicRouter, privateRouter]);
 };

@@ -30,6 +30,7 @@ export class LoginComponent implements OnInit {
                 this.error = 'Email or password is incorrect';
                 this.loading = false;
             }
+            this.router.navigate(['/']);
         }catch (e) {
             console.log(e);
         }

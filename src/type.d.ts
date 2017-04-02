@@ -29,7 +29,7 @@ export type Choice = {
   value: Number
 }
 export type AnswerSheet = {
-  id: Number,
+  id: String,
   testSheetUid: String,
   userId: String,
   jobId: Number,
@@ -40,4 +40,25 @@ export type AnswerSheet = {
 export type Answer = {
   questionId: Number,
   selectedChoiceId: String
+}
+export type Factor = {
+  factor:String,
+  value:Number
+}
+export type Result = {
+  testSheetUid:String,
+  factors:Factor[]
+}
+export type Job = {
+  id: Number,
+  name: String,
+  addedBy:String,
+  results:Result[],
+  answers:Answer[]
+}
+
+export type WorkPlace = {
+  id:String,
+  results:Result[],
+  answers:Answer[]
 }

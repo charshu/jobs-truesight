@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../shared';
-import { jobs } from './../shared/job';
+
 
 declare var google: any;
 @Component({
@@ -38,8 +38,6 @@ export class HomeComponent implements OnInit {
       searchBox.value = place.name;
     });
 
-    this.jobs = jobs.split('\n');
-    console.log(this.jobs);
 
   }
 

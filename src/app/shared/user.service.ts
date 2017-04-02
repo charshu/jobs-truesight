@@ -56,7 +56,6 @@ export class UserService implements OnInit {
             const response = await this.http.post('http://localhost:3000/auth/login', body, options)
             .toPromise();
             if (response.status === 200) {
-                console.log('login successfully');
                 const found = await this.loadCurrentUser();
                 if (found) {
                     // redirect back where they came
@@ -92,34 +91,49 @@ export class UserService implements OnInit {
     }
 
     public async loadCurrentUser(): Promise<boolean> {
-        console.log('loading current user');
         try {
             const query = this.apollo.query<QueryResponse>({
             query: CurrentUserProfile,
             forceFetch: true
             }).map(({data}) => data.currentUser);
-            const currentUser = await query.toPromise();
-            // found user
-            if (currentUser !== null) {
-                console.log('currentUser: ' + currentUser);
-                this._currentUser.next(currentUser);
-                return true;
+            let currentUser: User = await query.toPromise();
+            if (!currentUser) {
+                return false;
             }
-            // no user
-            console.log('no user!');
-            return false;
+            // found user, clone to avoid read only
+            this._currentUser.next(JSON.parse(JSON.stringify(currentUser)));
+            return true;
         } catch (err) {
             console.log(err);
             return false;
         }
     }
+    public isLoggedIn(): boolean {
+        console.log('current user : ' + this._currentUser.value);
+        if (!this._currentUser.value) {
+            this.router.navigate(['/login']);
+            return false;
+        }
+        return true;
+    }
+
     public getUserId(): String {
-        return this._currentUser.value.id;
+        return this.isLoggedIn ? this._currentUser.value.id : null;
     }
-    public async isLoggedIn(): Promise<Boolean> {
-        await this.loadCurrentUser();
-        return this._currentUser.value !== null;
+    public getJobId(): Number {
+        return this.isLoggedIn ? this._currentUser.value.profile.jobId : -1;
     }
+    public getWorkPlaceId(): String {
+        return this.isLoggedIn ? this._currentUser.value.profile.workPlaceId : null;
+    }
+    public setJobId(jobId): boolean {
+        if (this.isLoggedIn) {
+            this._currentUser.value.profile.jobId = jobId;
+            return true;
+        }
+        return false;
+    }
+
 
     ngOnInit() {
        
