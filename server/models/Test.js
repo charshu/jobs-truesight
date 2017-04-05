@@ -10,10 +10,6 @@ const choiceSchema = new Schema({
 });
 
 const questionSchema = new Schema({
-  id: {
-    type: Number,
-    unique: true
-  },
   title: String,
   factor: String,
   choices: [choiceSchema]
@@ -34,7 +30,7 @@ const testSheetSchema = new Schema({
 }, { timestamps: true });
 
 const answerSchema = new Schema({
-  questionId: Number,
+  questionId: String,
   selectedChoiceId: String
 }, { timestamps: true });
 
@@ -61,15 +57,15 @@ testSheetSchema.pre('save', function (next) {
     next();
   });
 });
-questionSchema.pre('save', function (next) {
-  const doc = this;
-  counter.findByIdAndUpdate({ _id: 'questionId' }, { $inc: { seq: 1 } }, (error, counter) => {
-    if (error) { return next(error); }
-    console.log(counter.seq);
-    doc.id = counter.seq;
-    next();
-  });
-});
+// questionSchema.pre('save', function (next) {
+//   const doc = this;
+//   counter.findByIdAndUpdate({ _id: 'questionId' }, { $inc: { seq: 1 } }, (error, counter) => {
+//     if (error) { return next(error); }
+//     console.log(counter.seq);
+//     doc.id = counter.seq;
+//     next();
+//   });
+// });
 answerSheetSchema.pre('save', function (next) {
   const doc = this;
   counter.findByIdAndUpdate({ _id: 'answerSheetId' }, { $inc: { seq: 1 } }, (error, counter) => {

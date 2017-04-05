@@ -58,7 +58,7 @@ export class TestComponent implements OnInit {
     this.pageScrollService.start(pageScrollInstance);
   }
 
-  public getAnswerByQid(qid: Number): Answer {
+  public getAnswerByQid(qid: string): Answer {
       let answer = find(this.answerSheet.answers, {questionId: qid});
       if (answer) {
         return answer;

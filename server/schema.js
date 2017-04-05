@@ -27,7 +27,7 @@ type TestSheet {
 }
 
 type Question {
-  id: Int!
+  id: String!
   title: String!
   factor: String
   choices: [Choice]
@@ -38,7 +38,7 @@ type Choice{
   value: Float
 }
 type Answer {
-  questionId: Int!
+  questionId: String!
   selectedChoiceId: String!
 }
 type AnswerSheet {
@@ -48,6 +48,8 @@ type AnswerSheet {
   jobId: Int
   workPlaceId: String
   done: Boolean
+  createdAt:Date
+  updatedAt:Date
   answers: [Answer]
 }
 
@@ -74,7 +76,7 @@ type Query {
   getTestSheet: [TestSheet]
   getTestSheetByUid(uid:String!): TestSheet
   getAnswerSheet: [AnswerSheet]
-  getAnswerSheetByUid(testSheetUid:String!,done:Boolean): [AnswerSheet]
+  getAnswerSheetByUid(testSheetUid:String): [AnswerSheet]
   getJobsChoice: [Job]
 }
 

@@ -6,23 +6,24 @@ module.exports = () => {
     try {
       const newTestSheet = new req.context.TestSheet({
         uid: req.body.uid,
-        title: req.body.title
+        title: req.body.title,
+        questions: req.body.questions
       });
       await newTestSheet.save();
 
-      async.each(req.body.questions, (question, next) => {
-        const temp = new req.context.Question({
-          testId: newTestSheet.id,
-          title: question.title,
-          factor: question.factor,
-          choices: question.choices
-        });
-        temp.save((err, doc) => {
-          next();
-        });
-      }, () => {
-        console.log('all questions are saved!');
-      });
+      // async.each(req.body.questions, (question, next) => {
+      //   const temp = new req.context.Question({
+      //     testId: newTestSheet.id,
+      //     title: question.title,
+      //     factor: question.factor,
+      //     choices: question.choices
+      //   });
+      //   temp.save((err, doc) => {
+      //     next();
+      //   });
+      // }, () => {
+      //   console.log('all questions are saved!');
+      // });
 
       console.log('=== successfully save new test===');
       res.json({
@@ -44,31 +45,38 @@ module.exports = () => {
         const newAnswerSheet = new req.context.AnswerSheet(req.body.answerSheet);
         await newAnswerSheet.save();
       // TODO: update answer sheet id on job and workplace
+        const user = await req.context.User.findOne({
+          _id: req.body.answerSheet.userId
+        });
+        if (user) {
+          if (!user.answers) {
+            user.answers = [];
+          }
+          user.answers.push(newAnswerSheet.id);
+          await user.save();
+        }
 
-        await req.context.Job.findOneAndUpdate(
-        { id: req.body.answerSheet.jobId },
-          {
-            $push: {
-              answers: newAnswerSheet.id
-            }
-          });
 
-        const workPlace = await req.context.WorkPlace.findOne({
+        const job = await req.context.Job.findOne({
+          id: req.body.answerSheet.jobId
+        });
+        if (job) {
+          job.answers.push(newAnswerSheet.id);
+          await job.save();
+        }
+
+
+        let workPlace = await req.context.WorkPlace.findOne({
           placeId: req.body.answerSheet.workPlaceId
         });
         if (!workPlace) {
-          const newWorkPlace = new req.context.WorkPlace({
+          workPlace = new req.context.WorkPlace({
             placeId: req.body.answerSheet.workPlaceId
           });
-          await newWorkPlace.save();
         }
-        await req.context.WorkPlace.findOneAndUpdate(
-        { placeId: req.body.answerSheet.workPlaceId },
-          {
-            $push: {
-              answers: newAnswerSheet.id
-            }
-          });
+        workPlace.answers.push(newAnswerSheet.id);
+        await workPlace.save();
+
         res.json(newAnswerSheet);
       }
     } catch (err) {

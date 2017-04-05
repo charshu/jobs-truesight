@@ -24,6 +24,8 @@ import { ApolloModule } from 'apollo-angular';
 import { RoundProgressModule } from 'angular-svg-round-progressbar';
 import { Ng2PageScrollModule } from 'ng2-page-scroll';
 import { CookieService } from 'angular2-cookie/core';
+import { ChartsModule } from 'ng2-charts/ng2-charts';
+
 // by default, this client will send queries to `/graphql` (relative to the URL of your app)
 const client = new ApolloClient({
   networkInterface: createNetworkInterface({
@@ -45,7 +47,8 @@ export function provideClient(): ApolloClient {
     routing,
     ApolloModule.forRoot(provideClient),
     RoundProgressModule,
-    Ng2PageScrollModule.forRoot()
+    Ng2PageScrollModule.forRoot(),
+    ChartsModule
   ],
   declarations: [
     AppComponent,

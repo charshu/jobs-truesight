@@ -1,11 +1,20 @@
 <div *ngIf="loaded" id="result-section" class="container-fluid result-bg noise">
     <div *ngIf="error" class="alert alert-danger">{{error}}</div>
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            
+    <div class="result-content container">
+        <div class="row">
+            <div class="col-md-7">
+
+            </div>
+            <div class="menu-right col-md-5">
+                <div class="chart">
+                    <canvas baseChart [datasets]="radarChartData" [labels]="radarChartLabels" [chartType]="radarChartType" (chartHover)="chartHovered($event)"
+                        (chartClick)="chartClicked($event)"></canvas>
+                </div>
+            </div>
+
+
         </div>
-
-
     </div>
+
 
 </div>

@@ -15,7 +15,7 @@ export class QuestionComponent implements OnInit {
   @Input() number: Number;
   @Output() clickChoice = new EventEmitter();
 
-  constructor(private testService: TestService){}
+  constructor(private testService: TestService) {}
   emitNewAnswer(questionId, choiceId) {
     if (this.answer.selectedChoiceId === choiceId) {
       // same answer

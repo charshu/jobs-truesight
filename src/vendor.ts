@@ -16,3 +16,4 @@ import 'jquery';
 import 'bootstrap/dist/js/bootstrap';
 import 'bootstrap-social/bootstrap-social.css';
 import 'font-awesome/css/font-awesome.css';
+import 'chart.js/dist/Chart';

@@ -28,13 +28,6 @@ const resolveFunctions = {
       if (!ct.user) {
         throw new Error('You have no authorized');
       }
-      if (params.done) {
-        return ct.AnswerSheet.find({
-          testSheetUid: params.testSheetUid,
-          userId: ct.user._id,
-          done: params.done
-        });
-      }
       return ct.AnswerSheet.find({
         testSheetUid: params.testSheetUid,
         userId: ct.user._id
@@ -60,11 +53,6 @@ const resolveFunctions = {
       return user.email;
     }
   },
-  TestSheet: {
-    questions(testSheet) {
-      return sortBy(testSheet.questions, 'id');
-    }
-  },
   AnswerSheet: {
     answers(answerSheet) {
       return sortBy(answerSheet.answers, 'id');
@@ -73,6 +61,9 @@ const resolveFunctions = {
   Question: {
     choices(question) {
       return question.choices;
+    },
+    id(question) {
+      return question._id;
     }
   },
   Choice: {

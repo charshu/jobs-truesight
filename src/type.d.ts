@@ -3,62 +3,65 @@
 
 
 export type User = {
-  id: String,
-  email: String,
+  id: string,
+  email: string,
   profile: any
 }
 
 // TODO: add and design more type
 // in application
 export type TestSheet = {
-  id: Number,
-  uid : String,
-  title: String,
+  id: number,
+  uid : string,
+  title: string,
   questions: Question[]
 }
 
 export type Question = {
-  id: Number,
-  title: String,
-  factor: String,
+  id: string,
+  title: string,
+  factor: string,
   choices: Choice[]
 }
 export type Choice = {
-  id: String
-  title: String,
-  value: Number
+  id: string
+  title: string,
+  value: number
 }
 export type AnswerSheet = {
-  id: String,
-  testSheetUid: String,
-  userId: String,
+  id: number,
+  testSheetUid: string,
+  userId: string,
   jobId: Number,
-  workPlaceId: String,
+  workPlaceId: string,
+  createdAt:number,
+  updatedAt:number,
   done: Boolean,
   answers: Answer[]
 }
 export type Answer = {
-  questionId: Number,
-  selectedChoiceId: String
+  questionId: string,
+  selectedChoiceId: string
 }
 export type Factor = {
-  factor:String,
-  value:Number
+  factor:string,
+  value:number
 }
 export type Result = {
-  testSheetUid:String,
+  testSheetUid:string,
   factors:Factor[]
 }
 export type Job = {
-  id: Number,
-  name: String,
-  addedBy:String,
+  id: number,
+  name: string,
+  createdAt:Date,
+  updatedAt:Date,
   results:Result[],
   answers:Answer[]
 }
 
 export type WorkPlace = {
-  id:String,
+  id:string,
   results:Result[],
   answers:Answer[]
 }

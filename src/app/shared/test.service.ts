@@ -76,13 +76,15 @@ query getAnswerSheet{
 }    
 `;
 const answerSheetQuery2 = gql `
-query getAnswerSheetByUid($testSheetUid: String!,$done: Boolean){
-  getAnswerSheetByUid(testSheetUid:$testSheetUid,done:$done) {
+query getAnswerSheetByUid($testSheetUid: String!){
+  getAnswerSheetByUid(testSheetUid:$testSheetUid) {
+    id
   testSheetUid
     userId
     jobId
     workPlaceId
-    done
+    createdAt
+    updatedAt
     answers {
       questionId
       selectedChoiceId
@@ -170,30 +172,30 @@ export class TestService implements OnInit {
       console.log(e);
     }
   }
-  public async getAnswerSheetByUid(testSheetUid ? : String, done ? : Boolean): Promise < AnswerSheet[] > {
+  public async getAnswerSheetByUid(testSheetUid: String): Promise < AnswerSheet[] > {
     console.log('Getting answer sheet by uid');
     try {
       const query = this.apollo.query < QueryResponse > ({
         query: answerSheetQuery2,
         forceFetch: true,
         variables: {
-          testSheetUid,
-          done
+          testSheetUid
         }
       }).map(({
         data
       }) => data.getAnswerSheetByUid);
       const answerSheets = await query.toPromise();
-      console.log(answerSheets);
-      console.log('Answer sheet loaded!');
-      return answerSheets;
+      if (answerSheets) {
+        return JSON.parse(JSON.stringify(answerSheets));
+      }
+      return [];
     } catch (e) {
       console.log(e);
     }
   }
   public async submitAnswerSheet(answerSheet): Promise < AnswerSheet > {
     let temp_answerSheet = Object.assign({
-      answerSheet: answerSheet
+      answerSheet
     });
     let headers = new Headers({
       'Content-Type': 'application/json'
@@ -204,7 +206,7 @@ export class TestService implements OnInit {
     });
     try {
       const newAnswerSheet = await this.http.post('http://localhost:3000/test/answer',
-        JSON.stringify(temp_answerSheet), options).map(res => res.json()).toPromise();
+        JSON.stringify(temp_answerSheet), options).map((res) => res.json()).toPromise();
       console.log('submit answer sheet complete!');
       return newAnswerSheet;
     } catch (err) {
@@ -212,7 +214,7 @@ export class TestService implements OnInit {
     }
 
   }
-  
+
   public async loadJobsChoice(): Promise < Job[] > {
     try {
       const query = this.apollo.query < QueryResponse > ({
@@ -228,7 +230,6 @@ export class TestService implements OnInit {
       console.log(e);
     }
   }
-
 
   ngOnInit() {
 

@@ -1,4 +1,4 @@
-<div id="profile-section" *ngIf="user">
+<div id="profile-section" *ngIf="loaded && user">
 
     <div class="container">
 
@@ -10,24 +10,30 @@
                     <div class="form-group">
                         <label for="email" class="col-md-2 control-label">Email</label>
                         <div class="col-md-7">
-                            <input type="email" name="email" id="email" class="form-control" [attr.value]="user.email" title="">
+                            <input type="email" name="email" id="email" class="form-control" 
+                            [(ngModel)]="user.email" title="">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="email" class="col-md-2 control-label">Name</label>
                         <div class="col-md-7">
-                            <input type="email" name="email" id="email" class="form-control" [attr.value]="user.profile.name" title="">
+                            <input type="email" name="email" id="email" class="form-control" 
+                            [(ngModel)]="user.profile.name" title="">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="gender" class="col-md-2 control-label">Gender</label>
                         <div class="col-md-7">
                             <label class="radio-inline">
-                            <input type="radio" [checked]="user.profile.gender==='male'" name="gender" value="male" title="">
+                            <input type="radio" name="gender" 
+                            (click)="user.profile.gender = 'male'"
+                            [checked]="user.profile.gender==='male'" >
                             <span>Male</span>
                         </label>
                             <label class="radio-inline">
-                            <input type="radio" [checked]="user.profile.gender==='female'" name="gender" value="female" title="">
+                            <input type="radio" name="gender" 
+                            (click)="user.profile.gender = 'female'"
+                            [checked]="user.profile.gender==='female'" >
                             <span>Female</span>
                         </label>
                             <!--<label class="radio-inline">
@@ -39,13 +45,15 @@
                     <div class="form-group">
                         <label for="age_range" class="col-md-2 control-label">Age range</label>
                         <div class="col-md-7">
-                            <input type="text" name="age_range" class="form-control" [attr.value]="user.profile.age_range" title="">
+                            <input type="text" name="age_range" class="form-control" 
+                            [(ngModel)]="user.profile.age_range" title="">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="location" class="col-md-2 control-label">Location</label>
                         <div class="col-md-7">
-                            <input type="text" name="location" class="form-control" [attr.value]="user.profile.location" title="">
+                            <input type="text" name="location" class="form-control" 
+                            [(ngModel)]="user.profile.location" title="">
                         </div>
                     </div>
                     <div class="form-group">

@@ -23,7 +23,8 @@ const userSchema = new Schema({
     workPlaceId: String,
     website: String,
     picture: String
-  }
+  },
+  answers: Array
 }, { timestamps: true });
 
 
