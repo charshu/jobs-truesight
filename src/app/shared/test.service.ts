@@ -1,6 +1,5 @@
 import {
-  Injectable,
-  OnInit
+  Injectable
 } from '@angular/core';
 import {
   Http,
@@ -15,23 +14,26 @@ import {
   TestSheet,
   AnswerSheet,
   Job,
-  Result
+  Result,
+  WorkPlace
 } from '../../type.d';
 import 'rxjs/add/operator/map';
 import {
   Apollo
 } from 'apollo-angular';
 import gql from 'graphql-tag';
+import { find } from 'lodash';
+
 // import { find } from 'lodash';
 
-const testSheetQuery = gql `
+const getTestSheet = gql`
 query getTestSheet{
   getTestSheet {
     title
     uid
     questions {
       id
-      factor
+      factor_name
       title
       choices {
         id
@@ -42,14 +44,14 @@ query getTestSheet{
   }
 }    
 `;
-const testSheetQuery2 = gql `
+const getTestSheetByUid = gql`
 query getTestSheetByUid($uid: String!){
   getTestSheetByUid(uid:$uid) {
     title
     uid
     questions {
       id
-      factor
+      factor_name
       title
       choices {
         id
@@ -60,7 +62,7 @@ query getTestSheetByUid($uid: String!){
   }
 }    
 `;
-const answerSheetQuery = gql `
+const getAnswerSheet = gql`
 query getAnswerSheet{
   getAnswerSheet {
   testSheetUid
@@ -75,7 +77,7 @@ query getAnswerSheet{
   }
 }    
 `;
-const answerSheetQuery2 = gql `
+const getAnswerSheetByUid = gql`
 query getAnswerSheetByUid($testSheetUid: String!){
   getAnswerSheetByUid(testSheetUid:$testSheetUid) {
     id
@@ -92,7 +94,7 @@ query getAnswerSheetByUid($testSheetUid: String!){
   }
 }    
 `;
-const getJobsChoiceQuery = gql `
+const getJobsChoice = gql`
 query getJobsChoice{
   getJobsChoice {
     id
@@ -100,6 +102,40 @@ query getJobsChoice{
   }
 }    
 `;
+const getJob = gql`
+query getJob($id:Int!){
+  getJob(id:$id) {
+    id
+    name
+		answers
+    results {
+      testSheetUid
+      factors {
+        name
+        value
+        question_counter
+      }
+    }
+  }
+}    
+`;
+const getWorkPlace = gql`
+query getWorkPlace($placeId:String!){
+  getWorkPlace(placeId:$placeId) {
+    placeId
+    answers
+    results {
+      testSheetUid
+      factors {
+        name
+        value
+        question_counter
+      }
+    }
+  }
+}   
+`;
+
 
 interface QueryResponse {
   getTestSheet: TestSheet[];
@@ -108,10 +144,12 @@ interface QueryResponse {
   getAnswerSheetByUid: AnswerSheet[];
   saveAnswer: AnswerSheet;
   getJobsChoice: Job[];
+  getJob: Job;
+  getWorkPlace: WorkPlace;
 }
 
 @Injectable()
-export class TestService implements OnInit {
+export class TestService {
 
   constructor(
     private apollo: Apollo,
@@ -123,7 +161,7 @@ export class TestService implements OnInit {
     console.log('Loading test');
     try {
       const query = this.apollo.query < QueryResponse > ({
-        query: testSheetQuery,
+        query: getTestSheet,
         forceFetch: true
       }).map(({
         data
@@ -140,7 +178,7 @@ export class TestService implements OnInit {
     console.log('Loading test');
     try {
       const query = this.apollo.query < QueryResponse > ({
-        query: testSheetQuery2,
+        query: getTestSheetByUid,
         forceFetch: true,
         variables: {
           uid
@@ -160,7 +198,7 @@ export class TestService implements OnInit {
 
     try {
       const query = this.apollo.query < QueryResponse > ({
-        query: answerSheetQuery,
+        query: getAnswerSheet,
         forceFetch: true
       }).map(({
         data
@@ -176,7 +214,7 @@ export class TestService implements OnInit {
     console.log('Getting answer sheet by uid');
     try {
       const query = this.apollo.query < QueryResponse > ({
-        query: answerSheetQuery2,
+        query: getAnswerSheetByUid,
         forceFetch: true,
         variables: {
           testSheetUid
@@ -194,9 +232,7 @@ export class TestService implements OnInit {
     }
   }
   public async submitAnswerSheet(answerSheet): Promise < AnswerSheet > {
-    let temp_answerSheet = Object.assign({
-      answerSheet
-    });
+
     let headers = new Headers({
       'Content-Type': 'application/json'
     });
@@ -206,7 +242,7 @@ export class TestService implements OnInit {
     });
     try {
       const newAnswerSheet = await this.http.post('http://localhost:3000/test/answer',
-        JSON.stringify(temp_answerSheet), options).map((res) => res.json()).toPromise();
+        JSON.stringify(answerSheet), options).map((res) => res.json()).toPromise();
       console.log('submit answer sheet complete!');
       return newAnswerSheet;
     } catch (err) {
@@ -215,24 +251,53 @@ export class TestService implements OnInit {
 
   }
 
-  public async loadJobsChoice(): Promise < Job[] > {
+  public async getJobsChoice(): Promise < Job[] > {
     try {
       const query = this.apollo.query < QueryResponse > ({
-        query: getJobsChoiceQuery,
+        query: getJobsChoice,
         forceFetch: true
       }).map(({
         data
       }) => data.getJobsChoice);
       const jobs = await query.toPromise();
-      console.log('Jobs loaded!');
       return jobs;
     } catch (e) {
       console.log(e);
     }
   }
-
-  ngOnInit() {
-
+  public async getJob(jobId: number): Promise < Job > {
+    try {
+      const query = this.apollo.query < QueryResponse > ({
+        query: getJob,
+        forceFetch: true,
+        variables: {
+          id: jobId
+        }
+      }).map(({
+        data
+      }) => data.getJob);
+      const job = await query.toPromise();
+      return job;
+    } catch (e) {
+      console.log(e);
+    }
   }
-
+  public async getWorkPlace(placeId: string): Promise < WorkPlace > {
+    try {
+      const query = this.apollo.query < QueryResponse > ({
+        query: getWorkPlace,
+        forceFetch: true,
+        variables: {
+          placeId
+        }
+      }).map(({
+        data
+      }) => data.getWorkPlace);
+      const workPlace = await query.toPromise();
+      console.log(workPlace);
+      return workPlace;
+    } catch (e) {
+      console.log(e);
+    }
+  }
 }

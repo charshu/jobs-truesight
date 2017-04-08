@@ -9,10 +9,8 @@ import { TestComponent } from './test/test.component';
 import { TestBoardComponent } from './test-board/test-board.component';
 import { QuestionComponent } from './question/question.component';
 
-
 import { routing } from './app.routing';
 import { TestService, UserService, RouteGuard } from './shared';
-
 
 import { ProfileComponent } from './profile/profile.component';
 import { LoginComponent } from './login/login.component';
@@ -25,6 +23,7 @@ import { RoundProgressModule } from 'angular-svg-round-progressbar';
 import { Ng2PageScrollModule } from 'ng2-page-scroll';
 import { CookieService } from 'angular2-cookie/core';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
+import {MomentModule} from 'angular2-moment';
 
 // by default, this client will send queries to `/graphql` (relative to the URL of your app)
 const client = new ApolloClient({
@@ -48,7 +47,8 @@ export function provideClient(): ApolloClient {
     ApolloModule.forRoot(provideClient),
     RoundProgressModule,
     Ng2PageScrollModule.forRoot(),
-    ChartsModule
+    ChartsModule,
+    MomentModule
   ],
   declarations: [
     AppComponent,

@@ -17,7 +17,7 @@ export class TestComponent implements OnInit {
 
   error: String;
   sub: any;
-  public testSheetUid: String;
+  public testSheetUid: string;
   public answerSheet: AnswerSheet;
   _answerSheet: Observable<AnswerSheet>;
   testSheet: TestSheet;
@@ -54,7 +54,7 @@ export class TestComponent implements OnInit {
   // }
 
   public jump(index) {
-    let pageScrollInstance: PageScrollInstance = PageScrollInstance.simpleInstance(this.document, '#q'+index);
+    let pageScrollInstance: PageScrollInstance = PageScrollInstance.simpleInstance(this.document, '#q' + index);
     this.pageScrollService.start(pageScrollInstance);
   }
 
@@ -71,6 +71,7 @@ export class TestComponent implements OnInit {
   }
 
   public async saveAnswer(newAnswer) {
+      const userId = await this.userService.getUserId();
       let answer = find(this.answerSheet.answers, { questionId: newAnswer.questionId} );
       if (!answer) {
         // console.log('push answer : ', JSON.stringify(newAnswer));
@@ -78,29 +79,29 @@ export class TestComponent implements OnInit {
           questionId: newAnswer.questionId,
           selectedChoiceId: newAnswer.choiceId
         });
+
       } else {
         // console.log('change choice : ', JSON.stringify(newAnswer));
         answer.selectedChoiceId = newAnswer.choiceId;
       }
+      // save to cookie
+      this._cookieService.putObject(userId + '.' + newAnswer.questionId, newAnswer.choiceId );
 
       // done flag
       if (this.testSheet.questions.length === this.answerSheet.answers.length) {
         this.answerSheet.done = true;
       }
 
-      // save to cookie
-      this._cookieService.putObject('answerSheet.' + this.testSheetUid, this.answerSheet );
-
   }
 
   public async submitAnswerSheet() {
-    if (!this.answerSheet.done) {
-      this.error = 'Please answer every questions';
-      return false;
-    }
+    // if (!this.answerSheet.done) {
+    //   this.error = 'Please answer every questions';
+    //   return false;
+    // }
     let newAnswerSheet = await this.testService.submitAnswerSheet(this.answerSheet);
     if (newAnswerSheet) {
-      //this._cookieService.remove('answerSheet.' + this.testSheetUid);
+      // this._cookieService.remove('answerSheet.' + this.testSheetUid);
       this.router.navigate(['/result', this.testSheetUid]);
       return true;
     }
@@ -111,36 +112,32 @@ export class TestComponent implements OnInit {
   public async ngOnInit() {
     this.start = false;
     try {
-
       // load test sheet
       this.testSheet = await this.testService.getTestSheetByUid(this.testSheetUid);
       if (!this.testSheet) {
         this.error = 'Test sheet not found';
       }
+      const userId: string = await this.userService.getUserId();
 
-      // find done/in-progress answer sheet in cookie
-      let answerSheet = this._cookieService.getObject('answerSheet.' + this.testSheetUid);
-      if (!answerSheet) {
-          answerSheet = {
+      // reload unsubmited answer from cookie
+      this.answerSheet = {
             testSheetUid: this.testSheetUid,
-            userId: await this.userService.getUserId(),
-            jobId: await this.userService.getJobId(),
-            workPlaceId: await this.userService.getWorkPlaceId(),
+            userId,
             done: false,
             answers: []
           };
-          this._cookieService.putObject('answerSheet.' + this.testSheetUid, answerSheet );
-          this.answerSheet = answerSheet;
-          this.start = true;
-          console.log('save answersheet to cookie : ' + JSON.stringify(answerSheet));
-      } else {
-        this.answerSheet = answerSheet;
-        console.log('read answersheet from cookie : ' + JSON.stringify(answerSheet));
-        this.start = true;
+      for (let question of this.testSheet.questions) {
+          let answer: string = this._cookieService.getObject( userId + '.' + question.id);
+          if (answer) {
+            this.answerSheet.answers.push({
+              questionId: question.id,
+              selectedChoiceId: answer
+            });
+          }
       }
+      this.start = true;
     } catch (err) {
       console.log(err);
-
     }
 
   }

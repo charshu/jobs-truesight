@@ -52,10 +52,10 @@ export class ProfileComponent implements OnInit {
             // this.placeChanged(lat, lng, address);
             console.log(lat, lng, address, place);
             searchBox.value = place.name;
-            this.user.profile.workPlaceId = place.id;
+            this.user.profile.workPlaceId = place.place_id;
             });
             // load jobs list
-            this.jobs = await this.testService.loadJobsChoice();
+            this.jobs = await this.testService.getJobsChoice();
 
             this.userService.currentUser.subscribe( (currentUser) => {
                 if (currentUser !== null) {

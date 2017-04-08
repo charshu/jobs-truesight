@@ -22,7 +22,15 @@ const CurrentUserProfile = gql`
         jobId
         workPlaceId
         picture
-        }
+    }
+     results {
+      testSheetUid
+      factors {
+        name
+        value
+        question_counter
+      }
+    }
     }
 }
     
@@ -117,13 +125,13 @@ export class UserService implements OnInit {
         return true;
     }
 
-    public getUserId(): String {
+    public getUserId(): string {
         return this.isLoggedIn ? this._currentUser.value.id : null;
     }
-    public getJobId(): Number {
+    public getJobId(): number {
         return this.isLoggedIn ? this._currentUser.value.profile.jobId : -1;
     }
-    public getWorkPlaceId(): String {
+    public getWorkPlaceId(): string {
         return this.isLoggedIn ? this._currentUser.value.profile.workPlaceId : null;
     }
     public setJobId(jobId): boolean {

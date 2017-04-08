@@ -11,7 +11,7 @@ const choiceSchema = new Schema({
 
 const questionSchema = new Schema({
   title: String,
-  factor: String,
+  factor_name: String,
   choices: [choiceSchema]
 
 }, { timestamps: true });

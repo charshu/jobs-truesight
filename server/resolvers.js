@@ -39,6 +39,17 @@ const resolveFunctions = {
           id: 1 // Sort by Date Added DESC
         }
       });
+    },
+    getJob(_, params, ct) {
+      return ct.Job.findOne({ id: params.id });
+    },
+    getWorkPlace(_, params, ct) {
+      // return async () => {
+      //   const workPlace = await ct.WorkPlace.findOne({ placeId: params.placeId });
+      //   console.log(workPlace.placeId);
+      //   return find(workPlace.results, { testSheetUid: params.testSheetUid });
+      // };
+      return ct.WorkPlace.findOne({ placeId: params.placeId });
     }
   },
   // Mutation: {
@@ -69,6 +80,11 @@ const resolveFunctions = {
   Choice: {
     id(choice) {
       return choice._id;
+    }
+  },
+  Result: {
+    testSheetUid(result) {
+      return result.testSheetUid;
     }
   },
   Date: {

@@ -1,15 +1,92 @@
-<div *ngIf="loaded" id="result-section" class="container-fluid result-bg noise">
+<div id="result-section" class="container-fluid result-bg noise">
     <div *ngIf="error" class="alert alert-danger">{{error}}</div>
-    <div class="result-content container">
+    <div class="container result-container">
         <div class="row">
-            <div class="col-md-7">
+            <div *ngIf="loaded" class="col-md-7">
+                <div class="block-top">
+                    <div class="title">ผลการวิเคราะห์แบบทดสอบ "{{testSheet.title}}"</div>
+                    <div class="sub-title">
+                        Last Update <i class="fa fa-clock-o" aria-hidden="true"></i> 
+                        {{answerSheets[0].createdAt | amTimeAgo}}
+                    </div>
+                    <hr>
+                </div>
+                <div class="block-content">
+                    <div *ngIf="loaded" class="chart">
+                        <canvas baseChart [datasets]="radarChartData" [labels]="radarChartLabels" [chartType]="radarChartType" (chartHover)="chartHovered($event)"
+                            [options]="radarChartOptions" (chartClick)="chartClicked($event)"></canvas>
+                    </div>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>ตัวแปร</th>
+                                <th>ระดับ</th>
+                            </tr>
+                        </thead>
+                        <tr *ngFor="let data of sortedData;let i = index ">
+                            <td>{{i+1}}</td>
+                            <td>
+                                <div>
+                                    {{data.label}}
+                                </div>
+                                <div>
+                                    อธิบาย
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn btn-xs btn-block btn-default">{{data.value > 4?'very high':data.value>3?'high':data.value>2?'medium':data.value>1?'low':'very
+                                    low'}}
+                                </div>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
 
             </div>
-            <div class="menu-right col-md-5">
-                <div class="chart">
-                    <canvas baseChart [datasets]="radarChartData" [labels]="radarChartLabels" [chartType]="radarChartType" (chartHover)="chartHovered($event)"
-                        (chartClick)="chartClicked($event)"></canvas>
+            <div class="col-md-5">
+                <div class="block-content block-blue">
+                    <div class="title">
+                        รายละเอียดของงาน
+                    </div>
+                    <table *ngIf="googleLoaded" class="table table-striped table-bordered">
+                        <tbody>
+                            <tr *ngIf="job">
+                                <td>ตำแหน่ง</td>
+                                <td>{{job.name}}</td>
+                            </tr>
+
+
+                        </tbody>
+                    </table>
+
+                    <div class="title">
+                        รายละเอียดสถานที่ทำงาน
+                    </div>
+                    <div id="map">
+
+                    </div>
+                    <table *ngIf="googleLoaded" class="table table-striped table-bordered">
+                        <tbody>
+                            <tr *ngIf="workPlace.name">
+                                <td>ชื่อ</td>
+                                <td>{{workPlace.name}}</td>
+                            </tr>
+                            <tr *ngIf="workPlace.formatted_address">
+                                <td>ที่อยู่</td>
+                                <td>{{workPlace.formatted_address}}</td>
+                            </tr>
+                            <tr>
+                                <td>เว็บไซต์</td>
+                                <td>{{workPlace.website}}</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
                 </div>
+
+
             </div>
 
 

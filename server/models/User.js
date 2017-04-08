@@ -2,6 +2,7 @@
 const bcrypt = require('bcrypt-nodejs');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
+const { resultSchema } = require('./Job');
 
 const Schema = mongoose.Schema;
 
@@ -24,6 +25,7 @@ const userSchema = new Schema({
     website: String,
     picture: String
   },
+  results: [resultSchema],
   answers: Array
 }, { timestamps: true });
 

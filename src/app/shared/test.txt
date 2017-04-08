@@ -164,7 +164,7 @@
    },
    {
       "title": "ฉันทำงานหลาย ๆ อย่างในแต่ละวัน",
-      "factor": "A",
+      "factor": "work variety",
       "choices": [
       { "title": "ไม่เห็นด้วยอย่างยิ่ง", "value": 1 },
       { "title": "ไม่เห็นด้วย", "value": 2 },
@@ -174,7 +174,7 @@
    },
    {
       "title": "ฉันสามารถจัดลำดับงานได้เองว่า จะทำอะไรก่อนหลัง",
-      "factor": "work variety",
+      "factor": "autonomy",
       "choices": [
       { "title": "ไม่เห็นด้วยอย่างยิ่ง", "value": 1 },
       { "title": "ไม่เห็นด้วย", "value": 2 },
@@ -184,7 +184,7 @@
    },
    {
       "title": "ในการทำงาน ฉันสามารถริเริ่มทำสิ่งต่าง ๆ ได้เอง",
-      "factor": "work variety",
+      "factor": "autonomy",
       "choices": [
       { "title": "ไม่เห็นด้วยอย่างยิ่ง", "value": 1 },
       { "title": "ไม่เห็นด้วย", "value": 2 },
@@ -235,7 +235,7 @@
    ,
    {
       "title": "ฉันสามารถเลือกสถานที่ทำงานเองได้ ไม่จำเป็นที่จะต้องอยู่ในออฟฟิศ",
-      "factor": "autonomy",
+      "factor": "spatial organization",
       "choices": [
       { "title": "ไม่เห็นด้วยอย่างยิ่ง", "value": 1 },
       { "title": "ไม่เห็นด้วย", "value": 2 },
@@ -246,7 +246,7 @@
    ,
    {
       "title": "ในที่ทำงาน ฉันสามารถเดินไปไหนมาไหนก็ได้ ไม่จำเป็นที่จะต้องอยู่ประจำที่ใดที่หนึ่งตลอดเวลา",
-      "factor": "autonomy",
+      "factor": "spatial organization",
       "choices": [
       { "title": "ไม่เห็นด้วยอย่างยิ่ง", "value": 1 },
       { "title": "ไม่เห็นด้วย", "value": 2 },
@@ -257,7 +257,7 @@
    ,
    {
       "title": "ในที่ทำงาน ฉันสามารถเลือกที่ที่ฉันอยากจะนั่งทำงานได้",
-      "factor": "autonomy",
+      "factor": "spatial organization",
       "choices": [
       { "title": "ไม่เห็นด้วยอย่างยิ่ง", "value": 1 },
       { "title": "ไม่เห็นด้วย", "value": 2 },
@@ -268,7 +268,7 @@
    ,
    {
       "title": "ฉันสามารถจัดแจงสิ่งต่าง ๆ ในบริเวณที่ฉันทำงานได้",
-      "factor": "autonomy",
+      "factor": "spatial organization",
       "choices": [
       { "title": "ไม่เห็นด้วยอย่างยิ่ง", "value": 1 },
       { "title": "ไม่เห็นด้วย", "value": 2 },
@@ -279,7 +279,7 @@
    ,
    {
       "title": "งานแต่ละชิ้นของฉัน มีกำหนดเวลาส่ง (deadline) ที่แน่นอน",
-      "factor": "autonomy",
+      "factor": "performance requirements",
       "choices": [
       { "title": "ไม่เห็นด้วยอย่างยิ่ง", "value": 1 },
       { "title": "ไม่เห็นด้วย", "value": 2 },
@@ -290,7 +290,7 @@
    ,
    {
       "title": "งานของฉันมีการกำหนดเป้าหมายผลงาน",
-      "factor": "autonomy",
+      "factor": "performance requirements",
       "choices": [
       { "title": "ไม่เห็นด้วยอย่างยิ่ง", "value": 1 },
       { "title": "ไม่เห็นด้วย", "value": 2 },
@@ -301,7 +301,7 @@
    ,
    {
       "title": "ฉันต้องทำงานให้ถึงเป้า เช่น ยอดขาย หรือส่วนแบ่งตลาด",
-      "factor": "autonomy",
+      "factor": "performance requirements",
       "choices": [
       { "title": "ไม่เห็นด้วยอย่างยิ่ง", "value": 1 },
       { "title": "ไม่เห็นด้วย", "value": 2 },
@@ -312,7 +312,7 @@
    ,
    {
       "title": "ฉันทำงานที่ต้องนั่งอยู่กับที่ตลอดทั้งวัน",
-      "factor": "autonomy",
+      "factor": "physical posture",
       "choices": [
       { "title": "ไม่เห็นด้วยอย่างยิ่ง", "value": 1 },
       { "title": "ไม่เห็นด้วย", "value": 2 },
@@ -323,7 +323,7 @@
    ,
    {
       "title": "งานของฉันไม่ต้องใช้กำลังกายมาก (เช่น ยกของหนัก)",
-      "factor": "autonomy",
+      "factor": "physical posture",
       "choices": [
       { "title": "ไม่เห็นด้วยอย่างยิ่ง", "value": 1 },
       { "title": "ไม่เห็นด้วย", "value": 2 },
@@ -333,7 +333,7 @@
    },
    {
       "title": "งานของฉันมีความเสี่ยงต่ำที่จะเกิดอุบัติเหตุทางร่างกาย",
-      "factor": "autonomy",
+      "factor": "physical posture",
       "choices": [
       { "title": "ไม่เห็นด้วยอย่างยิ่ง", "value": 1 },
       { "title": "ไม่เห็นด้วย", "value": 2 },
@@ -344,7 +344,7 @@
    ,
    {
       "title": "ฉันทำงานท่ามกลางเสียงดังหนวกหู",
-      "factor": "autonomy",
+      "factor": "physical environment",
       "choices": [
       { "title": "ไม่เห็นด้วยอย่างยิ่ง", "value": 1 },
       { "title": "ไม่เห็นด้วย", "value": 2 },
@@ -355,7 +355,7 @@
    ,
    {
       "title": "ฉันทำงานท่ามกลางมลภาวะ เช่น ฝุ่นละออง ควัน หรือกลิ่นอับชื้น",
-      "factor": "autonomy",
+      "factor": "physical environment",
       "choices": [
       { "title": "ไม่เห็นด้วยอย่างยิ่ง", "value": 1 },
       { "title": "ไม่เห็นด้วย", "value": 2 },
@@ -366,7 +366,7 @@
    ,
    {
       "title": "ฉันทำงานท่ามกลางภูมิอากาศ/สภาพแวดล้อมที่มีลักษณะเฉพาะ เช่น ร้อน หนาว ชื้นแฉะ หรือมีมรสุม",
-      "factor": "autonomy",
+      "factor": "physical environment",
       "choices": [
       { "title": "ไม่เห็นด้วยอย่างยิ่ง", "value": 1 },
       { "title": "ไม่เห็นด้วย", "value": 2 },

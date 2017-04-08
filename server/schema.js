@@ -4,11 +4,11 @@ const resolvers = require('./resolvers');
 const schema = `
 scalar Date
 type User {
-  id:String
+  id: String
   email: String!
   profile: Profile
+  results:[Result] 
 }
-
 type Profile {
     name: String
     gender: String
@@ -18,18 +18,16 @@ type Profile {
     jobId: Int
     workPlaceId: String
 }
-
 type TestSheet { 
   id: String!
-  uid:String!
+  uid: String!
   title: String
   questions: [Question]
 }
-
 type Question {
   id: String!
   title: String!
-  factor: String
+  factor_name: String
   choices: [Choice]
 }
 type Choice{
@@ -42,35 +40,38 @@ type Answer {
   selectedChoiceId: String!
 }
 type AnswerSheet {
-  id: String!
+  id: Int!
   testSheetUid: String
   userId: String
   jobId: Int
   workPlaceId: String
   done: Boolean
-  createdAt:Date
-  updatedAt:Date
+  createdAt: Date
+  updatedAt: Date
   answers: [Answer]
 }
-
 type Factor {
-  factor: String
+  name: String
   value: Float
+  question_counter: Int
 }
 type Result {
-  testSheetUid:String
-  factors:[Factor]
+  testSheetUid: String
+  factors: [Factor]
 }
-
 type Job {
   id: Int
   name: String
-  results:[Result] 
-  answers:[Answer]
-  createdAt:Date
-  updatedAt:Date
+  results: [Result] 
+  answers: [Int]
+  createdAt: Date
+  updatedAt: Date
 }
-
+type WorkPlace {
+  placeId: String
+  results: [Result] 
+  answers: [Int]
+}
 type Query {
   currentUser: User
   getTestSheet: [TestSheet]
@@ -78,10 +79,9 @@ type Query {
   getAnswerSheet: [AnswerSheet]
   getAnswerSheetByUid(testSheetUid:String): [AnswerSheet]
   getJobsChoice: [Job]
+  getJob(id:Int!): Job
+  getWorkPlace(placeId:String!): WorkPlace
 }
-
-
-
 `;
 
 module.exports = makeExecutableSchema({
