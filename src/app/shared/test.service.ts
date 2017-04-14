@@ -31,9 +31,11 @@ query getTestSheet{
   getTestSheet {
     title
     uid
+    picture
+    doneCounter
     questions {
       id
-      factor_name
+      factorName
       title
       choices {
         id
@@ -49,9 +51,11 @@ query getTestSheetByUid($uid: String!){
   getTestSheetByUid(uid:$uid) {
     title
     uid
+    picture
+    doneCounter
     questions {
       id
-      factor_name
+      factorName
       title
       choices {
         id
@@ -168,7 +172,6 @@ export class TestService {
       }) => data.getTestSheet);
       const testSheets = await query.toPromise();
       console.log('Test loaded!');
-
       return testSheets;
     } catch (e) {
       console.log(e);

@@ -11,20 +11,18 @@ const choiceSchema = new Schema({
 
 const questionSchema = new Schema({
   title: String,
-  factor_name: String,
+  factorName: String,
   choices: [choiceSchema]
 
 }, { timestamps: true });
 
 const testSheetSchema = new Schema({
-  id: {
-    type: Number,
-    unique: true
-  },
   uid: {
     type: String,
     unique: true
   },
+  doneCounter: 0,
+  picture: String,
   questions: [questionSchema],
   title: String
 }, { timestamps: true });
@@ -48,36 +46,29 @@ const answerSheetSchema = new Schema({
 
 }, { timestamps: true });
 
-testSheetSchema.pre('save', function (next) {
-  const doc = this;
-  counter.findByIdAndUpdate({ _id: 'testSheetId' }, { $inc: { seq: 1 } }, (error, counter) => {
-    if (error) { return next(error); }
-    console.log(counter.seq);
-    doc.id = counter.seq;
-    next();
-  });
-});
-// questionSchema.pre('save', function (next) {
+const TestSheet = mongoose.model('TestSheet', testSheetSchema);
+// testSheetSchema.pre('save', async (next) => {
 //   const doc = this;
-//   counter.findByIdAndUpdate({ _id: 'questionId' }, { $inc: { seq: 1 } }, (error, counter) => {
-//     if (error) { return next(error); }
-//     console.log(counter.seq);
-//     doc.id = counter.seq;
-//     next();
-//   });
+//   const found = await TestSheet.findOne({ uid: doc.uid });
+//   if (found) { throw new Error('duplicate uid'); }
+//   next();
 // });
+
+
 answerSheetSchema.pre('save', function (next) {
   const doc = this;
-  counter.findByIdAndUpdate({ _id: 'answerSheetId' }, { $inc: { seq: 1 } }, (error, counter) => {
-    if (error) { return next(error); }
-    console.log(counter.seq);
-    doc.id = counter.seq;
+  if (!doc.id) {
+    counter.findByIdAndUpdate({ _id: 'answerSheetId' }, { $inc: { seq: 1 } }, (error, counter) => {
+      if (error) { return next(error); }
+      console.log('gen id to answersheet');
+      doc.id = counter.seq;
+      next();
+    });
+  } else {
     next();
-  });
+  }
 });
 
-
-const TestSheet = mongoose.model('TestSheet', testSheetSchema);
 const AnswerSheet = mongoose.model('AnswerSheet', answerSheetSchema);
 const Question = mongoose.model('Question', questionSchema);
 const Choice = mongoose.model('Choice', choiceSchema);

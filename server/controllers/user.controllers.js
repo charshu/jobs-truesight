@@ -38,10 +38,30 @@ module.exports = () => {
     }
   };
 
-  const info = async (req, res) => {
-    const console = req.context.Logger({ prefix: 'user/info controller' });
-    console.log('=== response info ===');
-    res.json(req.user);
+  const updateProfile = async (req, res) => {
+    const console = req.context.Logger({ prefix: 'user/updateProfile controller' });
+    try {
+      if (!req.user) {
+        throw new Error('You have no authorized');
+      }
+      const user = await req.context.User.findOne({ _id: req.user._id });
+      if (user) {
+        if (req.body.name)user.profile.name = req.body.name;
+        if (req.body.gender)user.profile.gender = req.body.gender;
+        if (req.body.age_range)user.profile.age_range = req.body.age_range;
+        if (req.body.location)user.profile.location = req.body.location;
+        if (req.body.jobId)user.profile.jobId = req.body.jobId;
+        if (req.body.workPlaceId)user.profile.workPlaceId = req.body.workPlaceId;
+
+        await user.save();
+        console.log('successfully update user');
+        res.status(200).send('Success')
+        .end();
+      }
+    } catch (e) {
+      console.log(e);
+      res.status(500).send(e.toString());
+    }
   };
 
   const remove = async (req, res) => {
@@ -68,7 +88,7 @@ module.exports = () => {
   return {
     login,
     register,
-    info,
+    updateProfile,
     remove,
     logout
   };

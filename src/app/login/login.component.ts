@@ -1,6 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-
+import { Component } from '@angular/core';
 import { UserService } from '../shared';
 
 @Component({
@@ -8,29 +6,24 @@ import { UserService } from '../shared';
     styleUrls: ['./login.component.scss']
 })
 
-export class LoginComponent implements OnInit {
-    model: any = {};
-    loading = false;
-    error = '';
+export class LoginComponent  {
+    private model: any = {};
+    private loading = false;
+    private error = '';
 
     constructor(
-        private router: Router,
         private userService: UserService) { }
-
-    ngOnInit() {
-        // TODO: reset login status
-
-    }
 
     public async login() {
         this.loading = true;
         try {
+            // tslint:disable-next-line:max-line-length
             const isLoginSuccess = await this.userService.login(this.model.email, this.model.password);
             if (!isLoginSuccess) {
                 this.error = 'Email or password is incorrect';
                 this.loading = false;
             }
-            this.router.navigate(['/']);
+
         }catch (e) {
             console.log(e);
         }

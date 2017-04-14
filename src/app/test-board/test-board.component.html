@@ -1,5 +1,58 @@
-<div *ngIf="loaded" id="test-section" class="container">
-    <table class="table">
+<div *ngIf="loaded" id="testboard-section" class="container">
+
+    <masonry [options]="{ transitionDuration: '0.8s',gutter: 30 }" [useImagesLoaded]="true">
+        <masonry-brick class="testsheet-card" *ngFor="let testSheet of testSheets">
+            <div class="title">
+                {{testSheet.title}}
+            </div>
+            <div class="image-container" [ngStyle]="{'background-image': 'url('+testSheet.picture+')'}">
+                
+            </div>
+            <!--<img [src]="testSheet.picture" alt="">-->
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="number-box">
+                        <div class="number-label">
+                            Questions
+                        </div>
+                        <div class="number">
+                            {{testSheet.questions.length}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="number-box">
+                        <div class="number-label">
+                            Factor
+                        </div>
+                        <div class="number">
+                            {{getFactorNumber(testSheet.questions)}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="number-box">
+                        <div class="number-label">
+                            Done
+                        </div>
+                        <div class="number">
+                            {{testSheet.doneCounter}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">    
+                    <button type="button" [routerLink]="[testSheet.uid]" class="btn btn-large btn-block btn-default">Start</button>
+                </div>
+                <div class="col-md-6">    
+                    <button type="button" [routerLink]="['/result',testSheet.uid]" class="btn btn-large btn-block btn-default">Past result</button>
+                </div>
+            </div>
+        </masonry-brick>
+    </masonry>
+
+    <!--<table class="table">
         <thead>
             <td>#</td>
             <td>ชื่อแบบทดสอบ</td>
@@ -10,8 +63,8 @@
             <td><a [routerLink]="[testSheet.uid]">{{testSheet.title}}</a></td>
             <td>{{getAnswerSize(testSheet.uid)+'/'+testSheet.questions.length}}</td>
             <td>
-            <button  type="button" class="btn btn-success" [routerLink]="[testSheet.uid]">เริ่มทดสอบ</button>
+            <button type="button" class="btn btn-success" [routerLink]="[testSheet.uid]">เริ่มทดสอบ</button>
             </td>
         </tr>
-    </table>
+    </table>-->
 </div>

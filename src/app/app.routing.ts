@@ -12,7 +12,7 @@ const routes: Routes = [
   { path: '', component: HomeComponent  },
   { path: 'test', component: TestBoardComponent  },
   { path: 'test/:uid', component: TestComponent, canActivate: [RouteGuard] },
-  { path: 'result/:uid', component: ResultComponent  },
+  { path: 'result/:uid', component: ResultComponent,  canActivate: [RouteGuard]  },
   { path: 'login', component: LoginComponent },
   { path: 'profile', component: ProfileComponent }
 

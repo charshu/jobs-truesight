@@ -1,110 +1,104 @@
-<div id="profile-section" *ngIf="loaded && user">
+<div id="profile-section">
 
     <div class="container">
-
+        <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+        <div *ngIf="success" class="alert alert-success">{{success}}</div>
         <div class="row justify-content-center">
-            <div class="col-md-8">
-                <h3>Profile Information</h3>
-                <form class="form-horizontal" (ngSubmit)="f.form.valid" #f="ngForm" novalidate>
-
-                    <div class="form-group">
-                        <label for="email" class="col-md-2 control-label">Email</label>
-                        <div class="col-md-7">
-                            <input type="email" name="email" id="email" class="form-control" 
-                            [(ngModel)]="user.email" title="">
-                        </div>
+            <div class="col-md-8" >
+                <h3>My account</h3>
+                <hr>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <form (ngSubmit)="f.form.valid && updateProfile()" #f="ngForm" novalidate>
+                    <div *ngIf="loaded && user" class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" name="name" id="name" class="form-control" [(ngModel)]="user.profile.name" title="">
+                        <div class="help-block">Your name won't be included in any tests</div>
                     </div>
-                    <div class="form-group">
-                        <label for="email" class="col-md-2 control-label">Name</label>
-                        <div class="col-md-7">
-                            <input type="email" name="email" id="email" class="form-control" 
-                            [(ngModel)]="user.profile.name" title="">
-                        </div>
+                    <div *ngIf="loaded && user" class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" id="email" class="form-control" [(ngModel)]="user.email" title="" [disabled]="true">
                     </div>
-                    <div class="form-group">
-                        <label for="gender" class="col-md-2 control-label">Gender</label>
-                        <div class="col-md-7">
-                            <label class="radio-inline">
+                    
+                    <h3>Public profile</h3>
+                    <div class="help-block">this information will be included in answers, <a href="#">privacy terms</a></div>
+                    <hr>
+                    <div *ngIf="loaded && user" class="form-group">
+                        <label for="gender" style="margin-right: 10px;">Gender</label>
+                        <label class="radio-inline">
                             <input type="radio" name="gender" 
                             (click)="user.profile.gender = 'male'"
                             [checked]="user.profile.gender==='male'" >
                             <span>Male</span>
                         </label>
-                            <label class="radio-inline">
+                        <label class="radio-inline">
                             <input type="radio" name="gender" 
                             (click)="user.profile.gender = 'female'"
                             [checked]="user.profile.gender==='female'" >
                             <span>Female</span>
                         </label>
-                            <!--<label class="radio-inline">
-                            <input type="radio" [checked]="user.profile.gender=='other'" name="gender" value="other" title="">
-                            <span>Other</span>
-                        </label>-->
-                        </div>
+
                     </div>
-                    <div class="form-group">
-                        <label for="age_range" class="col-md-2 control-label">Age range</label>
-                        <div class="col-md-7">
-                            <input type="text" name="age_range" class="form-control" 
-                            [(ngModel)]="user.profile.age_range" title="">
+                    <div *ngIf="loaded && user" class="form-group">
+                        <label for="age_range">Age</label>
+
+                        <input type="text" name="age_range" #age="ngModel" class="form-control" [(ngModel)]="user.profile.age_range" number>
+                        <div *ngIf="age.errors?.number" class="help-block">
+                            Age must be a number
                         </div>
+
                     </div>
-                    <div class="form-group">
-                        <label for="location" class="col-md-2 control-label">Location</label>
-                        <div class="col-md-7">
-                            <input type="text" name="location" class="form-control" 
-                            [(ngModel)]="user.profile.location" title="">
-                        </div>
+                    <div *ngIf="loaded && user" class="form-group">
+                        <label for="location">Location</label>
+
+                        <input type="text" name="location" class="form-control" [(ngModel)]="user.profile.location">
+
                     </div>
-                    <div class="form-group">
-                        <label for="job" class="col-md-2 control-label">Job</label>
-                        <div class="col-md-7">
-                            <div class="input-group">
-                                <select [(ngModel)]="user.profile.jobId" class="form-control" name="job" #job="ngModel" [ngClass]="{'black':user.profile.jobId >= 0}" required>
+                    <div *ngIf="loaded && user" class="form-group">
+                        <label for="job">Job</label>
+
+                        <div class="input-group">
+                            <select [(ngModel)]="user.profile.jobId" class="form-control" name="job" #job="ngModel" [ngClass]="{'black':user.profile.jobId >= 0}"
+                                required>
                                 <option [disabled]="true" [value]="-1">เลือกอาชีพของคุณ</option>
                                     
                                     <option *ngFor="let job of jobs;let i = index" [value]="job.id">
                                         {{job.name}}
                                     </option>
                                 </select>
-                            </div>
-                            <div *ngIf="f.submitted && (!job.valid || (job.value === -1))" class="help-block">
-                                Job is required
-                            </div>
                         </div>
+                        <div *ngIf="f.submitted && (!job.valid || (job.value === -1))" class="help-block">
+                            Job is required
+                        </div>
+
                     </div>
 
                     <div class="form-group">
-                        <label for="place" class="col-md-2 control-label">Work place</label>
-                        <div class="col-md-7">
-                            <div class="input-group">
-                                <input id="search-box" [(ngModel)]="user.profile.workPlaceName" #place="ngModel" name="place" class="form-control" placeholder="คุณทำงานที่ไหน"
-                                    type="text" required/>
-                            </div>
-                            <div *ngIf="f.submitted && !place.valid" class="help-block">
-                                Work place is required
-                            </div>
+                        <label for="place">Work place</label>
+
+                        <div class="input-group">
+                            <input id="search-box" [(ngModel)]="user.profile.workPlaceName" #place="ngModel" name="place" class="form-control" placeholder="คุณทำงานที่ไหน"
+                                type="text" required/>
                         </div>
+                        <div *ngIf="f.submitted && !place.valid" class="help-block">
+                            Work place is required
+                        </div>
+
+
                     </div>
 
-                    <div class="form-group">
-                        <label for="picture" class="col-md-2 control-label">Picture</label>
-                        <div class="col-md-4">
-                            <img [src]="user.profile.picture" class="picture">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-10 col-sm-offset-2">
-                            <button type="submit" class="btn btn-primary">Update Profile</button>
-                        </div>
-                    </div>
-
+                    <button type="submit" class="btn btn-default">Update Profile</button>
                 </form>
             </div>
-
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="picture">Profile picture</label>
+                    <img [src]="user.profile.picture" name="picture" class="picture">
+                </div>
+            </div>
         </div>
     </div>
 
-
-    email : {{user.email | json}} profile : {{user.profile | json}}
 </div>

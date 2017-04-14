@@ -3,12 +3,10 @@ import {
   OnInit
 } from '@angular/core';
 import {
-  TestService,
-  UserService
+  TestService
 } from '../shared';
 import {
-  ActivatedRoute,
-  Router
+  ActivatedRoute
 } from '@angular/router';
 import {
   AnswerSheet,
@@ -30,16 +28,16 @@ declare var google: any;
 })
 export class ResultComponent implements OnInit {
 
-  error: String;
-  sub: any;
+  private error: String;
+  private workPlace: WorkPlace;
+  private job: Job;
   private testSheetUid: String;
   private answerSheets: AnswerSheet[] = [];
   private sortedData = [];
   private testSheet: TestSheet;
   private loaded: boolean = false;
   private googleLoaded: boolean = false;
-  workPlace: WorkPlace;
-  job: Job;
+
   // Radar
   private radarChartLabels: string[] = [];
 
@@ -60,8 +58,20 @@ export class ResultComponent implements OnInit {
     legend: {
       display: true,
       position: 'bottom'
-    }
+    },
+    responsive: true,
+    maintainAspectRatio: false
   };
+  constructor(
+      private route: ActivatedRoute,
+      private testService: TestService) {
+      this.route.params.subscribe((params) => {
+        // console.log(params['uid']);
+        this.testSheetUid = params['uid'];
+      });
+
+    }
+
   // events
   public chartClicked(e: any): void {
     console.log(e);
@@ -71,22 +81,6 @@ export class ResultComponent implements OnInit {
     console.log(e);
   }
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private testService: TestService,
-    private userService: UserService) {
-
-    this.route.params.subscribe((params) => {
-      // console.log(params['uid']);
-      this.testSheetUid = params['uid'];
-    });
-
-  }
-  //   @HostListener('window:scroll', [])
-  //   onWindowScroll() {
-  //       let scrollPos = this.document.body.scrollTop;
-  // }
   public pushData(result: Result, label: string) {
     // set initial factor label sequence
     if (!this.radarChartLabels) {
@@ -115,30 +109,27 @@ export class ResultComponent implements OnInit {
     try {
 
       this.testSheet = await this.testService.getTestSheetByUid(this.testSheetUid);
-      console.log(JSON.stringify(this.testSheet));
-      // this.userService.currentUser.subscribe((currentUser) => {
-      //     let result = find(currentUser.results, { testSheetUid : this.testSheetUid });
-      //     this.pushData(result, 'You');
-      // });
+      console.log(this.testSheet);
 
-      // load answer sheet by requested uid (recently submit by user)
+      /*
+        load lastest user answer sheet and calculate result
+      */
       let answerSheets = await this.testService.getAnswerSheetByUid(this.testSheetUid);
+      console.log(answerSheets);
       if (answerSheets && answerSheets.length > 0) {
         // sort by date
         answerSheets = answerSheets.sort((a, b) => {
           return (b.createdAt - a.createdAt);
         });
         this.answerSheets = answerSheets;
-        // console.log(`answer sheet is : ${JSON.stringify(this.answerSheets)}`);
-
         let factorCount = [];
         for (let answer of this.answerSheets[0].answers) {
           let question = find(this.testSheet.questions, {
             id: answer.questionId
           });
-          let index = this.radarChartLabels.indexOf(question.factor_name);
+          let index = this.radarChartLabels.indexOf(question.factorName);
           if (index < 0) {
-            this.radarChartLabels.push(question.factor_name);
+            this.radarChartLabels.push(question.factorName);
             this.radarChartData[0].data.push(0);
             factorCount.push(0);
             index = this.radarChartLabels.length - 1;
@@ -147,6 +138,9 @@ export class ResultComponent implements OnInit {
           let chosenChoice = find(question.choices, {
             id: answer.selectedChoiceId
           });
+          if (!chosenChoice) {
+            throw new Error(`chosen choice id: ${answer.selectedChoiceId} not found`);
+          }
           this.radarChartData[0].data[index] += chosenChoice.value;
 
         }
@@ -164,14 +158,18 @@ export class ResultComponent implements OnInit {
         temp = orderBy(temp, 'value', 'desc');
         this.sortedData = temp;
 
-        // load job and job's result
+        /*
+            load work place and work place's result
+         */
         this.workPlace = await this.testService.getWorkPlace(this.answerSheets[0].workPlaceId);
         let result = find(this.workPlace.results, {
           testSheetUid: this.testSheetUid
         });
         this.pushData(result, 'same job and work place');
 
-        // load job and job's result
+        /*
+            load job and job's result
+         */
         this.job = await this.testService.getJob(this.answerSheets[0].jobId);
         result = find(this.job.results, {
           testSheetUid: this.testSheetUid
@@ -180,7 +178,9 @@ export class ResultComponent implements OnInit {
 
         this.loaded = true;
 
-        // load work place details
+        /*
+           load work place details
+        */
         let map = new google.maps.Map(document.getElementById('map'), {
           center: {
             lat: 13.737889,
@@ -225,7 +225,6 @@ export class ResultComponent implements OnInit {
 
     } catch (err) {
       console.log(err);
-
     }
   }
 }

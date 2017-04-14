@@ -1,5 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { UserService } from '../shared';
+import {
+  Component,
+  OnInit
+} from '@angular/core';
+import {
+  UserService
+} from '../shared';
 
 
 declare var google: any;
@@ -9,12 +14,13 @@ declare var google: any;
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  jobs: String[];
+  private loaded: boolean;
 
   constructor(
     private userService: UserService) {}
 
-  ngOnInit() {
+  public async ngOnInit() {
+
     // Initialize the search box and autocomplete
     let searchBox: any = document.getElementById('search-box');
     let options = {
@@ -22,7 +28,9 @@ export class HomeComponent implements OnInit {
         // return only geocoding results, rather than business results.
         'establishment'
       ],
-      componentRestrictions: { country: 'th' }
+      componentRestrictions: {
+        country: 'th'
+      }
     };
     let autocomplete = new google.maps.places.Autocomplete(searchBox, options);
 
@@ -38,7 +46,8 @@ export class HomeComponent implements OnInit {
       searchBox.value = place.name;
     });
 
-
+    this.loaded = true;
   }
+
 
 }

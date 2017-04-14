@@ -1,6 +1,5 @@
-import { Component, OnInit, HostListener, Inject } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { TestService, UserService } from '../shared';
-import { Observable } from 'rxjs/Observable';
 import { DOCUMENT } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AnswerSheet, TestSheet, Answer } from './../../type.d';
@@ -14,15 +13,13 @@ import { find } from 'lodash';
   styleUrls: ['./test.component.scss']
 })
 export class TestComponent implements OnInit {
-
-  error: String;
-  sub: any;
   public testSheetUid: string;
   public answerSheet: AnswerSheet;
-  _answerSheet: Observable<AnswerSheet>;
-  testSheet: TestSheet;
-  start: boolean = false;
-  loaded: boolean = false;
+  private error: string;
+  private userId: string;
+
+  private testSheet: TestSheet;
+  private start: boolean = false;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -33,7 +30,6 @@ export class TestComponent implements OnInit {
     private userService: UserService) {
 
      this.route.params.subscribe((params) => {
-          // console.log(params['uid']);
           this.testSheetUid = params['uid'];
       });
      PageScrollConfig.defaultDuration = 500;
@@ -48,10 +44,6 @@ export class TestComponent implements OnInit {
             }
         };
     }
-  //   @HostListener('window:scroll', [])
-  //   onWindowScroll() {
-  //       let scrollPos = this.document.body.scrollTop;
-  // }
 
   public jump(index) {
     let pageScrollInstance: PageScrollInstance = PageScrollInstance.simpleInstance(this.document, '#q' + index);
@@ -74,14 +66,11 @@ export class TestComponent implements OnInit {
       const userId = await this.userService.getUserId();
       let answer = find(this.answerSheet.answers, { questionId: newAnswer.questionId} );
       if (!answer) {
-        // console.log('push answer : ', JSON.stringify(newAnswer));
         this.answerSheet.answers.push({
           questionId: newAnswer.questionId,
           selectedChoiceId: newAnswer.choiceId
         });
-
       } else {
-        // console.log('change choice : ', JSON.stringify(newAnswer));
         answer.selectedChoiceId = newAnswer.choiceId;
       }
       // save to cookie
@@ -91,7 +80,6 @@ export class TestComponent implements OnInit {
       if (this.testSheet.questions.length === this.answerSheet.answers.length) {
         this.answerSheet.done = true;
       }
-
   }
 
   public async submitAnswerSheet() {
@@ -101,7 +89,10 @@ export class TestComponent implements OnInit {
     // }
     let newAnswerSheet = await this.testService.submitAnswerSheet(this.answerSheet);
     if (newAnswerSheet) {
-      // this._cookieService.remove('answerSheet.' + this.testSheetUid);
+      const userId = await this.userService.getUserId();
+      for (let question of this.testSheet.questions) {
+        this._cookieService.remove(userId + '.' + question.id);
+      }
       this.router.navigate(['/result', this.testSheetUid]);
       return true;
     }
@@ -113,6 +104,7 @@ export class TestComponent implements OnInit {
     this.start = false;
     try {
       // load test sheet
+      this.userId = await this.userService.getUserId();
       this.testSheet = await this.testService.getTestSheetByUid(this.testSheetUid);
       if (!this.testSheet) {
         this.error = 'Test sheet not found';
@@ -133,6 +125,10 @@ export class TestComponent implements OnInit {
               questionId: question.id,
               selectedChoiceId: answer
             });
+          }
+          // done flag
+          if (this.testSheet.questions.length === this.answerSheet.answers.length) {
+            this.answerSheet.done = true;
           }
       }
       this.start = true;

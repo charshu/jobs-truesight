@@ -15,13 +15,15 @@ export type TestSheet = {
   id: number
   uid : string
   title: string
+  picture: string
+  doneCounter: number
   questions: Question[]
 }
 
 export type Question = {
   id: string
   title: string
-  factor_name: string
+  factorName: string
   choices: Choice[]
 }
 export type Choice = {

@@ -1,24 +1,18 @@
-<div class="cover-full">
-    <img id="cover-bg" src="/img/cover.jpg" alt="">
-    <div id="cover-content" class="container">
+<div *ngIf="!user && loaded" class="cover-full">
+    <img class="cover-bg" src="/img/cover.jpg" alt="">
+    <div class="container cover-content">
         <div class="row justify-content-center">
             <div class="col-xs-9 col-sm-9 col-md-10">
-                <h1>ค้นหางาน</h1>
+                <h1>รู้จักงานของคุณให้มากยิ่งขึ้น</h1>
             </div>
         </div>
         <div class="row justify-content-center">
-            <div class="col-xs-9 col-sm-9 col-md-7">
-                <form class="navbar-form" role="search">
-                    <div class="input-group input-group-lg add-on">
-                        <input id="search-box" class="form-control" placeholder="ค้นหาที่ทำงาน" type="text" />
-                        <div class="input-group-btn">
-                            <button class="btn btn-default" type="submit">ค้นหา</button>
-                        </div>
-                    </div>
-                </form>
+            <div class="col-md-2">
+                
+                <button type="button" class="btn btn-large btn-block btn-success">เข้าร่วมการสำรวจ</button>
+                
+                
             </div>
-
         </div>
-
     </div>
 </div>

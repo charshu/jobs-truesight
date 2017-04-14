@@ -53,15 +53,17 @@ const resolveFunctions = {
     }
   },
   // Mutation: {
-
+  //   updateProfile(_, { profile }, ct) {
+  //     console.log(profile);
+  //     if (!ct.user) {
+  //       throw new Error('You have no authorized');
+  //     }
+  //     return ct.User.findOne({ _id: ct.user.id });
+  //   }
   // },
   User: {
     id(user) {
       return user._id;
-    },
-    email(user) {
-      console.log(user.email);
-      return user.email;
     }
   },
   AnswerSheet: {
@@ -70,9 +72,6 @@ const resolveFunctions = {
     }
   },
   Question: {
-    choices(question) {
-      return question.choices;
-    },
     id(question) {
       return question._id;
     }
@@ -80,11 +79,6 @@ const resolveFunctions = {
   Choice: {
     id(choice) {
       return choice._id;
-    }
-  },
-  Result: {
-    testSheetUid(result) {
-      return result.testSheetUid;
     }
   },
   Date: {

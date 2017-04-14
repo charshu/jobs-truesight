@@ -5,7 +5,7 @@ const schema = `
 scalar Date
 type User {
   id: String
-  email: String!
+  email: String
   profile: Profile
   results:[Result] 
 }
@@ -22,12 +22,14 @@ type TestSheet {
   id: String!
   uid: String!
   title: String
+  picture: String
+  doneCounter: Int
   questions: [Question]
 }
 type Question {
   id: String!
   title: String!
-  factor_name: String
+  factorName: String
   choices: [Choice]
 }
 type Choice{
@@ -81,8 +83,24 @@ type Query {
   getJobsChoice: [Job]
   getJob(id:Int!): Job
   getWorkPlace(placeId:String!): WorkPlace
+  
 }
+
 `;
+
+// input Profile {
+//     userId: String
+//     name: String
+//     gender: String
+//     age_range: Int
+//     location: String
+//     picture: String
+//     jobId: Int
+//     workPlaceId: String
+// }
+// type Mutation {
+//   updateProfile(profile: Profile!): User
+// }
 
 module.exports = makeExecutableSchema({
   typeDefs: schema,

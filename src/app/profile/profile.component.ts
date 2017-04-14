@@ -1,22 +1,34 @@
-import { Component, OnInit } from '@angular/core';
-import { UserService, TestService } from '../shared';
-import { Job } from '../../type.d';
+import {
+    Component,
+    OnInit
+} from '@angular/core';
+import {
+    UserService,
+    TestService
+} from '../shared';
+import {
+    Job
+} from '../../type.d';
 declare var google: any;
-// We use the gql tag to parse our query string into a query document
+
 @Component({
     templateUrl: 'profile.component.html',
     styleUrls: ['./profile.component.scss']
 })
 
 export class ProfileComponent implements OnInit {
-    loaded: boolean;
-    user: any = {
+    private loaded: boolean;
+    private googleLoaded: boolean;
+    private user: any = {
         profile: {
             gender: 'male',
-            jobId : -1
+            jobId: -1,
+            workPlaceName: ''
         }
     };
-    jobs: Job[];
+    private jobs: Job[];
+    private error: string;
+    private success: string;
 
     constructor(
         private userService: UserService,
@@ -25,47 +37,51 @@ export class ProfileComponent implements OnInit {
 
     }
 
-    public selectJob( id ) {
+    public selectJob(id) {
         console.log(id);
         this.user.profile.jobId = id;
     }
-
+    public updateProfile() {
+        try {
+        
+            let isSuccess = this.userService.updateProfile(this.user.profile);
+            if (isSuccess) {
+                this.success = 'Profile is successfully saved.';
+            }
+        } catch (e) {
+            console.log(e);
+            this.error = e;
+        }
+    }
     public async ngOnInit() {
-                // Initialize the search box and autocomplete
-            let searchBox: any = document.getElementById('search-box');
-            let options = {
+        this.loaded = false;
+        // load jobs list
+        this.jobs = await this.testService.getJobsChoice();
+        // load user profile
+        this.user = this.userService.getCurrentUser();
+        this.user.profile.workPlaceName = await this.userService.getWorkPlaceName();
+        console.log(this.user.profile.workPlaceName);
+        this.loaded = true;
+        let searchBox: any = document.getElementById('search-box');
+        let options = {
             types: [
-                // return only geocoding results, rather than business results.
                 'establishment'
             ],
-            componentRestrictions: { country: 'th' }
-            };
-            let autocomplete = new google.maps.places.Autocomplete(searchBox, options);
+            componentRestrictions: {
+                country: 'th'
+            }
+        };
+        let autocomplete = new google.maps.places.Autocomplete(searchBox, options);
 
-            // Add listener to the place changed event
-            autocomplete.addListener('place_changed', () => {
-            let place = autocomplete.getPlace();
-            let lat = place.geometry.location.lat();
-            let lng = place.geometry.location.lng();
-            let address = place.formatted_address;
-
-            // this.placeChanged(lat, lng, address);
-            console.log(lat, lng, address, place);
+        autocomplete.addListener('place_changed', async () => {
+            const place = await autocomplete.getPlace();
+            console.log(place);
             searchBox.value = place.name;
+            this.user.profile.workPlaceName = place.name;
+            console.log('change work place name', this.user.profile.workPlaceName);
             this.user.profile.workPlaceId = place.place_id;
-            });
-            // load jobs list
-            this.jobs = await this.testService.getJobsChoice();
+            console.log('change work place id', this.user.profile.workPlaceId );
+        });
 
-            this.userService.currentUser.subscribe( (currentUser) => {
-                if (currentUser !== null) {
-                    if (!currentUser.profile.jobId) {
-                        this.userService.setJobId(-1);
-                    }
-                    this.user = currentUser;
-                }
-
-            });
-            this.loaded = true;
-        }
+    }
 }

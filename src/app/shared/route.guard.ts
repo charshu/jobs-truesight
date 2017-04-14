@@ -14,10 +14,10 @@ export class RouteGuard implements CanActivate {
   public async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     let url: string = state.url;
     if (await this.userService.isLoggedIn()) {
-      console.log('Check user login');
       return true;
     }
     this.userService.redirectUrl = url;
+    console.log(`set redirect url:${url}`);
     this.router.navigate(['/login']);
     return false;
 

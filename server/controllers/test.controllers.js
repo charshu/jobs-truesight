@@ -9,32 +9,18 @@ module.exports = () => {
     try {
       const newTestSheet = new req.context.TestSheet({
         uid: req.body.uid,
-        title: req.body.title,
+        title: req.body.title ? req.body.title : 'untitled',
+        picture: req.body.picture,
+        doneCounter: req.body.doneCounter ? req.body.doneCounter : 0,
         questions: req.body.questions
       });
       await newTestSheet.save();
 
-      // async.each(req.body.questions, (question, next) => {
-      //   const temp = new req.context.Question({
-      //     testId: newTestSheet.id,
-      //     title: question.title,
-      //     factor: question.factor,
-      //     choices: question.choices
-      //   });
-      //   temp.save((err, doc) => {
-      //     next();
-      //   });
-      // }, () => {
-      //   console.log('all questions are saved!');
-      // });
-
       console.log('=== successfully save new test===');
-      res.json({
-        id: newTestSheet.id
-      });
-    } catch (err) {
-      console.log(err);
-      res.status(500).end();
+      res.json(newTestSheet);
+    } catch (e) {
+      console.log(e);
+      res.status(500).send(e.toString());
     }
   };
   const processResult = (result, answerSheet, testSheet, req) => {
@@ -53,18 +39,18 @@ module.exports = () => {
         throw new Error(`choice id:"${answer.selectedChoiceId}" not found in question id:"${question.id}"`);
       }
       let factor = _.find(result.factors, {
-        name: question.factor_name
+        name: question.factorName
       });
       if (!factor) {
         factor = new req.context.Factor({
-          name: question.factor_name,
+          name: question.factorName,
           value: chosenChoice.value,
           question_counter: 1
         });
         console.log(`push factor to result.factors\n${factor}\n`);
         result.factors.push(factor);
       } else {
-        console.log(`factor_name:"${question.factor_name}" found`);
+        console.log(`factorName:"${question.factorName}" found`);
         factor.value += chosenChoice.value;
         factor.question_counter += 1;
       }
@@ -100,11 +86,16 @@ module.exports = () => {
         if (!testSheet) {
           throw new Error('Test sheet not found');
         }
-        console.log(`test sheet:"${testSheet.uid}"`);
+
+        console.log(`test sheet:"${testSheet.doneCounter}"`);
 
         await newAnswerSheet.save();
         console.log('answer sheet is successfully saved');
-
+        if (!testSheet.doneCounter) {
+          testSheet.doneCounter = 0;
+        }
+        testSheet.doneCounter += 1;
+        await testSheet.save();
         /*
           user handler
         */

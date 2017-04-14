@@ -21,6 +21,7 @@
                             <tr>
                                 <th></th>
                                 <th>ตัวแปร</th>
+                                <th>ความหมาย</th>
                                 <th>ระดับ</th>
                             </tr>
                         </thead>
@@ -28,14 +29,17 @@
                             <td>{{i+1}}</td>
                             <td>
                                 <div>
-                                    {{data.label}}
-                                </div>
-                                <div>
-                                    อธิบาย
+                                    {{data.label | capitalizeFirst}}
                                 </div>
                             </td>
                             <td>
-                                <div class="btn btn-xs btn-block btn-default">{{data.value > 4?'very high':data.value>3?'high':data.value>2?'medium':data.value>1?'low':'very
+                                <div>
+                                    Range of abilities needed to perform a specific job. Positions which require an individual to possess different skill sets in order to perform job duties are known to have a high skill variety.
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn btn-xs btn-block btn-default">
+                                    {{data.value > 4?'very high':data.value>3?'high':data.value>2?'medium':data.value>1?'low':'very
                                     low'}}
                                 </div>
                             </td>

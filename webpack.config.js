@@ -90,7 +90,7 @@ module.exports = (function makeWebpackConfig() {
       {
         test: /\.ts$/,
         loaders: [`awesome-typescript-loader?${atlOptions}`, 'angular2-template-loader', '@angularclass/hmr-loader'],
-        exclude: [isTest ? /\.(e2e)\.ts$/ : /\.(spec|e2e)\.ts$/, /node_modules\/(?!(ng2-.+))/]
+        exclude: [isTest ? /\.(e2e)\.ts$/ : /\.(spec|e2e)\.ts$/, /node_modules\/(?!(ng2-.+|angular2-masonry))/]
       },
 
       // copy those assets to output

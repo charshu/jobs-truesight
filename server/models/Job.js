@@ -42,9 +42,11 @@ jobSchema.pre('save', function (next) {
     counter.findByIdAndUpdate({ _id: 'jobId' }, { $inc: { seq: 1 } }, (error, counter) => {
       if (error) { return next(error); }
       doc.id = counter.seq;
+      next();
     });
+  } else {
+    next();
   }
-  next();
 });
 
 

@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { TestService } from '../shared';
 import { CookieService } from 'angular2-cookie/core';
-// import { Router, ActivatedRoute } from '@angular/router';
-import { TestSheet, AnswerSheet } from './../../type.d';
-import { find } from 'lodash';
+import { TestSheet } from './../../type.d';
+
 
 @Component({
   selector: 'test-sheet-board',
@@ -11,20 +10,23 @@ import { find } from 'lodash';
   styleUrls: ['./test-board.component.scss']
 })
 export class TestBoardComponent implements OnInit {
-  testSheets: TestSheet[];
-  loaded: boolean = false;
+  public flip: boolean;
+
+  private testSheets: TestSheet[];
+  private loaded: boolean = false;
 
   constructor(
     private testService: TestService,
     private _cookieService: CookieService ) {}
 
-
-  public getAnswerSize(testSheetUid) {
-    let answerSheet: AnswerSheet = this._cookieService.getObject('answerSheet.' + testSheetUid);
-    if (answerSheet) {
-      return answerSheet.answers.length;
+  public getFactorNumber(questions) {
+    let factors: string[] = [];
+    for ( let question of questions) {
+      if (factors.indexOf(question.factorName) === -1) {
+        factors.push(question.factorName);
+      }
     }
-    return 0;
+    return factors.length;
   }
 
   public async ngOnInit() {
