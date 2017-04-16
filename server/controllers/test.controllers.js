@@ -47,10 +47,10 @@ module.exports = () => {
           value: chosenChoice.value,
           question_counter: 1
         });
-        console.log(`push factor to result.factors\n${factor}\n`);
+        // console.log(`push factor to result.factors\n${factor}\n`);
         result.factors.push(factor);
       } else {
-        console.log(`factorName:"${question.factorName}" found`);
+        // console.log(`factorName:"${question.factorName}" found`);
         factor.value += chosenChoice.value;
         factor.question_counter += 1;
       }
@@ -62,15 +62,16 @@ module.exports = () => {
       prefix: 'answer/submit controller'
     });
     try {
-      console.log(`${req.user._id} ${req.body.userId}`);
-      if (!req.user._id.equals(req.body.userId)) {
+      if (!req.user) {
         res.status(401).end();
       } else {
         const newAnswerSheet = new req.context.AnswerSheet({
           testSheetUid: req.body.testSheetUid,
-          userId: req.body.userId,
+          gender: req.user.profile.gender,
+          age_range: req.user.profile.age_range,
           jobId: req.user.profile.jobId,
           workPlaceId: req.user.profile.workPlaceId,
+          salary: req.user.profile.salary,
           done: req.body.done,
           answers: req.body.answers
         });
@@ -96,31 +97,40 @@ module.exports = () => {
         }
         testSheet.doneCounter += 1;
         await testSheet.save();
+
         /*
           user handler
         */
         const user = await req.context.User.findOne({
-          _id: req.body.userId
+          _id: req.user._id
         });
+        if (!user) {
+          throw new Error('user not found');
+        }
 
+        /*
+          calculating result for same test sheet
+        */
         let result = _.find(user.results, {
-          testSheetUid: newAnswerSheet.testSheetUid
+          testSheetUid: newAnswerSheet.testSheetUid,
+          jobId: newAnswerSheet.jobId
         });
         if (!result) {
           result = new req.context.Result({
             testSheetUid: newAnswerSheet.testSheetUid,
+            jobId: newAnswerSheet.jobId,
             factors: []
           });
           result = processResult(result, newAnswerSheet, testSheet, req);
           user.results.push(result);
-          console.log(`push new result\n${result}\n`);
+          // console.log(`push new result\n${result}\n`);
         } else {
           result = processResult(result, newAnswerSheet, testSheet, req);
           await result.save();
-          console.log(`update result\n${result}\n`);
+          // console.log(`update result\n${result}\n`);
         }
-        user.answers.push(newAnswerSheet.id);
-        console.log(`push new answer sheet id:"${newAnswerSheet.id}" to "user.answers"`);
+        user.answerSheetsId.push(newAnswerSheet._id);
+        console.log(user);
         await user.save();
 
 
@@ -128,13 +138,15 @@ module.exports = () => {
           Job handler
         */
         const job = await req.context.Job.findOne({
-          id: newAnswerSheet.jobId
+          _id: newAnswerSheet.jobId
         });
         if (!job) {
-          throw new Error(`job id:${req.body.jobId} not found`);
+          throw new Error(`job id: ${req.body.jobId} not found`);
         }
-        console.log(`job found : ${job}`);
-        // update result summary
+
+        /*
+          calculating result for same test sheet and same job
+        */
         result = _.find(job.results, {
           testSheetUid: newAnswerSheet.testSheetUid
         });
@@ -145,14 +157,12 @@ module.exports = () => {
           });
           result = processResult(result, newAnswerSheet, testSheet, req);
           job.results.push(result);
-          console.log(`push new result\n${result}\n`);
         } else {
           result = processResult(result, newAnswerSheet, testSheet, req);
-          console.log(`update result\n${result}\n`);
           await result.save();
         }
-        job.answers.push(newAnswerSheet.id);
-        console.log(`push new answer sheet id ${newAnswerSheet.id} to job.answers`);
+        job.answerSheetsId.push(newAnswerSheet._id);
+        console.log(`push new answer sheet id ${newAnswerSheet._id} to job.answers`);
         await job.save();
 
 
@@ -160,30 +170,51 @@ module.exports = () => {
           Work place handler
         */
         let workPlace = await req.context.WorkPlace.findOne({
-          placeId: newAnswerSheet.workPlaceId
+          _id: newAnswerSheet.workPlaceId
         });
         if (!workPlace) {
           workPlace = new req.context.WorkPlace({
-            placeId: newAnswerSheet.workPlaceId
+            _id: newAnswerSheet.workPlaceId
           });
         }
-        result = _.find(workPlace.results, {
+        /*
+          calculating result for same test sheet and same work place
+        */
+        let resultOnlyWorkPlace = _.find(workPlace.results, {
           testSheetUid: newAnswerSheet.testSheetUid
         });
-        if (!result) {
-          result = new req.context.Result({
+        if (!resultOnlyWorkPlace) {
+          resultOnlyWorkPlace = new req.context.Result({
             testSheetUid: newAnswerSheet.testSheetUid,
             factors: []
           });
-          result = processResult(result, newAnswerSheet, testSheet, req);
-          workPlace.results.push(result);
-          console.log(`push new result\n${result}\n`);
+          resultOnlyWorkPlace = processResult(resultOnlyWorkPlace, newAnswerSheet, testSheet, req);
+          workPlace.results.push(resultOnlyWorkPlace);
         } else {
-          result = processResult(result, newAnswerSheet, testSheet, req);
-          await result.save();
-          console.log(`update result\n${result}\n`);
+          resultOnlyWorkPlace = processResult(resultOnlyWorkPlace, newAnswerSheet, testSheet, req);
+          await resultOnlyWorkPlace.save();
         }
-        workPlace.answers.push(newAnswerSheet.id);
+        /*
+          calculating result for same test sheet and same work place and same job
+        */
+        let resultWorkPlaceAndJob = _.find(workPlace.results, {
+          testSheetUid: newAnswerSheet.testSheetUid,
+          jobId: newAnswerSheet.jobId
+        });
+        if (!resultWorkPlaceAndJob) {
+          resultWorkPlaceAndJob = new req.context.Result({
+            testSheetUid: newAnswerSheet.testSheetUid,
+            jobId: newAnswerSheet.jobId,
+            factors: []
+          });
+          resultWorkPlaceAndJob = processResult(resultWorkPlaceAndJob, newAnswerSheet, testSheet, req);
+          workPlace.results.push(resultWorkPlaceAndJob);
+        } else {
+          resultWorkPlaceAndJob = processResult(resultWorkPlaceAndJob, newAnswerSheet, testSheet, req);
+          await resultWorkPlaceAndJob.save();
+        }
+
+        workPlace.answerSheetsId.push(newAnswerSheet._id);
         await workPlace.save();
 
         res.json(newAnswerSheet);

@@ -70,9 +70,11 @@ const getAnswerSheet = gql`
 query getAnswerSheet{
   getAnswerSheet {
   testSheetUid
-    userId
+    gender
+    age_range
     jobId
     workPlaceId
+    salary
     done
     answers {
       questionId
@@ -84,11 +86,12 @@ query getAnswerSheet{
 const getAnswerSheetByUid = gql`
 query getAnswerSheetByUid($testSheetUid: String!){
   getAnswerSheetByUid(testSheetUid:$testSheetUid) {
-    id
-  testSheetUid
-    userId
+    testSheetUid
+    gender
+    age_range
     jobId
     workPlaceId
+    salary
     createdAt
     updatedAt
     answers {
@@ -109,9 +112,32 @@ query getJobsChoice{
 const getJob = gql`
 query getJob($id:Int!){
   getJob(id:$id) {
-    id
     name
-		answers
+		answerSheets{
+      testSheetUid
+        job {
+        name
+        results {
+          testSheetUid
+          factors {
+            name
+            value
+            question_counter
+          }
+        }
+      }
+      workPlace {
+        id
+        results {
+          testSheetUid
+          factors {
+            name
+            value
+            question_counter
+          }
+        }
+      }
+    }
     results {
       testSheetUid
       factors {
@@ -123,23 +149,6 @@ query getJob($id:Int!){
   }
 }    
 `;
-const getWorkPlace = gql`
-query getWorkPlace($placeId:String!){
-  getWorkPlace(placeId:$placeId) {
-    placeId
-    answers
-    results {
-      testSheetUid
-      factors {
-        name
-        value
-        question_counter
-      }
-    }
-  }
-}   
-`;
-
 
 interface QueryResponse {
   getTestSheet: TestSheet[];
@@ -162,7 +171,6 @@ export class TestService {
   }
 
   public async getTestSheet(): Promise < TestSheet[] > {
-    console.log('Loading test');
     try {
       const query = this.apollo.query < QueryResponse > ({
         query: getTestSheet,
@@ -171,14 +179,13 @@ export class TestService {
         data
       }) => data.getTestSheet);
       const testSheets = await query.toPromise();
-      console.log('Test loaded!');
+      console.log('Get all TestSheet', testSheets);
       return testSheets;
     } catch (e) {
       console.log(e);
     }
   }
-  public async getTestSheetByUid(uid ? : String): Promise < TestSheet > {
-    console.log('Loading test');
+  public async getTestSheetByUid(uid ?: String): Promise < TestSheet > {
     try {
       const query = this.apollo.query < QueryResponse > ({
         query: getTestSheetByUid,
@@ -190,8 +197,7 @@ export class TestService {
         data
       }) => data.getTestSheetByUid);
       const testSheet = await query.toPromise();
-      console.log('Test loaded!');
-
+      console.log(`TestSheet uid: ${uid} \n`, testSheet);
       return testSheet;
     } catch (e) {
       console.log(e);
@@ -268,13 +274,13 @@ export class TestService {
       console.log(e);
     }
   }
-  public async getJob(jobId: number): Promise < Job > {
+  public async getJob(id: number): Promise < Job > {
     try {
       const query = this.apollo.query < QueryResponse > ({
         query: getJob,
         forceFetch: true,
         variables: {
-          id: jobId
+          id
         }
       }).map(({
         data
@@ -285,22 +291,5 @@ export class TestService {
       console.log(e);
     }
   }
-  public async getWorkPlace(placeId: string): Promise < WorkPlace > {
-    try {
-      const query = this.apollo.query < QueryResponse > ({
-        query: getWorkPlace,
-        forceFetch: true,
-        variables: {
-          placeId
-        }
-      }).map(({
-        data
-      }) => data.getWorkPlace);
-      const workPlace = await query.toPromise();
-      console.log(workPlace);
-      return workPlace;
-    } catch (e) {
-      console.log(e);
-    }
-  }
+
 }

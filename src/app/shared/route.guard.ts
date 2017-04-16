@@ -7,9 +7,7 @@ import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from
 export class RouteGuard implements CanActivate {
   constructor(
     private userService: UserService,
-    private router: Router) {
-    console.log("RouterGuard called");
-  }
+    private router: Router) { }
 
   public async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     let url: string = state.url;
@@ -22,4 +20,5 @@ export class RouteGuard implements CanActivate {
     return false;
 
   }
+
 }

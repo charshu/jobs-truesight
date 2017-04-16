@@ -7,7 +7,8 @@ type User {
   id: String
   email: String
   profile: Profile
-  results:[Result] 
+  results: [Result]
+  answerSheets: [AnswerSheet]
 }
 type Profile {
     name: String
@@ -17,6 +18,7 @@ type Profile {
     picture: String
     jobId: Int
     workPlaceId: String
+    salary: Int
 }
 type TestSheet { 
   id: String!
@@ -44,9 +46,11 @@ type Answer {
 type AnswerSheet {
   id: Int!
   testSheetUid: String
-  userId: String
-  jobId: Int
-  workPlaceId: String
+  gender: String
+  age_range: Int
+  job: Job
+  workPlace: WorkPlace
+  salary: Int
   done: Boolean
   createdAt: Date
   updatedAt: Date
@@ -64,30 +68,33 @@ type Result {
 type Job {
   id: Int
   name: String
-  results: [Result] 
-  answers: [Int]
   createdAt: Date
   updatedAt: Date
+  results: [Result] 
+  answerSheets: [AnswerSheet]
+  
 }
 type WorkPlace {
-  placeId: String
+  id: String
+  viewCount: Int
   results: [Result] 
-  answers: [Int]
+  answerSheets: [AnswerSheet]
 }
 type Query {
-  currentUser: User
+  getUser: User
   getTestSheet: [TestSheet]
   getTestSheetByUid(uid:String!): TestSheet
-  getAnswerSheet: [AnswerSheet]
-  getAnswerSheetByUid(testSheetUid:String): [AnswerSheet]
+
   getJobsChoice: [Job]
   getJob(id:Int!): Job
-  getWorkPlace(placeId:String!): WorkPlace
+  getWorkPlace(id:String!): WorkPlace
   
 }
 
 `;
 
+  // getAnswerSheet: [AnswerSheet]
+  // getAnswerSheetByUid(testSheetUid:String): [AnswerSheet]
 // input Profile {
 //     userId: String
 //     name: String

@@ -12,36 +12,38 @@ const factorSchema = new Schema({
 
 });
 const resultSchema = new Schema({
-  testSheetUid: String,
+  testSheetUid: { type: String, ref: 'TestSheet' },
+  jobId: { type: Number, ref: 'Job' },
   factors: [factorSchema]
 }, { timestamps: true });
 
 const jobSchema = new Schema({
-  id: {
+  _id: {
     type: Number,
     unique: true
   },
   name: String,
   results: [resultSchema],
-  answers: [{ type: Number, ref: 'Answer' }]
+  answerSheetsId: [{ type: Number, ref: 'AnswerSheet' }]
 }, { timestamps: true });
 
 const workPlaceSchema = new Schema({
-  placeId: {
+  _id: {
     type: String,
     unique: true
   },
+  viewCount: Number,
   results: [resultSchema],
-  answers: [{ type: Number, ref: 'Answer' }]
+  answerSheetsId: [{ type: Number, ref: 'AnswerSheet' }]
 }, { timestamps: true });
 
 
 jobSchema.pre('save', function (next) {
   const doc = this;
-  if (!doc.id) {
+  if (!doc._id) {
     counter.findByIdAndUpdate({ _id: 'jobId' }, { $inc: { seq: 1 } }, (error, counter) => {
       if (error) { return next(error); }
-      doc.id = counter.seq;
+      doc._id = counter.seq;
       next();
     });
   } else {

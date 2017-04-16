@@ -6,7 +6,8 @@ export type User = {
   id: string
   email: string
   profile: any
-  results:Result[]
+  results?: number[]
+  answerSheets?:AnswerSheet[]
 }
 
 // TODO: add and design more type
@@ -34,9 +35,8 @@ export type Choice = {
 export type AnswerSheet = {
   id?: number
   testSheetUid: string
-  userId?: string
-  jobId?: number
-  workPlaceId?: string
+  job?: Job
+  workPlace?: WorkPlace
   createdAt?:number
   updatedAt?:number
   done: boolean
@@ -62,11 +62,12 @@ export type Job = {
   createdAt?:Date
   updatedAt?:Date
   results?:Result[]
-  answers?:Answer[]
+  answerSheets?:AnswerSheet[]
 }
 
 export type WorkPlace = {
   id:string
+  viewCount:number
   results?:Result[]
-  answers?:Answer[]
+  answerSheets?:AnswerSheet[]
 }

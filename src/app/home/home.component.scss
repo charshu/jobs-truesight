@@ -1,26 +1,45 @@
 $coverHeight:500px;
-.cover-full {
+.mycover {
     position: relative;
-    width: 100%;
-}
-
-img.cover-bg {
-    position: absolute;
     height: $coverHeight;
     width: 100%;
-    object-fit: cover;
-    object-position: center;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    margin-bottom: 30px;
+    transition: all .3s ease-in-out;
+}
+.mycover.active {
+    height: 200px;
 }
 
-.cover-content {
+.mycover > .cover-content {
     padding-top: 150px;
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
     z-index: 10;
+    transition: all .3s ease-in-out;
+}
+.mycover.active > .cover-content{
+    padding-top: 10px;
 }
 
+.mycover > .cover-content h1 {
+    font-size: 50px;
+    font-weight: 700;
+    text-align: center;
+    color: white;
+    text-shadow: 1px 1px 2px black;
+    transition: all 1s ease-in-out;
+    opacity: 1;
+
+}
+.mycover.active > .cover-content h1 {
+    opacity: 0;
+
+}
 .cover-content .input-group {
     width: 100%;
 }
@@ -29,13 +48,6 @@ img.cover-bg {
     width: 50px;
 }
 
-.cover-content h1 {
-    font-size: 50px;
-    font-weight: 700;
-    text-align: center;
-    color: white;
-    text-shadow: 1px 1px 2px black;
-}
 
 .btn {
     box-shadow : inset 0 1px 0 rgba(255,255,255,0.2)!important;
@@ -50,3 +62,32 @@ img.cover-bg {
     background-color: #218263;
     
 }
+
+#diamond-icon {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+.result-block {
+    background-color: white;
+    border: 1px solid #CCC;
+    padding: 20px;
+    box-shadow: 1px 2px 1px rgba(0,0,0,0.1);
+    width: 100%;
+    margin-bottom: 20px;
+}
+.result-block .field-label {
+    display: block;
+    font-size: 0.8em;
+    color: #777;
+    &::after {
+       content: ':'; 
+    }
+}
+.result-block .title {
+    display: block;
+    font-size: 1.8em;
+    font-weight: 700;
+    
+}
+

@@ -1,18 +1,82 @@
-<div *ngIf="!user && loaded" class="cover-full">
-    <img class="cover-bg" src="/img/cover.jpg" alt="">
+<div class="mycover" [ngClass]="{'active':hasResult}" [ngStyle]="{'background-image':'url('+ coverUrl +')'}">
     <div class="container cover-content">
         <div class="row justify-content-center">
             <div class="col-xs-9 col-sm-9 col-md-10">
-                <h1>รู้จักงานของคุณให้มากยิ่งขึ้น</h1>
+                <h1>ค้นหางานด้วยข้อมูลเชิงลึก</h1>
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <form class="navbar-form" role="search">
+                            <div class="input-group input-group-lg add-on">
+                                <input id="search-box" class="form-control" placeholder="ชื่อสถานที่ทำงาน" type="text" />
+                                <div class="input-group-btn">
+                                    <button (click)="searchWorkPlace(placeId)" class="btn btn-default" type="submit">สำรวจที่นี่</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row justify-content-center">
+
+        <!--<div *ngIf="loaded && !user" class="row justify-content-center">
             <div class="col-md-2">
-                
                 <button type="button" class="btn btn-large btn-block btn-success">เข้าร่วมการสำรวจ</button>
-                
-                
             </div>
+        </div>-->
+    </div>
+
+</div>
+<div *ngIf="!searchLoaded" class="justify-content-center">
+    <div>
+        <img id="diamond-icon" src="/img/animat-diamond-color.gif">
+        <!--<i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>-->
+    </div>
+    <p class="sr-only">Loading...</p>
+</div>
+
+<div *ngIf="searchLoaded && hasResult" class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <masonry [options]="{ transitionDuration: '0.8s',gutter: 30 }" [useImagesLoaded]="true">
+                <masonry-brick *ngIf="place.name" class="result-block">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="field-label">
+                                work place
+                            </div>
+                            <div class="title">
+                                {{place.name}}
+                            </div>
+                            <small>{{place.formatted_address}}</small>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="field-label">
+                                views
+                            </div>
+                            <div class="title">
+                                {{workPlace.viewCount}} คน
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="field-label">
+                                participant
+                            </div>
+                            <div class="title">
+                                {{workPlace.answerSheets.length}} คน
+                            </div>
+                        </div>
+                    </div>
+
+                </masonry-brick>
+                <masonry-brick *ngIf="place.formatted_address" class="result-block">
+                    <div class="field-label">
+                        participant
+                    </div>
+                    <div class="title">
+                        {{workPlace.answerSheets.length}} คน
+                    </div>
+                </masonry-brick>
+            </masonry>
         </div>
     </div>
 </div>

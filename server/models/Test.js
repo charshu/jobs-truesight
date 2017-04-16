@@ -33,14 +33,16 @@ const answerSchema = new Schema({
 }, { timestamps: true });
 
 const answerSheetSchema = new Schema({
-  id: {
+  _id: {
     type: Number,
     unique: true
   },
-  testSheetUid: String,
-  userId: String,
-  jobId: Number,
-  workPlaceId: String,
+  testSheetUid: { type: String, ref: 'TestSheet' },
+  gender: String,
+  age_range: Number,
+  jobId: { type: Number, ref: 'Job' },
+  workPlaceId: { type: String, ref: 'WorkPlace' },
+  salary: Number,
   done: Boolean,
   answers: [answerSchema]
 
@@ -57,11 +59,11 @@ const TestSheet = mongoose.model('TestSheet', testSheetSchema);
 
 answerSheetSchema.pre('save', function (next) {
   const doc = this;
-  if (!doc.id) {
+  if (!doc._id) {
     counter.findByIdAndUpdate({ _id: 'answerSheetId' }, { $inc: { seq: 1 } }, (error, counter) => {
       if (error) { return next(error); }
       console.log('gen id to answersheet');
-      doc.id = counter.seq;
+      doc._id = counter.seq;
       next();
     });
   } else {

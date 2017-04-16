@@ -10,7 +10,7 @@ import { TestBoardComponent } from './test-board/test-board.component';
 import { QuestionComponent } from './question/question.component';
 
 import { routing } from './app.routing';
-import { TestService, UserService, RouteGuard, CapitalizeFirstPipe } from './shared';
+import { TestService, UserService, RouteGuard, CapitalizeFirstPipe, PlaceService } from './shared';
 
 import { ProfileComponent } from './profile/profile.component';
 import { LoginComponent } from './login/login.component';
@@ -25,7 +25,7 @@ import { CookieService } from 'angular2-cookie/core';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
 import { MomentModule } from 'angular2-moment';
 import { MasonryModule } from 'angular2-masonry';
-import { CustomFormsModule } from 'ng2-validation'
+import { CustomFormsModule } from 'ng2-validation';
 
 // by default, this client will send queries to `/graphql` (relative to the URL of your app)
 const client = new ApolloClient({
@@ -70,7 +70,8 @@ export function provideClient(): ApolloClient {
     UserService,
     TestService,
     RouteGuard,
-    CookieService
+    CookieService,
+    PlaceService
   ],
   bootstrap: [AppComponent]
 })

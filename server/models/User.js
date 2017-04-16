@@ -20,13 +20,14 @@ const userSchema = new Schema({
     gender: String,
     age_range: Number,
     location: String,
-    jobId: Number,
-    workPlaceId: String,
+    jobId: { type: Number, ref: 'Job' },
+    workPlaceId: { type: String, ref: 'WorkPlace' },
     website: String,
-    picture: String
+    picture: String,
+    salary: Number
   },
   results: [resultSchema],
-  answers: Array
+  answerSheetsId: [{ type: Number, ref: 'AnswerSheet' }]
 }, { timestamps: true });
 
 

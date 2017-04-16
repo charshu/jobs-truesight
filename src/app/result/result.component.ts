@@ -3,7 +3,9 @@ import {
   OnInit
 } from '@angular/core';
 import {
-  TestService
+  TestService,
+  PlaceService,
+  UserService
 } from '../shared';
 import {
   ActivatedRoute
@@ -28,10 +30,11 @@ declare var google: any;
 })
 export class ResultComponent implements OnInit {
 
-  private error: String;
+  private error: string;
   private workPlace: WorkPlace;
+  private place: any;
   private job: Job;
-  private testSheetUid: String;
+  private testSheetUid: string;
   private answerSheets: AnswerSheet[] = [];
   private sortedData = [];
   private testSheet: TestSheet;
@@ -64,7 +67,9 @@ export class ResultComponent implements OnInit {
   };
   constructor(
       private route: ActivatedRoute,
-      private testService: TestService) {
+      private userService: UserService,
+      private testService: TestService,
+      private placeService: PlaceService) {
       this.route.params.subscribe((params) => {
         // console.log(params['uid']);
         this.testSheetUid = params['uid'];
@@ -109,21 +114,20 @@ export class ResultComponent implements OnInit {
     try {
 
       this.testSheet = await this.testService.getTestSheetByUid(this.testSheetUid);
-      console.log(this.testSheet);
 
       /*
-        load lastest user answer sheet and calculate result
+        load lastest user answer sheet
       */
-      let answerSheets = await this.testService.getAnswerSheetByUid(this.testSheetUid);
-      console.log(answerSheets);
-      if (answerSheets && answerSheets.length > 0) {
-        // sort by date
-        answerSheets = answerSheets.sort((a, b) => {
-          return (b.createdAt - a.createdAt);
-        });
-        this.answerSheets = answerSheets;
+      let answerSheets = await this.userService.getAnswerSheetByUid(this.testSheetUid
+      , {forceFetch : true} );
+      this.answerSheets = answerSheets;
+      /*
+        calculating result offline for an user's answer sheet
+        (Because this answer sheet result don't have to save in database)
+      */
+      if (answerSheets) {
         let factorCount = [];
-        for (let answer of this.answerSheets[0].answers) {
+        for (let answer of answerSheets[0].answers) {
           let question = find(this.testSheet.questions, {
             id: answer.questionId
           });
@@ -145,7 +149,7 @@ export class ResultComponent implements OnInit {
 
         }
 
-        // find average and round
+        // Average value
         let temp = [];
         for (let i = 0; i < this.radarChartData[0].data.length; i++) {
           this.radarChartData[0].data[i] /= factorCount[i];
@@ -155,31 +159,37 @@ export class ResultComponent implements OnInit {
             value: this.radarChartData[0].data[i]
           });
         }
+        // Sorting
         temp = orderBy(temp, 'value', 'desc');
         this.sortedData = temp;
 
         /*
-            load work place and work place's result
-         */
-        this.workPlace = await this.testService.getWorkPlace(this.answerSheets[0].workPlaceId);
-        let result = find(this.workPlace.results, {
-          testSheetUid: this.testSheetUid
+            Loading results from the work place
+        */
+        this.workPlace = answerSheets[0].workPlace;
+        let workPlaceResult = find(this.workPlace.results, {
+          testSheetUid: this.testSheetUid,
+          jobId: answerSheets[0].job.id
         });
-        this.pushData(result, 'same job and work place');
+        if (workPlaceResult) {
+          this.pushData(workPlaceResult, 'Your Co-worker');
+        }
 
         /*
-            load job and job's result
-         */
-        this.job = await this.testService.getJob(this.answerSheets[0].jobId);
-        result = find(this.job.results, {
+            Loading results from job
+        */
+        this.job = answerSheets[0].job;
+        let jobResult = find(this.job.results, {
           testSheetUid: this.testSheetUid
         });
-        this.pushData(result, 'same job');
+        if (jobResult) {
+          this.pushData(jobResult, 'Same Job');
+        }
 
         this.loaded = true;
 
         /*
-           load work place details
+           Loading work place details
         */
         let map = new google.maps.Map(document.getElementById('map'), {
           center: {
@@ -189,36 +199,30 @@ export class ResultComponent implements OnInit {
           zoom: 10
         });
         let infowindow = new google.maps.InfoWindow();
-        let service = new google.maps.places.PlacesService(map);
-        console.log(`request place id : ${this.answerSheets[0].workPlaceId}`);
-        service.getDetails({
-          placeId: this.answerSheets[0].workPlaceId
-        }, (place, status) => {
-          console.log(`status: ${status}, place: `, place);
-          if (status === google.maps.places.PlacesServiceStatus.OK) {
-            this.workPlace = place;
-            let latitude = place.geometry.location.lat();
-            let longitude = place.geometry.location.lng();
-            map.setOptions({
-              center: {
-                lat: latitude,
-                lng: longitude
-              },
-              zoom: 15
-            });
-            let marker = new google.maps.Marker({
-              map,
-              position: place.geometry.location
-            });
-            google.maps.event.addListener(marker, 'click', function () {
-              infowindow.setContent('<div><strong>' + place.name + '</strong><br>' +
-                'Place ID: ' + place.place_id + '<br>' +
-                place.formatted_address + '</div>');
-              infowindow.open(map, this);
-            });
-          }
+        let place = await this.placeService.getPlace(answerSheets[0].workPlace.id);
+        if (place) {
+          let latitude = place.geometry.location.lat();
+          let longitude = place.geometry.location.lng();
+          map.setOptions({
+                center: {
+                  lat: latitude,
+                  lng: longitude
+                },
+                zoom: 15
+              });
+          let marker = new google.maps.Marker({
+                map,
+                position: place.geometry.location
+              });
+          this.place = place;
+          google.maps.event.addListener(marker, 'click', () => {
+                infowindow.setContent('<div><strong>' + place.name + '</strong><br>' +
+                  'Place ID: ' + place.place_id + '<br>' +
+                  place.formatted_address + '</div>');
+                infowindow.open(map, this);
+              });
           this.googleLoaded = true;
-        });
+        }
       } else {
         this.error = 'answer sheet not found';
       }

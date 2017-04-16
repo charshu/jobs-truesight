@@ -18,18 +18,21 @@ import {
 } from 'rxjs/BehaviorSubject';
 // import { AuthenticationService } from '../shared/authentication.service';
 import {
-    User
+    User,
+    AnswerSheet
 } from '../../type.d';
 import 'rxjs/add/operator/map';
 import {
     Apollo
 } from 'apollo-angular';
 import gql from 'graphql-tag';
-declare var google: any;
+import {
+    filter
+} from 'lodash';
 
-const CurrentUserProfile = gql `
+const getUser = gql `
 {
-    currentUser {
+    getUser {
         id
         email
         profile {
@@ -40,6 +43,7 @@ const CurrentUserProfile = gql `
             jobId
             workPlaceId
             picture
+            salary
         }
         results {
         testSheetUid
@@ -49,24 +53,52 @@ const CurrentUserProfile = gql `
                 question_counter
             }
         }
+            answerSheets {
+      testSheetUid
+      job {
+        id
+        name
+        results {
+          testSheetUid
+          factors {
+            name
+            value
+            question_counter
+          }
+        }
+      }
+      workPlace {
+        id
+        results {
+          testSheetUid
+          factors {
+            name
+            value
+            question_counter
+          }
+        }
+      }
+      createdAt
+      answers {
+        questionId
+        selectedChoiceId
+      }
     }
+  }
 }
     
 `;
 interface QueryResponse {
-    currentUser: User;
+    getUser: User;
 }
 
 @Injectable()
 export class UserService {
-    private _currentUser: BehaviorSubject < User > = new BehaviorSubject < User > (null);
-    public currentUser: Observable < User > = this._currentUser.asObservable();
-
     public redirectUrl: string;
-
-    constructor(private apollo: Apollo, private http: Http, private router: Router, ) {
-
-    }
+    private user: BehaviorSubject < User > = new BehaviorSubject < User > (null);
+    private observableUser: Observable < User > = this.user.asObservable();
+    private firstLoaded: boolean = false;
+    constructor(private apollo: Apollo, private http: Http, private router: Router, ) {}
 
     public async login(email: string, password: string): Promise < boolean > {
         let headers = new Headers({
@@ -84,8 +116,8 @@ export class UserService {
             const response = await this.http.post('http://localhost:3000/auth/login', body, options)
                 .toPromise();
             if (response.status === 200) {
-                const found = await this.loadCurrentUser();
-                if (found) {
+                const user = await this.getUser();
+                if (user) {
                     // redirect back where they came
                     if (!this.redirectUrl) {
                         this.redirectUrl = '/';
@@ -120,79 +152,74 @@ export class UserService {
         const response = await this.http.get('http://localhost:3000/auth/logout', options)
             .toPromise();
         if (response.status === 200) {
-            this._currentUser.next(null);
+            this.user.next(null);
             return true;
         }
         return false;
     }
 
-    public async loadCurrentUser(): Promise < boolean > {
+    public async getUser(): Promise < User > {
         try {
             const query = this.apollo.query < QueryResponse > ({
-                query: CurrentUserProfile,
+                query: getUser,
                 forceFetch: true
             }).map(({
                 data
-            }) => data.currentUser);
-            let currentUser: User = await query.toPromise();
-            let user = JSON.parse(JSON.stringify(currentUser));
+            }) => data.getUser);
+            let user: User = await query.toPromise();
             if (!user) {
                 console.log('user not found');
-                return false;
+                return null;
             }
-            this._currentUser.next(JSON.parse(JSON.stringify(user)));
-            return true;
+            user = JSON.parse(JSON.stringify(user));
+            this.user.next(user);
+            return user;
         } catch (err) {
             console.log(err);
-            return false;
+            return null;
         }
     }
-    public getWorkPlaceName(): Promise < string > {
-        let service = new google.maps.places.PlacesService(document.createElement('div'));
-        let place_id = this._currentUser.value.profile.workPlaceId;
+    public async isLoggedIn(): Promise<boolean> {
 
-        return new Promise((resolve, reject) => {
-            if (place_id) {
-                console.log(`request place id : ${place_id}`);
-                service.getDetails({
-                    placeId: place_id
-                }, (place, status) => {
-                    if (status === google.maps.places.PlacesServiceStatus.OK) {
-                        console.log('ok place:', place);
-                        resolve(place.name);
-                    }
-                });
-            } else {
-                reject(null);
-            }
-        });
-
-
-
+        if (!this.firstLoaded) {
+          this.firstLoaded = true;
+          // check if user still have session on server
+          const user = await this.getUser();
+          console.log(`User session ? ${user ? 'FOUND' : 'NOT FOUND'}`);
+        }
+        console.log(`LoggedIn ? ${this.user.value ? 'YES' : 'NO'} `);
+        return this.user.value ? true : false;
     }
     public getCurrentUser(): User {
-        return this.isLoggedIn ? this._currentUser.value : null;
+        return this.user.value;
     }
-    public isLoggedIn(): boolean {
-        console.log(`is user logged in ? ${this._currentUser.value ? 'yes' : 'no'} `);
-        return this._currentUser.value ? true : false;
+    public getObservableUser(): Observable < User > {
+        return this.observableUser;
     }
-
     public getUserId(): string {
-        return this.isLoggedIn ? this._currentUser.value.id : null;
+        return this.user.value ? this.user.value.id : null;
     }
     public getJobId(): number {
-        return this.isLoggedIn ? this._currentUser.value.profile.jobId : -1;
+        return this.user.value ? this.user.value.profile.jobId : -1;
     }
     public getWorkPlaceId(): string {
-        return this.isLoggedIn ? this._currentUser.value.profile.workPlaceId : null;
+        return this.user.value ? this.user.value.profile.workPlaceId : null;
     }
-    public setJobId(jobId): boolean {
-        if (this.isLoggedIn) {
-            this._currentUser.value.profile.jobId = jobId;
-            return true;
+    public setJobId(jobId): void {
+        if (this.user.value) {
+            this.user.value.profile.jobId = jobId;
         }
-        return false;
+    }
+    // tslint:disable-next-line:max-line-length
+    public async getAnswerSheetByUid(uid: string, option?: {forceFetch?: boolean}): Promise<AnswerSheet[]> {
+        if (option.forceFetch) {
+            await this.getUser();
+        }
+        let answerSheets: AnswerSheet[] = filter(this.user.value.answerSheets, {
+            testSheetUid: uid
+        });
+        console.log('get answer sheet by uid: ' + uid + '\n', answerSheets);
+        return answerSheets;
     }
     public async updateProfile(profile): Promise < boolean > {
         let headers = new Headers({
@@ -204,11 +231,16 @@ export class UserService {
         });
         try {
             const response = await this.http.post('http://localhost:3000/auth/profile',
-                JSON.stringify(profile), options).map((res) => res.json()).toPromise();
-            this.loadCurrentUser();
-            return response.status === 200;
+                JSON.stringify(profile), options).toPromise();
+            const user = await this.getUser();
+            if (user) {
+                return response.status === 200;
+            } else {
+                throw new Error('user is missing after update profile');
+            }
         } catch (err) {
             console.log(err);
+            return false;
         }
     }
 }

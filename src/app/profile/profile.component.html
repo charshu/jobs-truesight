@@ -88,6 +88,15 @@
 
 
                     </div>
+                     <div *ngIf="loaded && user" class="form-group">
+                        <label for="salary">Salary</label>
+
+                        <input type="text" name="salary" #salary="ngModel" class="form-control" [(ngModel)]="user.profile.salary" number>
+                        <div *ngIf="salary.errors?.number" class="help-block">
+                            Salary must be a number
+                        </div>
+
+                    </div>
 
                     <button type="submit" class="btn btn-default">Update Profile</button>
                 </form>

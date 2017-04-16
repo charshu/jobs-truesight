@@ -83,10 +83,10 @@ export class TestComponent implements OnInit {
   }
 
   public async submitAnswerSheet() {
-    // if (!this.answerSheet.done) {
-    //   this.error = 'Please answer every questions';
-    //   return false;
-    // }
+    if (!this.answerSheet.done) {
+      this.error = 'Please answer every questions';
+      return false;
+    }
     let newAnswerSheet = await this.testService.submitAnswerSheet(this.answerSheet);
     if (newAnswerSheet) {
       const userId = await this.userService.getUserId();
@@ -114,12 +114,11 @@ export class TestComponent implements OnInit {
       // reload unsubmited answer from cookie
       this.answerSheet = {
             testSheetUid: this.testSheetUid,
-            userId,
             done: false,
             answers: []
           };
       for (let question of this.testSheet.questions) {
-          let answer: string = this._cookieService.getObject( userId + '.' + question.id);
+          let answer: any = this._cookieService.getObject( userId + '.' + question.id);
           if (answer) {
             this.answerSheet.answers.push({
               questionId: question.id,

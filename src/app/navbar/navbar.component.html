@@ -19,16 +19,20 @@
       </ul>
 
       <ul class="nav navbar-nav navbar-right account-menu">
-        <li *ngIf="user">
-          <form class="navbar-form" role="search">
+        <li *ngIf="!user">
+        <button type="button" class="btn btn-success navbar-btn">เข้าร่วมการสำรวจ</button>
+                
+          
+          <!--<form class="navbar-form" role="search">
             <div class="input-group add-on">
               <input id="search-box" class="form-control" placeholder="ชื่อสถานที่ทำงาน" type="text" />
               <div class="input-group-btn">
                 <button class="btn btn-default" type="submit">ค้นหา</button>
               </div>
             </div>
-          </form>
+          </form>-->
         </li>
+        
         <li *ngIf="!user"><a [routerLink]="['login']">Login</a></li>
         <li *ngIf="user" class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><img class="picture" [src]="user.profile.picture"> {{user.email}} <span class="caret"></span></a>

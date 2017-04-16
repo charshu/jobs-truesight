@@ -52,7 +52,7 @@ module.exports = () => {
         if (req.body.location)user.profile.location = req.body.location;
         if (req.body.jobId)user.profile.jobId = req.body.jobId;
         if (req.body.workPlaceId)user.profile.workPlaceId = req.body.workPlaceId;
-
+        if (req.body.salary)user.profile.salary = req.body.salary;
         await user.save();
         console.log('successfully update user');
         res.status(200).send('Success')
