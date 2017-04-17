@@ -22,8 +22,6 @@ import {
   Apollo
 } from 'apollo-angular';
 import gql from 'graphql-tag';
-import { find } from 'lodash';
-
 // import { find } from 'lodash';
 
 const getTestSheet = gql`
@@ -33,6 +31,13 @@ query getTestSheet{
     uid
     picture
     doneCounter
+    criterias {
+      factorName
+      ranges {
+        min
+        result
+      }
+    }
     questions {
       id
       factorName
@@ -43,6 +48,14 @@ query getTestSheet{
         value
       }
     }
+  }
+}    
+`;
+const getTestSheetSmall = gql`
+query getTestSheet{
+  getTestSheet {
+    uid
+    title
   }
 }    
 `;
@@ -155,10 +168,8 @@ interface QueryResponse {
   getTestSheetByUid: TestSheet;
   getAnswerSheet: AnswerSheet[];
   getAnswerSheetByUid: AnswerSheet[];
-  saveAnswer: AnswerSheet;
   getJobsChoice: Job[];
   getJob: Job;
-  getWorkPlace: WorkPlace;
 }
 
 @Injectable()
@@ -170,21 +181,22 @@ export class TestService {
 
   }
 
-  public async getTestSheet(): Promise < TestSheet[] > {
+  public async getTestSheet(option?: { small: boolean}): Promise < TestSheet[] > {
     try {
       const query = this.apollo.query < QueryResponse > ({
-        query: getTestSheet,
+        query: option.small ? getTestSheetSmall : getTestSheet,
         forceFetch: true
       }).map(({
         data
       }) => data.getTestSheet);
       const testSheets = await query.toPromise();
-      console.log('Get all TestSheet', testSheets);
+      console.log('Get all TestSheet\n', testSheets);
       return testSheets;
     } catch (e) {
       console.log(e);
     }
   }
+
   public async getTestSheetByUid(uid ?: String): Promise < TestSheet > {
     try {
       const query = this.apollo.query < QueryResponse > ({

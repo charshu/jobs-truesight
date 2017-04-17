@@ -26,6 +26,7 @@ query getWorkPlace($id:String!){
     answerSheets{
       testSheetUid
         job {
+        id
         name
         results {
           testSheetUid
@@ -38,8 +39,14 @@ query getWorkPlace($id:String!){
       }
     }
     viewCount
+    participant
+    factorsAvailable
     results {
       testSheetUid
+      job{
+          id
+          name
+      }
       factors {
         name
         value
@@ -70,7 +77,7 @@ export class PlaceService {
                 data
             }) => data.getWorkPlace);
             const workPlace = await query.toPromise();
-            console.log(`Work place data: `, workPlace);
+            console.log(`Work place data \n`, workPlace);
             return workPlace;
         } catch (e) {
             console.log(e);

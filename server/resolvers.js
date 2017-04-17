@@ -77,6 +77,9 @@ const resolveFunctions = {
           path: 'workPlaceId',
           model: 'WorkPlace'
         }
+      })
+      .populate({
+        path: 'results.jobId'
       });
       return place;
     }
@@ -96,6 +99,19 @@ const resolveFunctions = {
     },
     answerSheets(user) {
       return sortBy(user.answerSheetsId, 'createdAt').reverse();
+    }
+  },
+  TestSheet: {
+    doneCounter(testSheet) {
+      if (!testSheet.doneCounter) {
+        return 0;
+      }
+      return testSheet.doneCounter;
+    }
+  },
+  Result: {
+    job(result) {
+      return result.jobId;
     }
   },
   Job: {

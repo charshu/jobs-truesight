@@ -49,7 +49,7 @@
                             </div>
                             <small>{{place.formatted_address}}</small>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <div class="field-label">
                                 views
                             </div>
@@ -57,24 +57,66 @@
                                 {{workPlace.viewCount}} คน
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <!--<div class="col-md-2">
                             <div class="field-label">
-                                participant
+                                Like
                             </div>
                             <div class="title">
-                                {{workPlace.answerSheets.length}} คน
+                                {{workPlace.participant}} คน
                             </div>
-                        </div>
+                        </div>-->
                     </div>
 
                 </masonry-brick>
                 <masonry-brick *ngIf="place.formatted_address" class="result-block">
-                    <div class="field-label">
-                        participant
+                    <div class="col-md-2">
+                        <div class="field-label">
+                            participant
+                        </div>
+                        <div class="title">
+                            {{workPlace.participant}} คน
+                        </div>
                     </div>
-                    <div class="title">
-                        {{workPlace.answerSheets.length}} คน
+                    <div class="col-md-2">
+                        <div class="field-label">
+                            available factor
+                        </div>
+                        <div class="title">
+                            {{workPlace.factorsAvailable.length}} ตัวแปร
+                        </div>
                     </div>
+                </masonry-brick>
+                <masonry-brick *ngIf="workPlace.results" class="result-block">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="testsheet">Test Sheet</label>
+
+                            <div class="input-group">
+                                <select (ngModelChange)="onChangeTestSheet($event)" [(ngModel)]="selectedTestSheet" class="form-control" name="testsheet" #testsheet="ngModel" required>
+                                    <template ngFor let-testSheet [ngForOf]="testSheetList" >
+                                    <option [value]="testSheet.uid">
+                                        {{testSheet.title}}
+                                    </option>
+                                    </template>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="job">Job</label>
+
+                            <div class="input-group">
+                                <select (ngModelChange)="onChangeJob($event)" [(ngModel)]="selectedJob" class="form-control" name="job" #job="ngModel" required>
+                                <option [value]="0">ทั้งหมด</option>
+                                    <template ngFor let-result [ngForOf]="workPlace.results" >
+                                    <option *ngIf="result.job" [value]="result.job.id">
+                                        {{result.job.name}}
+                                    </option>
+                                    </template>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                 </masonry-brick>
             </masonry>
         </div>

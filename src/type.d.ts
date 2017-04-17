@@ -3,9 +3,9 @@
 
 
 export type User = {
-  id: string
-  email: string
-  profile: any
+  id?: string
+  email?: string
+  profile?: any
   results?: number[]
   answerSheets?:AnswerSheet[]
 }
@@ -52,7 +52,7 @@ export type Factor = {
   question_counter:number
 }
 export type Result = {
-  testSheetUid:string
+  testSheetUid: string
   factors:Factor[]
   question_counter:number
 }
@@ -68,6 +68,8 @@ export type Job = {
 export type WorkPlace = {
   id:string
   viewCount:number
+  participant:number
+  factorsAvailable:string[]
   results?:Result[]
   answerSheets?:AnswerSheet[]
 }

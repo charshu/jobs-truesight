@@ -26,7 +26,16 @@ type TestSheet {
   title: String
   picture: String
   doneCounter: Int
+  criterias: [Criteria]
   questions: [Question]
+}
+type Criteria {
+  factorName: String!
+  ranges: [Range]!
+}
+type Range {
+  min: Float!
+  result: String!
 }
 type Question {
   id: String!
@@ -63,6 +72,7 @@ type Factor {
 }
 type Result {
   testSheetUid: String
+  job: Job
   factors: [Factor]
 }
 type Job {
@@ -77,6 +87,8 @@ type Job {
 type WorkPlace {
   id: String
   viewCount: Int
+  participant: Int
+  factorsAvailable: [String]
   results: [Result] 
   answerSheets: [AnswerSheet]
 }

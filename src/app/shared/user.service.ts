@@ -47,13 +47,16 @@ const getUser = gql `
         }
         results {
         testSheetUid
+        job{
+            name
+        }
             factors {
                 name
                 value
                 question_counter
             }
         }
-            answerSheets {
+answerSheets {
       testSheetUid
       job {
         id
@@ -71,6 +74,9 @@ const getUser = gql `
         id
         results {
           testSheetUid
+          job{
+              name
+          }
           factors {
             name
             value
@@ -98,7 +104,10 @@ export class UserService {
     private user: BehaviorSubject < User > = new BehaviorSubject < User > (null);
     private observableUser: Observable < User > = this.user.asObservable();
     private firstLoaded: boolean = false;
-    constructor(private apollo: Apollo, private http: Http, private router: Router, ) {}
+    constructor(private apollo: Apollo, private http: Http, private router: Router, ) {
+        console.log('User services init');
+        this.isLoggedIn();
+    }
 
     public async login(email: string, password: string): Promise < boolean > {
         let headers = new Headers({
@@ -150,7 +159,7 @@ export class UserService {
             withCredentials: true
         });
         const response = await this.http.get('http://localhost:3000/auth/logout', options)
-            .toPromise();
+        .toPromise();
         if (response.status === 200) {
             this.user.next(null);
             return true;

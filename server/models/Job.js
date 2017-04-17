@@ -33,6 +33,8 @@ const workPlaceSchema = new Schema({
     unique: true
   },
   viewCount: Number,
+  participant: Number,
+  factorsAvailable: [String],
   results: [resultSchema],
   answerSheetsId: [{ type: Number, ref: 'AnswerSheet' }]
 }, { timestamps: true });

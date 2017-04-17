@@ -16,6 +16,15 @@ const questionSchema = new Schema({
 
 }, { timestamps: true });
 
+const rangeSchema = new Schema({
+  min: Number,
+  result: String
+});
+const criteriaSchema = new Schema({
+  factorName: String,
+  ranges: [rangeSchema]
+});
+
 const testSheetSchema = new Schema({
   uid: {
     type: String,
@@ -23,6 +32,7 @@ const testSheetSchema = new Schema({
   },
   doneCounter: 0,
   picture: String,
+  criterias: [criteriaSchema],
   questions: [questionSchema],
   title: String
 }, { timestamps: true });

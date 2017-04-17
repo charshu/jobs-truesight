@@ -1,6 +1,11 @@
 const async = require('async');
 const _ = require('lodash');
 
+const JobEnum = {
+  NO_JOB: -1,
+  ALL_JOB: 0
+};
+
 module.exports = () => {
   const createTestSheet = async (req, res) => {
     const console = req.context.Logger({
@@ -12,6 +17,7 @@ module.exports = () => {
         title: req.body.title ? req.body.title : 'untitled',
         picture: req.body.picture,
         doneCounter: req.body.doneCounter ? req.body.doneCounter : 0,
+        criterias: req.body.criterias ? req.body.criterias : null,
         questions: req.body.questions
       });
       await newTestSheet.save();
@@ -57,6 +63,7 @@ module.exports = () => {
     }
     return result;
   };
+
   const submitAnswerSheet = async (req, res) => {
     const console = req.context.Logger({
       prefix: 'answer/submit controller'
@@ -181,11 +188,13 @@ module.exports = () => {
           calculating result for same test sheet and same work place
         */
         let resultOnlyWorkPlace = _.find(workPlace.results, {
-          testSheetUid: newAnswerSheet.testSheetUid
+          testSheetUid: newAnswerSheet.testSheetUid,
+          jobId: JobEnum.ALL_JOBS
         });
         if (!resultOnlyWorkPlace) {
           resultOnlyWorkPlace = new req.context.Result({
             testSheetUid: newAnswerSheet.testSheetUid,
+            jobId: JobEnum.ALL_JOBS,
             factors: []
           });
           resultOnlyWorkPlace = processResult(resultOnlyWorkPlace, newAnswerSheet, testSheet, req);
@@ -212,6 +221,33 @@ module.exports = () => {
         } else {
           resultWorkPlaceAndJob = processResult(resultWorkPlaceAndJob, newAnswerSheet, testSheet, req);
           await resultWorkPlaceAndJob.save();
+        }
+
+        /*
+          incrementing factorCount
+        */
+        _.forEach(testSheet.questions, (value) => {
+          console.log(value);
+          if (_.indexOf(workPlace.factorsAvailable, value.factorName) === -1) {
+            workPlace.factorsAvailable.push(value.factorName);
+          }
+        });
+
+        /*
+          incrementing unique paticipant
+        */
+        if (!workPlace.participant) {
+          workPlace.participant = 0;
+        }
+        for (let i = 0; i < workPlace.answerSheetsId.length; i += 1) {
+          const index = _.indexOf(workPlace.answerSheetsId, user.answerSheetsId[i]);
+          if (index >= 0) {
+            console.log('participant not unique');
+            break;
+          }
+          if (i === workPlace.answerSheetsId.length - 1) {
+            workPlace.participant += 1;
+          }
         }
 
         workPlace.answerSheetsId.push(newAnswerSheet._id);

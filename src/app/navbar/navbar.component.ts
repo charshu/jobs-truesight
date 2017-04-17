@@ -41,9 +41,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     public async logout() {
         try {
             const isLogout = await this.userService.logout();
-            // console.log(isLogout);
             if (isLogout) {
-                this.user = undefined;
                 this.router.navigate(['/']);
             }
         } catch (e) {
@@ -56,9 +54,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
             window.location.hash = '';
         }
         this.sub = this.userService.getObservableUser().subscribe((user) => {
-            if (user !== null) {
                 this.user = user;
-            }
         });
 
         if (this.user) {

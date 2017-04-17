@@ -1,0 +1,175 @@
+{
+		"uid": "work-engagement",
+		"title":"ความทุ่มเทในการทำงาน",
+        "criterias":[{
+            "factorName": "vigor",
+            "ranges":[
+                {
+                    "min": "5.496",
+                    "result": "high"
+                },
+                {
+                    "min": "4.323",
+                    "result": "medium"
+                },
+                {
+                    "min": "3.150",
+                    "result": "low"
+                },
+                {
+                    "min": "0",
+                    "result": "very low"
+                }
+            ]
+        },{
+            "factorName": "dedication",
+            "ranges":[
+                {
+                    "min": "5.669",
+                    "result": "high"
+                },
+                {
+                    "min": "4.556",
+                    "result": "medium"
+                },
+                {
+                    "min": "3.443",
+                    "result": "low"
+                },
+                {
+                    "min": "0",
+                    "result": "very low"
+                }
+            ]
+        },{
+            "factorName": "absorption",
+            "ranges":[
+                {
+                    "min": "5.656",
+                    "result": "high"
+                },
+                {
+                    "min": "4.516",
+                    "result": "medium"
+                },
+                {
+                    "min": "3.376",
+                    "result": "low"
+                },
+                {
+                    "min": "0",
+                    "result": "very low"
+                }
+            ]
+        },]
+		"questions":[
+   {
+      "title": "ฉันทำงานด้วยพลังที่เต็มเปี่ยม",
+      "factorName": "vigor",
+      "choices": [
+      { "title": "ไม่เคยเลย", "value": 0 },
+      { "title": "แทบจะไม่เคย", "value": 1 },
+      { "title": "น้อยครั้ง", "value": 2 },
+      { "title": "บางครั้ง", "value": 3 },
+      { "title": "บ่อยครั้ง", "value": 4 },
+      { "title": "บ่อยครั้งมาก", "value": 5 },
+      { "title": "เป็นประจำ", "value": 6 }]
+   },
+   {
+      "title": "ฉันรู้สึกกระฉับกระเฉงเวลาทำงาน",
+      "factorName": "vigor",
+      "choices": [
+      { "title": "ไม่เคยเลย", "value": 0 },
+      { "title": "แทบจะไม่เคย", "value": 1 },
+      { "title": "น้อยครั้ง", "value": 2 },
+      { "title": "บางครั้ง", "value": 3 },
+      { "title": "บ่อยครั้ง", "value": 4 },
+      { "title": "บ่อยครั้งมาก", "value": 5 },
+      { "title": "เป็นประจำ", "value": 6 }]
+   },
+   {
+      "title": "ฉันรู้สึกกระตือรือร้นที่จะทำงาน",
+      "factorName": "dedication",
+      "choices": [
+      { "title": "ไม่เคยเลย", "value": 0 },
+      { "title": "แทบจะไม่เคย", "value": 1 },
+      { "title": "น้อยครั้ง", "value": 2 },
+      { "title": "บางครั้ง", "value": 3 },
+      { "title": "บ่อยครั้ง", "value": 4 },
+      { "title": "บ่อยครั้งมาก", "value": 5 },
+      { "title": "เป็นประจำ", "value": 6 }]
+   },
+   {
+      "title": "งานที่ฉันทำสร้างแรงบันดาลใจให้กับฉัน",
+      "factorName": "dedication",
+      "choices": [
+      { "title": "ไม่เคยเลย", "value": 0 },
+      { "title": "แทบจะไม่เคย", "value": 1 },
+      { "title": "น้อยครั้ง", "value": 2 },
+      { "title": "บางครั้ง", "value": 3 },
+      { "title": "บ่อยครั้ง", "value": 4 },
+      { "title": "บ่อยครั้งมาก", "value": 5 },
+      { "title": "เป็นประจำ", "value": 6 }]
+   },
+   {
+      "title": "ฉันตื่นขึ้นมาในตอนเช้าพร้อมกับความรู้สึกอยากไปทำงาน",
+      "factorName": "vigor",
+      "choices": [
+      { "title": "ไม่เคยเลย", "value": 0 },
+      { "title": "แทบจะไม่เคย", "value": 1 },
+      { "title": "น้อยครั้ง", "value": 2 },
+      { "title": "บางครั้ง", "value": 3 },
+      { "title": "บ่อยครั้ง", "value": 4 },
+      { "title": "บ่อยครั้งมาก", "value": 5 },
+      { "title": "เป็นประจำ", "value": 6 }]
+   },
+   {
+      "title": "ฉันมีความสุขเวลาที่ฉันได้ทำงานอย่างเต็มที่",
+      "factorName": "absorption",
+      "choices": [
+      { "title": "ไม่เคยเลย", "value": 0 },
+      { "title": "แทบจะไม่เคย", "value": 1 },
+      { "title": "น้อยครั้ง", "value": 2 },
+      { "title": "บางครั้ง", "value": 3 },
+      { "title": "บ่อยครั้ง", "value": 4 },
+      { "title": "บ่อยครั้งมาก", "value": 5 },
+      { "title": "เป็นประจำ", "value": 6 }]
+   },
+   {
+      "title": "ฉันรู้สึกภูมิใจในงานที่ฉันทำ",
+      "factorName": "dedication",
+      "choices": [
+      { "title": "ไม่เคยเลย", "value": 0 },
+      { "title": "แทบจะไม่เคย", "value": 1 },
+      { "title": "น้อยครั้ง", "value": 2 },
+      { "title": "บางครั้ง", "value": 3 },
+      { "title": "บ่อยครั้ง", "value": 4 },
+      { "title": "บ่อยครั้งมาก", "value": 5 },
+      { "title": "เป็นประจำ", "value": 6 }]
+   },
+   {
+      "title": "เวลาทำงานฉันรู้สึก “อิน” กับสิ่งที่ฉันทำ คือมีสมาธิจดจ่ออยู่กับสิ่งนั้นอย่างเต็มที่",
+      "factorName": "absorption",
+      "choices": [
+      { "title": "ไม่เคยเลย", "value": 0 },
+      { "title": "แทบจะไม่เคย", "value": 1 },
+      { "title": "น้อยครั้ง", "value": 2 },
+      { "title": "บางครั้ง", "value": 3 },
+      { "title": "บ่อยครั้ง", "value": 4 },
+      { "title": "บ่อยครั้งมาก", "value": 5 },
+      { "title": "เป็นประจำ", "value": 6 }]
+   },
+   {
+      "title": "เวลาทำงานฉันรู้สึกสนุกและเพลิดเพลินไปกับสิ่งที่ฉันทำ",
+      "factorName": "absorption",
+      "choices": [
+      { "title": "ไม่เคยเลย", "value": 0 },
+      { "title": "แทบจะไม่เคย", "value": 1 },
+      { "title": "น้อยครั้ง", "value": 2 },
+      { "title": "บางครั้ง", "value": 3 },
+      { "title": "บ่อยครั้ง", "value": 4 },
+      { "title": "บ่อยครั้งมาก", "value": 5 },
+      { "title": "เป็นประจำ", "value": 6 }]
+   }
+]
+}
