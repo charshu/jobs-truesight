@@ -8,7 +8,9 @@ const Schema = mongoose.Schema;
 const factorSchema = new Schema({
   name: String,
   value: Number,
-  question_counter: Number
+  question_counter: Number,
+  max: Number,
+  min: Number
 
 });
 const resultSchema = new Schema({
@@ -33,7 +35,11 @@ const workPlaceSchema = new Schema({
     unique: true
   },
   viewCount: Number,
-  participant: Number,
+  participant: {
+    male: Number,
+    female: Number,
+    ages: [String]
+  },
   factorsAvailable: [String],
   results: [resultSchema],
   answerSheetsId: [{ type: Number, ref: 'AnswerSheet' }]

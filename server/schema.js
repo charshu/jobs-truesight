@@ -69,6 +69,8 @@ type Factor {
   name: String
   value: Float
   question_counter: Int
+  min: Float
+  max: Float
 }
 type Result {
   testSheetUid: String
@@ -87,10 +89,15 @@ type Job {
 type WorkPlace {
   id: String
   viewCount: Int
-  participant: Int
+  participant: Participant
   factorsAvailable: [String]
   results: [Result] 
   answerSheets: [AnswerSheet]
+}
+type Participant {
+  male: Int
+  female: Int
+  ages: [Int]
 }
 type Query {
   getUser: User

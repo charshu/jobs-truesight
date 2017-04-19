@@ -22,14 +22,15 @@
                                 <th></th>
                                 <th>ตัวแปร</th>
                                 <th>ความหมาย</th>
+                                <th>คะแนน</th>
                                 <th>ระดับ</th>
                             </tr>
                         </thead>
-                        <tr *ngFor="let data of sortedData;let i = index ">
+                        <tr *ngFor="let evaluation of evaluations;let i = index ">
                             <td>{{i+1}}</td>
                             <td>
                                 <div>
-                                    {{data.label | capitalizeFirst}}
+                                    {{evaluation.factorName | capitalizeFirst}}
                                 </div>
                             </td>
                             <td>
@@ -38,9 +39,13 @@
                                 </div>
                             </td>
                             <td>
+                                <div>
+                                    {{evaluation.value}}
+                                </div>
+                            </td>
+                            <td>
                                 <div class="btn btn-xs btn-block btn-default">
-                                    {{data.value > 4?'very high':data.value>3?'high':data.value>2?'medium':data.value>1?'low':'very
-                                    low'}}
+                                    {{evaluation.result}}
                                 </div>
                             </td>
                         </tr>

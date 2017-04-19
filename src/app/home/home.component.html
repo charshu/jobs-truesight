@@ -18,11 +18,11 @@
             </div>
         </div>
 
-        <!--<div *ngIf="loaded && !user" class="row justify-content-center">
+        <div *ngIf="loaded && !user && !hasResult" class="row justify-content-center">
             <div class="col-md-2">
-                <button type="button" class="btn btn-large btn-block btn-success">เข้าร่วมการสำรวจ</button>
+                <button type="button" class="btn btn-large btn-block btn-success">เข้าร่วมการทดสอบ</button>
             </div>
-        </div>-->
+        </div>
     </div>
 
 </div>
@@ -54,69 +54,113 @@
                                 views
                             </div>
                             <div class="title">
-                                {{workPlace.viewCount}} คน
+                                {{workPlace?workPlace.viewCount:'-'}} คน
                             </div>
                         </div>
-                        <!--<div class="col-md-2">
+                        <div class="col-md-2">
                             <div class="field-label">
-                                Like
+                                available factor
                             </div>
                             <div class="title">
-                                {{workPlace.participant}} คน
+                                {{workPlace?workPlace.factorsAvailable.length:'-'}} ตัวแปร
                             </div>
-                        </div>-->
+                        </div>
+
                     </div>
 
                 </masonry-brick>
-                <masonry-brick *ngIf="place.formatted_address" class="result-block">
-                    <div class="col-md-2">
-                        <div class="field-label">
-                            participant
+                <masonry-brick *ngIf="workPlace" class="result-block">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="field-label">
+                                overall
+                            </div>
+                            <div class="title">
+                                {{workPlace.participant.male + workPlace.participant.female}} คน
+                            </div>
                         </div>
-                        <div class="title">
-                            {{workPlace.participant}} คน
+                        <div class="col-md-2">
+                            <div class="field-label">
+                                <img class="icon" src="/img/fashion.svg"> male
+                            </div>
+                            <div class="title">
+                                {{workPlace.participant.male}} คน
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="field-label">
-                            available factor
+                        <div class="col-md-2">
+                            <div class="field-label">
+                                <img class="icon" src="/img/clothes.svg"> female
+                            </div>
+                            <div class="title">
+                                {{workPlace.participant.female}} คน
+                            </div>
                         </div>
-                        <div class="title">
-                            {{workPlace.factorsAvailable.length}} ตัวแปร
+                         <div class="col-md-2">
+                            <div class="field-label">
+                                <img class="icon" src="/img/clothes.svg"> Avg age
+                            </div>
+                            <div class="title">
+                                {{averageAge}} ปี
+                            </div>
                         </div>
                     </div>
                 </masonry-brick>
-                <masonry-brick *ngIf="workPlace.results" class="result-block">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="testsheet">Test Sheet</label>
+                <masonry-brick *ngIf="workPlace" class="result-block">
+                    <div *ngIf="workPlace.results" class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="testsheet">เลือกชุดทดสอบ</label>
 
-                            <div class="input-group">
-                                <select (ngModelChange)="onChangeTestSheet($event)" [(ngModel)]="selectedTestSheet" class="form-control" name="testsheet" #testsheet="ngModel" required>
+                                <div class="input-group">
+                                    <select (ngModelChange)="onChangeTestSheet($event)" [(ngModel)]="selectedTestSheet" class="form-control" name="testsheet"
+                                        #testsheet="ngModel" required>
+                                    <option [disabled]="true" [value]="undefined"></option>
                                     <template ngFor let-testSheet [ngForOf]="testSheetList" >
                                     <option [value]="testSheet.uid">
                                         {{testSheet.title}}
                                     </option>
                                     </template>
+                                    
                                 </select>
+                                
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="job">Job</label>
+                            <div class="form-group">
+                                <label for="job">ตัวกรองอาชีพ</label>
 
-                            <div class="input-group">
-                                <select (ngModelChange)="onChangeJob($event)" [(ngModel)]="selectedJob" class="form-control" name="job" #job="ngModel" required>
+                                <div class="input-group">
+                                    <select (ngModelChange)="onChangeJob($event)" [(ngModel)]="selectedJob" class="form-control" name="job" #job="ngModel" required>
                                 <option [value]="0">ทั้งหมด</option>
-                                    <template ngFor let-result [ngForOf]="workPlace.results" >
-                                    <option *ngIf="result.job" [value]="result.job.id">
-                                        {{result.job.name}}
+                                    <template ngFor let-job [ngForOf]="jobList" >
+                                    <option [value]="job.id">
+                                        {{job.name}}
                                     </option>
                                     </template>
                                 </select>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="col-md-9">
+                            <div *ngIf="chartLoaded" style="display: block">
+                                <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions" [legend]="barChartLegend"
+                                    [chartType]="barChartType" (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)"></canvas>
                             </div>
                         </div>
                     </div>
-
+                </masonry-brick>
+                <masonry-brick *ngIf="!workPlace" class="result-block">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p>ไม่นะ ! ยังไม่มีใครทำการทดสอบที่นี่มาก่อน</p>
+                            <div class="row justify-content-center">
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-large btn-block btn-success">ฉันเคยทำงานที่นี่ !</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </masonry-brick>
             </masonry>
         </div>

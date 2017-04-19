@@ -15,14 +15,15 @@ import {
   AnswerSheet,
   Job,
   Result,
-  WorkPlace
+  WorkPlace,
+  Criteria
 } from '../../type.d';
 import 'rxjs/add/operator/map';
 import {
   Apollo
 } from 'apollo-angular';
 import gql from 'graphql-tag';
-// import { find } from 'lodash';
+import * as _ from 'lodash';
 
 const getTestSheet = gql`
 query getTestSheet{
@@ -66,6 +67,13 @@ query getTestSheetByUid($uid: String!){
     uid
     picture
     doneCounter
+    criterias {
+      factorName
+      ranges {
+        min
+        result
+      }
+    }
     questions {
       id
       factorName
@@ -128,17 +136,6 @@ query getJob($id:Int!){
     name
 		answerSheets{
       testSheetUid
-        job {
-        name
-        results {
-          testSheetUid
-          factors {
-            name
-            value
-            question_counter
-          }
-        }
-      }
       workPlace {
         id
         results {
@@ -157,6 +154,8 @@ query getJob($id:Int!){
         name
         value
         question_counter
+        min
+        max
       }
     }
   }
@@ -182,6 +181,12 @@ export class TestService {
   }
 
   public async getTestSheet(option?: { small: boolean}): Promise < TestSheet[] > {
+
+    if (!option) {
+      option = {
+        small : false
+      };
+    }
     try {
       const query = this.apollo.query < QueryResponse > ({
         query: option.small ? getTestSheetSmall : getTestSheet,
@@ -302,6 +307,44 @@ export class TestService {
     } catch (e) {
       console.log(e);
     }
+  }
+  public evaluate(criteria: Criteria, value: number): string {
+    // sort desc
+    let _criteria = JSON.parse(JSON.stringify(criteria));
+    _criteria.ranges = _.sortBy(_criteria.ranges, 'min').reverse();
+    for (let range of criteria.ranges) {
+      if (value > range.min) {
+        return range.result;
+      }
+    }
+  }
+  public getChartData(result: Result,
+                      chartLabelsOrder: any[]|string[] = _.map(result.factors, 'name'),
+                      options: { method: string } = { method : 'average'}) {
+    // add dataset
+    let data = [];
+    for (let factorLabel of chartLabelsOrder) {
+      let factor = _.find(result.factors, {
+        name: factorLabel
+      });
+      if (factor) {
+        if (options.method === 'average') {
+          data.push(_.round(factor.value / factor.question_counter, 2));
+        } else if (options.method === 'percentage') {
+          data.push(_.round(factor.value / factor.max, 2));
+        }
+      }
+    }
+    return data;
+  }
+  public getMaxTick(result: Result) {
+    let highestValueFactor = _.maxBy(result.factors, 'max');
+    return highestValueFactor.max / highestValueFactor.question_counter;
+
+  }
+  public getMinTick(result: Result) {
+    let lowestValueFactor = _.minBy(result.factors, 'min');
+    return lowestValueFactor.min / lowestValueFactor.question_counter;
   }
 
 }

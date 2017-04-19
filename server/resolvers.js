@@ -22,7 +22,11 @@ const resolveFunctions = {
         path: 'answerSheetsId',
         populate: {
           path: 'workPlaceId',
-          model: 'WorkPlace'
+          model: 'WorkPlace',
+          populate: {
+            path: 'results.jobId',
+            model: 'Job'
+          }
         }
       });
     },

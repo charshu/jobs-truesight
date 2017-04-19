@@ -1,7 +1,8 @@
 import {
   Component,
   OnInit,
-  OnDestroy
+  OnDestroy,
+  ViewChild
 } from '@angular/core';
 import {
     Subscription
@@ -14,11 +15,20 @@ import {
 import {
   User,
   WorkPlace,
-  TestSheet
+  TestSheet,
+  Result,
+  Factor
 } from '../../type.d';
-import { indexOf, find } from 'lodash';
+import {
+  BaseChartDirective
+} from 'ng2-charts/ng2-charts';
+import * as _ from 'lodash';
 declare var google: any;
 const MIN_LOADING_TIME = 1000;
+const JobEnum = {
+  NO_JOB: -1,
+  ALL_JOB: 0
+};
 
 @Component({
   selector: 'my-home',
@@ -30,8 +40,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   public place: any;
   private loaded: boolean;
   private searchLoaded: boolean = true;
+  private chartLoaded: boolean = false;
   private user: User;
-  private selectedJob: number;
+  private selectedJob: number = JobEnum.ALL_JOB;
+  private selectedTestSheet: string;
   private testSheetList: [{
     uid: string,
     title: string
@@ -46,23 +58,85 @@ export class HomeComponent implements OnInit, OnDestroy {
   private jobChoices: any;
   private sub: Subscription;
   private testSheets: TestSheet[];
+  private averageAge: any = 0;
+  // Radar
+  private radarChartLabels: string[] = [];
+
+  private radarChartData: any = [{
+      data: [],
+      label: 'You'
+    }
+  ];
+  private radarChartType: string = 'radar';
+  private radarChartOptions = {
+    scale: {
+      ticks: {
+        beginAtZero: true,
+        backdropColor: '#FFF',
+        showLabelBackdrop: false,
+        max: undefined,
+        min: undefined
+      }
+    },
+    legend: {
+      display: true,
+      position: 'bottom'
+    },
+    responsive: true,
+    maintainAspectRatio: false
+  };
+  @ViewChild(BaseChartDirective)
+  public chart: BaseChartDirective;
+
+  public barChartOptions: any = {
+    scaleShowVerticalLines: true,
+    responsive: true,
+    scales: {
+            xAxes: [{
+                ticks: {
+                    max: 100,
+                    min: 0,
+                    stepSize: 10
+                }
+            }]
+        }
+  };
+  public barChartLabels: any[] = [];
+  public barChartType: string = 'horizontalBar';
+  public barChartLegend: boolean = true;
+
+  public barChartData: any[] = [];
+
+  // events
+  public chartClicked(e: any): void {
+    console.log(e);
+  }
+
+  public chartHovered(e: any): void {
+    console.log(e);
+  }
+
   constructor(
     private userService: UserService,
     private placeService: PlaceService,
     private testService: TestService) {}
 
-  public getTestSheetList(results, jobId?) {
+  public getTestSheetList(results: Result[], jobId: number = JobEnum.ALL_JOB) {
       /*
         set up unique test sheet list for selector
       */
+      jobId = Number(jobId);
       let testSheetList: any = [];
       let testSheetSet: string[] = [];
       for (let result of results) {
-        if (jobId && jobId !== result.jobId) {
+        if (!result.job) {
           continue;
         }
-        let testSheet = find(this.testSheets, { uid : result.testSheetUid});
-        if (indexOf(testSheetSet, testSheet.title) === -1) {
+        if (jobId !== result.job.id && jobId !== JobEnum.ALL_JOB) {
+          continue;
+        }
+        let testSheet = _.find(this.testSheets, { uid : result.testSheetUid});
+        if (_.indexOf(testSheetSet, testSheet.title) === -1) {
             testSheetSet.push(testSheet.title);
             testSheetList.push({ uid: testSheet.uid, title: testSheet.title});
         }
@@ -71,17 +145,17 @@ export class HomeComponent implements OnInit, OnDestroy {
       return testSheetList;
   }
   public getJobList(results, testSheetUid?) {
-      let jobList: [{
-        id: number,
-        name: string
-      }];
+      let jobList: any = [];
       let jobSet = [];
       for (let result of results) {
         if (testSheetUid && testSheetUid !== result.testSheetUid) {
           continue;
         }
+        if (!result.job) {
+          continue;
+        }
         let job = result.job;
-        if (indexOf(jobSet, job.name) === -1) {
+        if (_.indexOf(jobSet, job.name) === -1) {
             jobSet.push(job.name);
             jobList.push({ id: job.id, name: job.name});
         }
@@ -89,6 +163,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       console.log('return unique job list\n', jobList);
       return jobList;
   }
+
   public async searchWorkPlace(placeId: string) {
     try {
       if (!placeId) {
@@ -97,11 +172,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.hasResult = true;
       this.searchLoaded = false;
       this.workPlace = await this.placeService.getWorkPlace(placeId);
-      this.testSheetList = this.getTestSheetList(this.workPlace.results);
-
-      this.place = await this.placeService.getPlace(this.workPlace.id);
-
-      // minimum loading time 1s
+      if (this.workPlace) {
+        this.averageAge = _.mean(this.workPlace.participant.ages);
+        this.testSheetList = this.getTestSheetList(this.workPlace.results);
+      }
+      this.place = await this.placeService.getPlace(placeId);
+       // minimum loading time 1s
       setTimeout( () => {
         this.searchLoaded = true;
       }, MIN_LOADING_TIME);
@@ -110,29 +186,85 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  public onChangeTestSheet(uid) {
+  public findAndMergeResult(results: Result[], selectedTestSheet: string, selectedJob: number): Result {
+    let copy_results = JSON.parse(JSON.stringify(results));
+    selectedJob = Number(selectedJob);
+    let _results;
+    console.log('copy_result: ', copy_results);
+    console.log('ts: ' + selectedTestSheet + ' sj: ' + selectedJob);
+    if (selectedJob === JobEnum.ALL_JOB) {
+      _results = _.filter(copy_results, { testSheetUid: selectedTestSheet });
+    } else {
+      _results = _.filter(copy_results, { testSheetUid: selectedTestSheet, job: { id: selectedJob }});
+    }
+    console.log('filtered results ', _results);
+    let mergedFactors: Factor[] = [];
+    if (_results.length > 1) {
+      _.forEach(_results, (result) => {
+          _.forEach(result.factors, (factor) => {
+            let found = _.find(mergedFactors, { name : factor.name});
+            if (!found) {
+              mergedFactors.push(factor);
+            } else {
+              found.value += factor.value;
+              found.max += factor.max;
+              found.min += factor.min;
+            }
+          });
+      });
+    } else {
+      mergedFactors = _results[0].factors;
+    }
+    console.log('merged factors : ', mergedFactors);
+    let new_result: Result = {
+      testSheetUid: selectedTestSheet,
+      factors: mergedFactors
+    };
+    return new_result;
+  }
+  public onChangeTestSheet(uid: string) {
+    this.chartLoaded = false;
     console.log('change test sheet uid: ' + uid);
+    this.selectedTestSheet = uid;
     this.jobList = this.getJobList(this.workPlace.results, uid);
-    // let workPlaceResult = find(this.workPlace.results, {
-    //       testSheetUid: this.testSheetUid,
-    //       jobId
-    //     });
-    // if (workPlaceResult) {
-    //       this.pushData(workPlaceResult, 'Your Co-worker');
-    //     }
+    let mergedResult = this.findAndMergeResult(this.workPlace.results, this.selectedTestSheet, this.selectedJob);
+    this.barChartLabels = [];
+    this.barChartLabels = _.map(mergedResult.factors, 'name');
+    let data = this.testService.getChartData(mergedResult, this.barChartLabels, {method : 'percentage'});
+    data = _.map(data, (val) => {
+      return _.round(val * 100, 2);
+    });
+    this.barChartData = [];
+    this.barChartData.push({
+      data,
+      label: this.place.name
+    });
+    console.log('bar chart : ', this.barChartData);
+    this.chartLoaded = true;
+    // this.chart.chart.update();
   }
-  public onChangeJob(jobId) {
+  public onChangeJob(jobId: number) {
+    this.chartLoaded = false;
     console.log('change job id: ' + jobId);
+    this.selectedJob = jobId;
     this.testSheetList = this.getTestSheetList(this.workPlace.results, jobId);
-    // let workPlaceResult = find(this.workPlace.results, {
-    //       testSheetUid: this.testSheetUid,
-    //       jobId
-    //     });
-    // if (workPlaceResult) {
-    //       this.pushData(workPlaceResult, 'Your Co-worker');
-    //     }
-  }
+    let mergedResult = this.findAndMergeResult(this.workPlace.results, this.selectedTestSheet, this.selectedJob);
+    this.barChartLabels = [];
+    this.barChartLabels = _.map(mergedResult.factors, 'name');
+    let data = this.testService.getChartData(mergedResult, this.barChartLabels, {method : 'percentage'});
+    data = _.map(data, (val) => {
+      return _.round(val * 100, 2);
+    });
+    this.barChartData = [];
+    this.barChartData.push({
+      data,
+      label: this.place.name
+    });
+    console.log('bar chart : ', this.barChartData);
 
+    this.chartLoaded = true;
+    // this.chart.chart.update();
+  }
 
   public async ngOnInit() {
     this.testSheets = await this.testService.getTestSheet({ small : true });

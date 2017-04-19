@@ -26,6 +26,7 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
 import { MomentModule } from 'angular2-moment';
 import { MasonryModule } from 'angular2-masonry';
 import { CustomFormsModule } from 'ng2-validation';
+import {SelectModule} from 'ng2-select';
 
 // by default, this client will send queries to `/graphql` (relative to the URL of your app)
 const client = new ApolloClient({
@@ -52,7 +53,8 @@ export function provideClient(): ApolloClient {
     ChartsModule,
     MomentModule,
     MasonryModule,
-    CustomFormsModule
+    CustomFormsModule,
+    SelectModule
   ],
   declarations: [
     AppComponent,

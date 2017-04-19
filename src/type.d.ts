@@ -17,8 +17,17 @@ export type TestSheet = {
   uid : string
   title: string
   picture: string
+  criterias: Criteria
   doneCounter: number
   questions: Question[]
+}
+export type Criteria = {
+  factorName: string
+  ranges: Range[]
+}
+export type Range = {
+  min: number
+  result: string
 }
 
 export type Question = {
@@ -50,11 +59,14 @@ export type Factor = {
   name:string
   value:number
   question_counter:number
+  max:number
+  min:number
 }
 export type Result = {
   testSheetUid: string
+  jobId?: number
+  job?: Job
   factors:Factor[]
-  question_counter:number
 }
 export type Job = {
   id: number
@@ -68,7 +80,11 @@ export type Job = {
 export type WorkPlace = {
   id:string
   viewCount:number
-  participant:number
+  participant:{
+    male:number
+    female:number
+    ages:number[]
+  }
   factorsAvailable:string[]
   results?:Result[]
   answerSheets?:AnswerSheet[]

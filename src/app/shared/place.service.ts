@@ -39,7 +39,11 @@ query getWorkPlace($id:String!){
       }
     }
     viewCount
-    participant
+    participant{
+        male
+        female
+        ages
+    }
     factorsAvailable
     results {
       testSheetUid
@@ -51,6 +55,8 @@ query getWorkPlace($id:String!){
         name
         value
         question_counter
+        min
+        max
       }
     }
   }
@@ -78,7 +84,7 @@ export class PlaceService {
             }) => data.getWorkPlace);
             const workPlace = await query.toPromise();
             console.log(`Work place data \n`, workPlace);
-            return workPlace;
+            return JSON.parse(JSON.stringify(workPlace));
         } catch (e) {
             console.log(e);
         }

@@ -67,6 +67,8 @@ answerSheets {
             name
             value
             question_counter
+            min
+            max
           }
         }
       }
@@ -74,13 +76,16 @@ answerSheets {
         id
         results {
           testSheetUid
-          job{
-              name
+          job {
+            id
+            name
           }
           factors {
             name
             value
             question_counter
+            min
+            max
           }
         }
       }
@@ -190,8 +195,7 @@ export class UserService {
     }
     public async isLoggedIn(): Promise<boolean> {
 
-        if (!this.firstLoaded) {
-          this.firstLoaded = true;
+        if (!this.user.value) {
           // check if user still have session on server
           const user = await this.getUser();
           console.log(`User session ? ${user ? 'FOUND' : 'NOT FOUND'}`);
@@ -227,7 +231,7 @@ export class UserService {
         let answerSheets: AnswerSheet[] = filter(this.user.value.answerSheets, {
             testSheetUid: uid
         });
-        console.log('get answer sheet by uid: ' + uid + '\n', answerSheets);
+        console.log('Get answer sheet by uid: ' + uid + '\n', answerSheets);
         return answerSheets;
     }
     public async updateProfile(profile): Promise < boolean > {

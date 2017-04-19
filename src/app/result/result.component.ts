@@ -19,7 +19,11 @@ import {
 } from './../../type.d';
 import {
   find,
-  orderBy
+  orderBy,
+  maxBy,
+  minBy,
+  max,
+  min
 } from 'lodash';
 declare var google: any;
 
@@ -36,7 +40,7 @@ export class ResultComponent implements OnInit {
   private job: Job;
   private testSheetUid: string;
   private answerSheets: AnswerSheet[] = [];
-  private sortedData = [];
+  private evaluations = [];
   private testSheet: TestSheet;
   private loaded: boolean = false;
   private googleLoaded: boolean = false;
@@ -55,7 +59,9 @@ export class ResultComponent implements OnInit {
       ticks: {
         beginAtZero: true,
         backdropColor: '#FFF',
-        showLabelBackdrop: false
+        showLabelBackdrop: false,
+        max: undefined,
+        min: undefined
       }
     },
     legend: {
@@ -86,35 +92,13 @@ export class ResultComponent implements OnInit {
     console.log(e);
   }
 
-  public pushData(result: Result, label: string) {
-    // set initial factor label sequence
-    if (!this.radarChartLabels) {
-      for (let factor of result.factors) {
-        this.radarChartLabels.push(factor.name);
-      }
-    }
-
-    // add dataset
-    let dataset = {
-      data: [],
-      label
-    };
-
-    for (let factorLabel of this.radarChartLabels) {
-      let factor = find(result.factors, {
-        name: factorLabel
-      });
-      dataset.data.push((factor.value / factor.question_counter).toFixed(3));
-    }
-    this.radarChartData.push(dataset);
-
+  public evaluate(criteria, value): string {
+      return this.testService.evaluate(criteria, value);
   }
   public async ngOnInit() {
     this.loaded = false;
     try {
-
       this.testSheet = await this.testService.getTestSheetByUid(this.testSheetUid);
-
       /*
         load lastest user answer sheet
       */
@@ -146,22 +130,30 @@ export class ResultComponent implements OnInit {
             throw new Error(`chosen choice id: ${answer.selectedChoiceId} not found`);
           }
           this.radarChartData[0].data[index] += chosenChoice.value;
-
         }
 
-        // Average value
-        let temp = [];
+        /*
+          Average value which has same factor name
+        */
+        let evaluations = [];
         for (let i = 0; i < this.radarChartData[0].data.length; i++) {
           this.radarChartData[0].data[i] /= factorCount[i];
           this.radarChartData[0].data[i] = this.radarChartData[0].data[i].toFixed(3);
-          temp.push({
-            label: this.radarChartLabels[i],
-            value: this.radarChartData[0].data[i]
+          /*
+            Evaluating each factors using the criteria
+          */
+          let factorName = this.radarChartLabels[i];
+          let criteria = find(this.testSheet.criterias, {factorName});
+          let value = this.radarChartData[0].data[i];
+          evaluations.push({
+            factorName,
+            value,
+            result: this.evaluate(criteria, value)
           });
         }
         // Sorting
-        temp = orderBy(temp, 'value', 'desc');
-        this.sortedData = temp;
+        evaluations = orderBy(evaluations, 'value', 'desc');
+        this.evaluations = evaluations;
 
         /*
             Loading results from the work place
@@ -169,10 +161,16 @@ export class ResultComponent implements OnInit {
         this.workPlace = answerSheets[0].workPlace;
         let workPlaceResult = find(this.workPlace.results, {
           testSheetUid: this.testSheetUid,
-          jobId: answerSheets[0].job.id
+          job: {
+            id : answerSheets[0].job.id
+          }
         });
         if (workPlaceResult) {
-          this.pushData(workPlaceResult, 'Your Co-worker');
+          let data = this.testService.getChartData(workPlaceResult, this.radarChartLabels);
+          this.radarChartData.push({
+            data,
+            label: 'Your Co-worker'
+          });
         }
 
         /*
@@ -183,7 +181,21 @@ export class ResultComponent implements OnInit {
           testSheetUid: this.testSheetUid
         });
         if (jobResult) {
-          this.pushData(jobResult, 'Same Job');
+          let data = this.testService.getChartData(jobResult, this.radarChartLabels);
+          this.radarChartData.push({
+            data,
+            label: 'Same Job'
+          });
+        }
+
+        /*
+            Setting max/min ticks of radar chart
+        */
+        if (workPlaceResult && jobResult) {
+          this.radarChartOptions.scale.ticks.max = max([this.testService.getMaxTick(workPlaceResult)
+          , this.testService.getMaxTick(workPlaceResult)]);
+          this.radarChartOptions.scale.ticks.min = min([this.testService.getMinTick(workPlaceResult)
+          , this.testService.getMinTick(workPlaceResult)]);
         }
 
         this.loaded = true;

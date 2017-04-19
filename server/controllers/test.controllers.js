@@ -47,17 +47,22 @@ module.exports = () => {
       let factor = _.find(result.factors, {
         name: question.factorName
       });
+
       if (!factor) {
         factor = new req.context.Factor({
           name: question.factorName,
           value: chosenChoice.value,
-          question_counter: 1
+          question_counter: 1,
+          max: _.maxBy(question.choices, 'value').value,
+          min: _.minBy(question.choices, 'value').value
         });
         // console.log(`push factor to result.factors\n${factor}\n`);
         result.factors.push(factor);
       } else {
         // console.log(`factorName:"${question.factorName}" found`);
         factor.value += chosenChoice.value;
+        factor.max += _.maxBy(question.choices, 'value').value;
+        factor.min += _.minBy(question.choices, 'value').value;
         factor.question_counter += 1;
       }
     }
@@ -95,10 +100,10 @@ module.exports = () => {
           throw new Error('Test sheet not found');
         }
 
-        console.log(`test sheet:"${testSheet.doneCounter}"`);
+        // console.log(`test sheet:"${testSheet.doneCounter}"`);
 
         await newAnswerSheet.save();
-        console.log('answer sheet is successfully saved');
+        // console.log('answer sheet is successfully saved');
         if (!testSheet.doneCounter) {
           testSheet.doneCounter = 0;
         }
@@ -137,7 +142,7 @@ module.exports = () => {
           // console.log(`update result\n${result}\n`);
         }
         user.answerSheetsId.push(newAnswerSheet._id);
-        console.log(user);
+        // console.log(user);
         await user.save();
 
 
@@ -169,7 +174,7 @@ module.exports = () => {
           await result.save();
         }
         job.answerSheetsId.push(newAnswerSheet._id);
-        console.log(`push new answer sheet id ${newAnswerSheet._id} to job.answers`);
+        // console.log(`push new answer sheet id ${newAnswerSheet._id} to job.answers`);
         await job.save();
 
 
@@ -181,28 +186,35 @@ module.exports = () => {
         });
         if (!workPlace) {
           workPlace = new req.context.WorkPlace({
-            _id: newAnswerSheet.workPlaceId
+            _id: newAnswerSheet.workPlaceId,
+            participant: {
+                male: 0,
+                female: 0,
+                ages: []
+            }
           });
         }
-        /*
-          calculating result for same test sheet and same work place
-        */
-        let resultOnlyWorkPlace = _.find(workPlace.results, {
-          testSheetUid: newAnswerSheet.testSheetUid,
-          jobId: JobEnum.ALL_JOBS
-        });
-        if (!resultOnlyWorkPlace) {
-          resultOnlyWorkPlace = new req.context.Result({
-            testSheetUid: newAnswerSheet.testSheetUid,
-            jobId: JobEnum.ALL_JOBS,
-            factors: []
-          });
-          resultOnlyWorkPlace = processResult(resultOnlyWorkPlace, newAnswerSheet, testSheet, req);
-          workPlace.results.push(resultOnlyWorkPlace);
-        } else {
-          resultOnlyWorkPlace = processResult(resultOnlyWorkPlace, newAnswerSheet, testSheet, req);
-          await resultOnlyWorkPlace.save();
-        }
+
+        // /*
+        //   calculating result for same test sheet and same work place
+        // */
+        // let resultOnlyWorkPlace = _.find(workPlace.results, {
+        //   testSheetUid: newAnswerSheet.testSheetUid,
+        //   jobId: JobEnum.ALL_JOBS
+        // });
+        // if (!resultOnlyWorkPlace) {
+        //   resultOnlyWorkPlace = new req.context.Result({
+        //     testSheetUid: newAnswerSheet.testSheetUid,
+        //     jobId: JobEnum.ALL_JOBS,
+        //     factors: []
+        //   });
+        //   resultOnlyWorkPlace = processResult(resultOnlyWorkPlace, newAnswerSheet, testSheet, req);
+        //   workPlace.results.push(resultOnlyWorkPlace);
+        // } else {
+        //   resultOnlyWorkPlace = processResult(resultOnlyWorkPlace, newAnswerSheet, testSheet, req);
+        //   await resultOnlyWorkPlace.save();
+        // }
+
         /*
           calculating result for same test sheet and same work place and same job
         */
@@ -227,7 +239,7 @@ module.exports = () => {
           incrementing factorCount
         */
         _.forEach(testSheet.questions, (value) => {
-          console.log(value);
+          // console.log(value);
           if (_.indexOf(workPlace.factorsAvailable, value.factorName) === -1) {
             workPlace.factorsAvailable.push(value.factorName);
           }
@@ -236,18 +248,22 @@ module.exports = () => {
         /*
           incrementing unique paticipant
         */
-        if (!workPlace.participant) {
-          workPlace.participant = 0;
-        }
-        for (let i = 0; i < workPlace.answerSheetsId.length; i += 1) {
+        for (let i = 0; i < user.answerSheetsId.length; i += 1) {
           const index = _.indexOf(workPlace.answerSheetsId, user.answerSheetsId[i]);
           if (index >= 0) {
             console.log('participant not unique');
             break;
           }
-          if (i === workPlace.answerSheetsId.length - 1) {
-            workPlace.participant += 1;
+          if (i === user.answerSheetsId.length - 1) {
+            if (user.profile.gender === 'male') {
+              workPlace.participant.male += 1;
+            }
+            if (user.profile.gender === 'female') {
+              workPlace.participant.female += 1;
+            }
+            workPlace.participant.ages.push(user.profile.age_range);
           }
+            
         }
 
         workPlace.answerSheetsId.push(newAnswerSheet._id);
