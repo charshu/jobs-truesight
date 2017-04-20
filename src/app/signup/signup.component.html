@@ -1,0 +1,119 @@
+<div id="signup-section">
+
+    <div class="container">
+        <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+        <div *ngIf="success" class="alert alert-success">{{success}}</div>
+        <div class="row justify-content-center ">
+            <div class="col-md-5 round-container">
+                <div>
+                    <h3>สร้างบัญชีใหม่</h3>
+                    <hr>
+                </div>
+                <form (ngSubmit)="f.form.valid && register()" #f="ngForm" novalidate>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" class="form-control" [(ngModel)]="user.email">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" class="form-control" [(ngModel)]="user.password">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" name="confirm-password" class="form-control" [(ngModel)]="user.confirmPassword">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" name="name" class="form-control" [(ngModel)]="user.profile.name">
+                        <div class="help-block">Your name won't be included in any answers</div>
+                    </div>
+                    <h3>ข้อมูลทั่วไป</h3>
+                    <div class="help-block" style="text-align: center;">this information will be included in answers, <a href="#">privacy terms</a></div>
+                    <hr>
+                    <div class="form-group">
+                        <label for="gender" style="margin-right: 10px;">Gender</label>
+                        <label class="radio-inline">
+                            <input type="radio" name="gender" 
+                            (click)="user.profile.gender = 'male'"
+                            [checked]="user.profile.gender==='male'" >
+                            <span>Male</span>
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="gender" 
+                            (click)="user.profile.gender = 'female'"
+                            [checked]="user.profile.gender==='female'" >
+                            <span>Female</span>
+                        </label>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="age_range">Age</label>
+
+                        <input type="number" name="age_range" #age="ngModel" class="form-control" [(ngModel)]="user.profile.age_range" number>
+                        <div *ngIf="age.errors?.number" class="help-block">
+                            Age must be a number
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+
+                        <input type="text" name="location" class="form-control" [(ngModel)]="user.profile.location">
+
+                    </div>
+                    <div class="form-group">
+                        <label for="job">Job</label>
+
+                        <div class="input-group">
+                            <select [(ngModel)]="user.profile.jobId" class="form-control" name="job" #job="ngModel" [ngClass]="{'black':user.profile.jobId >= 0}"
+                                required>
+                                <option [disabled]="true" [value]="undefined">อาชีพปัจจุบันของคุณ</option>
+                                    
+                                    <option *ngFor="let job of jobs;let i = index" [value]="job.id">
+                                        {{job.name}}
+                                    </option>
+                                </select>
+                        </div>
+                        <div *ngIf="f.submitted && (!job.valid || (job.value === undefined))" class="help-block">
+                            Job is required
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label for="place">Work place</label>
+
+                        <div class="input-group">
+                            <input id="search-box" [(ngModel)]="user.profile.workPlaceName" #place="ngModel" name="place" class="form-control" placeholder="ปัจจุบันคุณทำงานที่ไหน"
+                                type="text" required/>
+                        </div>
+                        <div *ngIf="f.submitted && !place.valid" class="help-block">
+                            Work place is required
+                        </div>
+
+                    </div>
+                    <div *ngIf="loaded && user" class="form-group">
+                        <label for="salary">Salary</label>
+
+                        <input type="number" name="salary" #salary="ngModel" class="form-control" [(ngModel)]="user.profile.salary" number>
+                        <div *ngIf="salary.errors?.number" class="help-block">
+                            Salary must be a number
+                        </div>
+
+                    </div>
+
+                    <button id="submit-button" type="submit" class="btn btn-success btn-lg btn-block">สร้างบัญชี</button>
+                </form>
+                {{ user | json}}
+            </div>
+            <!--<div class="col-md-3">
+                <div class="form-group">
+                    <label for="picture">Profile picture</label>
+                    <img [src]="user.profile.picture" name="picture" class="picture">
+                </div>
+            </div>-->
+        </div>
+    </div>
+
+</div>

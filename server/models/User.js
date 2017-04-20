@@ -22,7 +22,6 @@ const userSchema = new Schema({
     location: String,
     jobId: { type: Number, ref: 'Job' },
     workPlaceId: { type: String, ref: 'WorkPlace' },
-    website: String,
     picture: String,
     salary: Number
   },

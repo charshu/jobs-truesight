@@ -22,7 +22,8 @@ exports.deserializeUser = ({ User, Logger }) => async (id, done) => {
 };
 
 // How to authentication with email
-exports.LocalStrategyMiddleware = ({ User, Logger }) => new LocalStrategy({ usernameField: 'email' }, async (username, password, done) => {
+exports.LocalStrategyMiddleware = ({ User, Logger }) => new LocalStrategy({ usernameField: 'email' }, 
+async (username, password, done) => {
   const console = Logger({ prefix: 'Email login' });
   console.log('=== start local authtentication ===');
   try {

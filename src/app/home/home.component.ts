@@ -173,7 +173,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.searchLoaded = false;
       this.workPlace = await this.placeService.getWorkPlace(placeId);
       if (this.workPlace) {
-        this.averageAge = _.mean(this.workPlace.participant.ages);
+        this.averageAge = _.round(_.mean(this.workPlace.participant.ages), 2);
         this.testSheetList = this.getTestSheetList(this.workPlace.results);
       }
       this.place = await this.placeService.getPlace(placeId);
@@ -202,13 +202,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (_results.length > 1) {
       _.forEach(_results, (result) => {
           _.forEach(result.factors, (factor) => {
+            let _factor = JSON.parse(JSON.stringify(factor));
             let found = _.find(mergedFactors, { name : factor.name});
             if (!found) {
-              mergedFactors.push(factor);
+              console.log('push-> name: ' + _factor.name + ' value: ' + _factor.value);
+              mergedFactors.push(_factor);
             } else {
-              found.value += factor.value;
-              found.max += factor.max;
-              found.min += factor.min;
+              found.value += _factor.value;
+              found.max += _factor.max;
+              found.min += _factor.min;
+              console.log('update-> name: ' + found.name + ' value: ' + found.value);
             }
           });
       });

@@ -1,10 +1,10 @@
 <div id="login-section" class="container">
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-5">
             <div class="round-container">
                 <div class="title">
-                    <h2>Sign in</h2>
-                    <p>Tracking your test results! <i class="fa fa-line-chart" aria-hidden="true"></i></p>
+                    <h2>เข้าสู่ระบบ</h2>
+                    <p>แบ่งปันความรู้สึกและประสบการณ์ทำงานในที่ต่างๆ ของคุณให้กับทุกคน <i class="fa fa-line-chart" aria-hidden="true"></i></p>
                 </div>
                 <form name="form" (ngSubmit)="f.form.valid && login()" #f="ngForm" novalidate>
                     <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
@@ -18,18 +18,22 @@
                         [(ngModel)]="model.password" #password="ngModel" required />
                         <div *ngIf="f.submitted && !password.valid" class="help-block">Password is required</div>
                     </div>
-                    <a [routerLink]="['/register']">Need an account?</a> 
-                    <a [routerLink]="['/register']">Forgot your password?</a>
+                    <!--<a [routerLink]="['/register']">Need an account?</a> 
+                    <a [routerLink]="['/register']">Forgot your password?</a>-->
                     <div id="btn-continue" class="form-group">
-                        <button [disabled]="loading" class="btn btn-success btn-lg pull-right">Continue</button>
+                        <button [disabled]="loading" class="btn btn-success btn-lg btn-block">ต่อไป</button>
                     </div>
                     <div *ngIf="error" class="alert alert-danger">{{error}}</div>
                 </form>
             </div>
             <hr><span>Or</span><hr>
             <a href="http://localhost:3000/auth/facebook" class="btn btn-block btn-social btn-facebook">
-                <span class="fa fa-facebook"></span> Sign in with Facebook
+                <span class="fa fa-facebook"></span> เข้าสู่ระบบด้วย Facebook
             </a>
+            <br>
+            <button [routerLink]="['/signup']" class="btn btn-block btn-social btn-facebook">
+                สร้างบัญชีใหม่
+            </button>
 
         </div>
         

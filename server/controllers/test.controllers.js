@@ -248,23 +248,13 @@ module.exports = () => {
         /*
           incrementing unique paticipant
         */
-        for (let i = 0; i < user.answerSheetsId.length; i += 1) {
-          const index = _.indexOf(workPlace.answerSheetsId, user.answerSheetsId[i]);
-          if (index >= 0) {
-            console.log('participant not unique');
-            break;
-          }
-          if (i === user.answerSheetsId.length - 1) {
-            if (user.profile.gender === 'male') {
+        if (user.profile.gender === 'male') {
               workPlace.participant.male += 1;
             }
-            if (user.profile.gender === 'female') {
-              workPlace.participant.female += 1;
-            }
-            workPlace.participant.ages.push(user.profile.age_range);
-          }
-            
+        if (user.profile.gender === 'female') {
+          workPlace.participant.female += 1;
         }
+        workPlace.participant.ages.push(user.profile.age_range);
 
         workPlace.answerSheetsId.push(newAnswerSheet._id);
         await workPlace.save();

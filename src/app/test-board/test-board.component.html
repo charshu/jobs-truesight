@@ -1,7 +1,10 @@
 <div *ngIf="loaded" id="testboard-section" class="container">
 
     <masonry [options]="{ transitionDuration: '0.8s',gutter: 30 }" [useImagesLoaded]="true">
-        <masonry-brick class="testsheet-card" *ngFor="let testSheet of testSheets">
+        <masonry-brick *ngFor="let testSheet of testSheets">
+            <div class="testsheet-card">
+                
+            
             <div class="title">
                 {{testSheet.title}}
             </div>
@@ -48,6 +51,7 @@
                 <div class="col-md-6">    
                     <button type="button" [routerLink]="['/result',testSheet.uid]" class="btn btn-large btn-block btn-default">Past result</button>
                 </div>
+            </div>
             </div>
         </masonry-brick>
     </masonry>

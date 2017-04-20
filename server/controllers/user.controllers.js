@@ -18,13 +18,18 @@ module.exports = () => {
   const register = async (req, res) => {
     const console = req.context.Logger({ prefix: 'user/register controller' });
     try {
+      console.log(req.body)
       const newUser = new req.context.User({
         email: req.body.email,
         password: req.body.password,
         profile: {
-          gender: req.body.gender,
-          jobId: req.body.jobId,
-          workPlaceId: req.body.workPlaceId
+          name: req.body.profile.name,
+          gender: req.body.profile.gender,
+          location: req.body.profile.location,
+          age_range: req.body.profile.age_range,
+          jobId: req.body.profile.jobId,
+          workPlaceId: req.body.profile.workPlaceId,
+          salary: req.body.profile.salary
         }
       });
       console.log('=== save new user ===');

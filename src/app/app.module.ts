@@ -13,6 +13,7 @@ import { routing } from './app.routing';
 import { TestService, UserService, RouteGuard, CapitalizeFirstPipe, PlaceService } from './shared';
 
 import { ProfileComponent } from './profile/profile.component';
+import { SignUpComponent } from './signup/signup.component';
 import { LoginComponent } from './login/login.component';
 import { ResultComponent } from './result/result.component';
 import { NavbarComponent } from './navbar/navbar.component';
@@ -66,6 +67,7 @@ export function provideClient(): ApolloClient {
     QuestionComponent,
     TestBoardComponent,
     ResultComponent,
+    SignUpComponent,
     CapitalizeFirstPipe
   ],
   providers: [

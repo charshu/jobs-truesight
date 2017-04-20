@@ -113,6 +113,28 @@ export class UserService {
         console.log('User services init');
         this.isLoggedIn();
     }
+    public async register(user) {
+        let headers = new Headers({
+            'Content-Type': 'application/json'
+        });
+        let options = new RequestOptions({
+            headers
+        });
+
+        try {
+            const response = await this.http.post('http://localhost:3000/auth/register',
+            JSON.stringify(user), options).toPromise();
+            if (response.status === 200) {
+                await this.login(user.email , user.password);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
 
     public async login(email: string, password: string): Promise < boolean > {
         let headers = new Headers({
@@ -256,4 +278,5 @@ export class UserService {
             return false;
         }
     }
+
 }
