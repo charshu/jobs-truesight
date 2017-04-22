@@ -101,7 +101,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             }]
         }
   };
-  public barChartLabels: any[] = [];
+  public barChartLabels: string[] = [];
   public barChartType: string = 'horizontalBar';
   public barChartLegend: boolean = true;
 
@@ -232,7 +232,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.jobList = this.getJobList(this.workPlace.results, uid);
     let mergedResult = this.findAndMergeResult(this.workPlace.results, this.selectedTestSheet, this.selectedJob);
     this.barChartLabels = [];
-    this.barChartLabels = _.map(mergedResult.factors, 'name');
+    this.barChartLabels = _.map(mergedResult.factors, 'name') as string[];
     let data = this.testService.getChartData(mergedResult, this.barChartLabels, {method : 'percentage'});
     data = _.map(data, (val) => {
       return _.round(val * 100, 2);

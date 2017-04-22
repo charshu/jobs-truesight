@@ -4,7 +4,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const Logger = require('../common/logger');
-
+const flash = require('express-flash');
 const { graphqlExpress, graphiqlExpress } = require('graphql-server-express');
 const schema = require('./schema');
 
@@ -35,6 +35,7 @@ const context = {
   Logger
 
 };
+
 app.use(ContextMiddlewareHandler(context));
 
 // Setup express
@@ -64,6 +65,7 @@ app.use(require('express-session')({
   resave: false,
   saveUninitialized: false
 }));
+app.use(flash());
 
 
 app.use(passport.initialize());

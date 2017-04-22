@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/zapkub/jobsmeter",
-  "author": "Rungsikorn Rungsikavanich <rungsikorn@me.com>",
+  "author": "Vachirakorn Rungsikavanich <vachirakorn@hotmail.com>",
   "license": "MIT",
   "scripts": {
     "clean": "rimraf node_modules doc dist && npm cache clean",

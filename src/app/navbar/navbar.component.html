@@ -20,7 +20,7 @@
 
       <ul class="nav navbar-nav navbar-right account-menu">
         <li *ngIf="!user">
-        <button type="button" class="btn btn-success navbar-btn">เข้าร่วมการสำรวจ</button>
+        <button type="button" [routerLink]="['/signup']" class="btn btn-success navbar-btn">เข้าร่วมการสำรวจ</button>
                 
           
           <!--<form class="navbar-form" role="search">
