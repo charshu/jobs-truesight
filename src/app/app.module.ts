@@ -17,6 +17,7 @@ import { SignUpComponent } from './signup/signup.component';
 import { LoginComponent } from './login/login.component';
 import { ResultComponent } from './result/result.component';
 import { NavbarComponent } from './navbar/navbar.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
 import { ApolloClient, createNetworkInterface } from 'apollo-client';
 import { ApolloModule } from 'apollo-angular';
@@ -27,8 +28,9 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
 import { MomentModule } from 'angular2-moment';
 import { MasonryModule } from 'angular2-masonry';
 import { CustomFormsModule } from 'ng2-validation';
-import {SelectModule} from 'ng2-select';
-
+import { SelectModule } from 'ng2-select';
+import { AlertModule } from 'ngx-bootstrap/alert';
+import { ModalModule } from 'ngx-bootstrap/modal';
 // by default, this client will send queries to `/graphql` (relative to the URL of your app)
 const client = new ApolloClient({
   networkInterface: createNetworkInterface({
@@ -55,7 +57,9 @@ export function provideClient(): ApolloClient {
     MomentModule,
     MasonryModule,
     CustomFormsModule,
-    SelectModule
+    SelectModule,
+    AlertModule.forRoot(),
+    ModalModule.forRoot()
   ],
   declarations: [
     AppComponent,
@@ -68,6 +72,7 @@ export function provideClient(): ApolloClient {
     TestBoardComponent,
     ResultComponent,
     SignUpComponent,
+    NotFoundComponent,
     CapitalizeFirstPipe
   ],
   providers: [

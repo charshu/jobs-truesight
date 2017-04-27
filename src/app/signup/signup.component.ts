@@ -24,20 +24,18 @@ export class SignUpComponent implements OnInit {
         profile: {
             age_range: undefined,
             gender: 'male',
-            jobId: undefined,
-            workPlaceId: undefined,
-            workPlaceName: undefined,
+            job: { id: undefined},
+            workPlaceId: null,
+            workPlaceName: null,
             salary: undefined
         }
     };
     private jobs: Job[];
     private error: string;
-    private success: string;
 
     constructor(
         private userService: UserService,
         private testService: TestService,
-        private placeService: PlaceService,
         private router: Router
     ) {
 
@@ -45,7 +43,7 @@ export class SignUpComponent implements OnInit {
 
     public selectJob(id) {
         console.log(`Select job id:${id}`);
-        this.user.profile.jobId = id;
+        this.user.profile.job.id = id;
     }
     public async register() {
         console.log(this.user);

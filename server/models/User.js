@@ -21,7 +21,7 @@ const userSchema = new Schema({
     age_range: Number,
     location: String,
     jobId: { type: Number, ref: 'Job' },
-    workPlaceId: { type: String, ref: 'WorkPlace' },
+    workPlaceId: String,
     picture: String,
     salary: Number
   },

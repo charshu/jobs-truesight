@@ -85,6 +85,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     responsive: true,
     maintainAspectRatio: false
   };
+
   @ViewChild(BaseChartDirective)
   public chart: BaseChartDirective;
 
@@ -195,7 +196,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (selectedJob === JobEnum.ALL_JOB) {
       _results = _.filter(copy_results, { testSheetUid: selectedTestSheet });
     } else {
-      _results = _.filter(copy_results, { testSheetUid: selectedTestSheet, job: { id: selectedJob }});
+      _results = _.filter(copy_results, { testSheetUid: selectedTestSheet,
+        job: { id: selectedJob }});
     }
     console.log('filtered results ', _results);
     let mergedFactors: Factor[] = [];
@@ -205,13 +207,15 @@ export class HomeComponent implements OnInit, OnDestroy {
             let _factor = JSON.parse(JSON.stringify(factor));
             let found = _.find(mergedFactors, { name : factor.name});
             if (!found) {
-              console.log('push-> name: ' + _factor.name + ' value: ' + _factor.value);
+              console.log('push-> name: ' + _factor.name + ' value: ' + _factor.value
+              + '/' + _factor.max);
               mergedFactors.push(_factor);
             } else {
               found.value += _factor.value;
               found.max += _factor.max;
               found.min += _factor.min;
-              console.log('update-> name: ' + found.name + ' value: ' + found.value);
+              console.log('update-> name: ' + found.name + ' value: ' + found.value
+              + '/' + found.max);
             }
           });
       });

@@ -22,6 +22,7 @@ const rangeSchema = new Schema({
 });
 const criteriaSchema = new Schema({
   factorName: String,
+  factorNameTH: String,
   ranges: [rangeSchema]
 });
 
@@ -32,6 +33,7 @@ const testSheetSchema = new Schema({
   },
   doneCounter: 0,
   picture: String,
+  instruction: String,
   criterias: [criteriaSchema],
   questions: [questionSchema],
   title: String

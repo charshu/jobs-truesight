@@ -9,6 +9,9 @@ const resolveFunctions = {
       }
       return ct.User.findOne({ _id: ct.user._id })
       .populate({
+        path: 'profile.jobId'
+      })
+      .populate({
         path: 'answerSheetsId'
       })
       .populate({
@@ -33,8 +36,12 @@ const resolveFunctions = {
     getTestSheet(_, params, ct) {
       return ct.TestSheet.find({});
     },
-    getTestSheetByUid(_, params, ct) {
-      return ct.TestSheet.findOne({ uid: params.uid });
+    async getTestSheetByUid(_, params, ct) {
+      let testSheet = await ct.TestSheet.findOne({ uid: params.uid });
+      if (!testSheet) {
+        throw new Error(`Test sheet ${params.uid} not found`);
+      }
+      return testSheet;
     },
     // getAnswerSheet(_, params, ct) {
     //   if (!ct.user) {
@@ -103,6 +110,11 @@ const resolveFunctions = {
     },
     answerSheets(user) {
       return sortBy(user.answerSheetsId, 'createdAt').reverse();
+    }
+  },
+  Profile: {
+    job(profile) {
+      return profile.jobId;
     }
   },
   TestSheet: {

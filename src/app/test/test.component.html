@@ -1,9 +1,8 @@
-<div *ngIf="start" id="test-section" class="container-fluid question-bg noise">
-    <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+<div id="test-section" class="container-fluid question-bg noise">
+
     <div class="row justify-content-center">
         <div class="col-md-2 question-nav-wrapper">
-
-            <div class="question-nav" [ngStyle]="{'top':document.body.scrollTop+'px'}">
+            <div *ngIf="start" class="question-nav" [ngStyle]="{'top':document.body.scrollTop+'px'}">
                 <div class="progress-wrapper">
                     <div class="progress-counter">{{answerSheet.answers.length+'/'+testSheet.questions.length}}</div>
                     <round-progress [current]="answerSheet.answers.length" [max]="testSheet.questions.length" [color]="'#ffffff'" [background]="'rgba(0,0,0,0.21)'"
@@ -17,20 +16,80 @@
                     </div>
                 </div>
                 <div class="button-wrapper justify-content-center">
-                    
                     <button type="button" (click)="submitAnswerSheet()" class="btn btn-large btn-block btn-default">ดูผลลัพธ์</button>
-                    
                 </div>
-
+                <div *ngIf="error" class="alert alert-danger">{{error}}</div>
             </div>
         </div>
         <div class="col-md-8">
             <div class="row">
                 <div class="col-md-offset-1 col-md-11">
-                    <my-question *ngFor="let question of testSheet.questions;let i = index" [attr.id]="'q'+(i+1)" [question]="question" [answer]="getAnswerByQid(question.id)"
-                    [number]="i+1" (clickChoice)="saveAnswer($event)"></my-question>
+
+                    <div class="alert alert-warning">
+                        <strong>คำแนะนำ: </strong> ข้อคำถามต่อไปนี้ถามเกี่ยวกับประสบการณ์การทำงานของคุณในช่วง 1 ปีที่ผ่านมา
+                        กรุณาตอบคำถามโดยเลือกคำตอบที่ตรงกับระดับความเห็นของคุณมากที่สุด
+                    </div>
+
+                    <div class="alert alert-info">
+                        <div class="row">
+                            <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="place">ชื่อสถานที่ทำงานที่ทดสอบ</label>
+
+                                        <div class="input-group">
+                                            <input id="search-box" [(ngModel)]="workPlaceName" #place="ngModel" name="place" class="form-control" placeholder="คุณทำงานที่ไหน"
+                                                type="text" required/>
+                                        </div>
+                                        <div *ngIf="!place.valid" class="help-block">
+                                            กรุณากรอกสถานที่ทำงานที่ต้องการทดสอบ
+                                        </div>
+
+
+                                    </div>
+                                    <div *ngIf="start" class="form-group">
+                                        <label for="job">อาชีพที่ทดสอบ</label>
+                                        <div class="input-group">
+                                            <select [(ngModel)]="jobId" class="form-control" name="job" #job="ngModel" [ngClass]="{'black':jobId >= 0}"
+                                                required>
+                                <option [disabled]="true" [value]="-1">เลือกอาชีพของคุณ</option>
+                                    
+                                    <option *ngFor="let job of jobs;let i = index" [value]="job.id">
+                                        {{job.name}}
+                                    </option>
+                                </select>
+                                        </div>
+                                        <div *ngIf="(!job.valid || (job.value === -1))" class="help-block">
+                                            กรุณาเลือกอาชีพที่ต้องการทดสอบ
+                                        </div>
+
+                                    </div>
+                                    {{jobId}}
+                                    <div *ngIf="start" class="form-group">
+                                        <label for="salary">เงินเดือนที่คุณได้รับ</label>
+
+                                        <input type="number" name="salary" #salaryy="ngModel" class="form-control" 
+                                        [(ngModel)]="salary" number>
+                                        <div *ngIf="salaryy.errors?.number" class="help-block">
+                                            Salary must be a number
+                                        </div>
+
+                                    </div>
+                            </div>
+                        </div>
+                        <!--อาชีพที่กำลังทดสอบ:
+                        <u>{{user.profile.job.name}}</u>&nbsp;&nbsp;สถานที่ทำงานที่กำลังทดสอบ:
+                        <u>{{user.profile.workPlaceName}}</u>
+                        <a [routerLink]="['/profile']"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i> แก้ไขข้อมูล</a>-->
+                    </div>
+
+
+
+                    <div *ngIf="start">
+                        <my-question *ngFor="let question of testSheet.questions;let i = index" [attr.id]="'q'+(i+1)" [question]="question" [answer]="getAnswerByQid(question.id)"
+                            [number]="i+1" (clickChoice)="saveAnswer($event);jump(i+2)"></my-question>
+                    </div>
+
                 </div>
-                
             </div>
         </div>
 

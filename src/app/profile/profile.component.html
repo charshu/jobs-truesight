@@ -44,7 +44,7 @@
                     <div *ngIf="loaded && user" class="form-group">
                         <label for="age_range">Age</label>
 
-                        <input type="text" name="age_range" #age="ngModel" class="form-control" [(ngModel)]="user.profile.age_range" number>
+                        <input type="number" name="age_range" #age="ngModel" class="form-control" [(ngModel)]="user.profile.age_range" number>
                         <div *ngIf="age.errors?.number" class="help-block">
                             Age must be a number
                         </div>
@@ -60,7 +60,7 @@
                         <label for="job">Job</label>
 
                         <div class="input-group">
-                            <select [(ngModel)]="user.profile.jobId" class="form-control" name="job" #job="ngModel" [ngClass]="{'black':user.profile.jobId >= 0}"
+                            <select [(ngModel)]="user.profile.job.id" class="form-control" name="job" #job="ngModel" [ngClass]="{'black':user.profile.job.id >= 0}"
                                 required>
                                 <option [disabled]="true" [value]="-1">เลือกอาชีพของคุณ</option>
                                     
@@ -91,7 +91,7 @@
                      <div *ngIf="loaded && user" class="form-group">
                         <label for="salary">Salary</label>
 
-                        <input type="text" name="salary" #salary="ngModel" class="form-control" [(ngModel)]="user.profile.salary" number>
+                        <input type="number" name="salary" #salary="ngModel" class="form-control" [(ngModel)]="user.profile.salary" number>
                         <div *ngIf="salary.errors?.number" class="help-block">
                             Salary must be a number
                         </div>
@@ -102,7 +102,7 @@
                 </form>
             </div>
             <div class="col-md-3">
-                <div class="form-group">
+                <div *ngIf="loaded && user" class="form-group">
                     <label for="picture">Profile picture</label>
                     <img [src]="user.profile.picture" name="picture" class="picture">
                 </div>

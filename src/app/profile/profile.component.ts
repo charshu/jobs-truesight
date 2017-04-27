@@ -1,12 +1,16 @@
 import {
     Component,
-    OnInit
+    OnInit,
+    Inject
 } from '@angular/core';
 import {
     UserService,
     TestService,
     PlaceService
 } from '../shared';
+import {
+    DOCUMENT
+} from '@angular/platform-browser';
 import {
     Job
 } from '../../type.d';
@@ -19,13 +23,14 @@ declare var google: any;
 
 export class ProfileComponent implements OnInit {
     private loaded: boolean;
-    private googleLoaded: boolean;
     private user: any = {
         profile: {
             age_range: 0,
             gender: 'male',
-            jobId: -1,
-            placeId: null,
+            job: {
+                id: -1
+            },
+            workPlaceId: null,
             workPlaceName: null,
             salary: 0
         }
@@ -37,21 +42,23 @@ export class ProfileComponent implements OnInit {
     constructor(
         private userService: UserService,
         private testService: TestService,
-        private placeService: PlaceService
+        private placeService: PlaceService,
+        @Inject(DOCUMENT) private document: Document
     ) {
 
     }
 
     public selectJob(id) {
         console.log(`Select job id:${id}`);
-        this.user.profile.jobId = id;
+        this.user.profile.job.id = id;
     }
     public updateProfile() {
         try {
-            console.log(`Send profile:${this.user.profile} to user service`);
+            console.log(`Send profile to user service`, this.user.profile);
             let isSuccess = this.userService.updateProfile(this.user.profile);
             if (isSuccess) {
                 this.success = 'Profile is successfully saved.';
+                this.document.body.scrollTop = 0;
             }
         } catch (e) {
             console.log(e);
@@ -64,12 +71,15 @@ export class ProfileComponent implements OnInit {
         this.jobs = await this.testService.getJobsChoice();
         // load user profile
         this.user = await this.userService.getCurrentUser();
+
         if (this.user.profile.workPlaceId) {
             let place = await this.placeService.getPlace(this.user.profile.workPlaceId);
             this.user.profile.workPlaceName = place.name;
+        } else {
+            this.user.profile.workPlaceName = '';
         }
 
-        console.log(this.user.profile.workPlaceName);
+
         this.loaded = true;
         let searchBox: any = document.getElementById('search-box');
         let options = {

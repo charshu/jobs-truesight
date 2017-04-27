@@ -6,7 +6,7 @@ import {
   Headers,
   RequestOptions
 } from '@angular/http';
-// import { Router } from '@angular/router';
+import { Router } from '@angular/router';
 // import { Observable } from 'rxjs/Observable';
 // import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 // import { UserService } from './user.service';
@@ -15,7 +15,6 @@ import {
   AnswerSheet,
   Job,
   Result,
-  WorkPlace,
   Criteria
 } from '../../type.d';
 import 'rxjs/add/operator/map';
@@ -34,6 +33,7 @@ query getTestSheet{
     doneCounter
     criterias {
       factorName
+      factorNameTH
       ranges {
         min
         result
@@ -69,6 +69,7 @@ query getTestSheetByUid($uid: String!){
     doneCounter
     criterias {
       factorName
+      factorNameTH
       ranges {
         min
         result
@@ -176,7 +177,8 @@ export class TestService {
 
   constructor(
     private apollo: Apollo,
-    private http: Http) {
+    private http: Http,
+    private router: Router) {
 
   }
 
@@ -197,8 +199,9 @@ export class TestService {
       const testSheets = await query.toPromise();
       console.log('Get all TestSheet\n', testSheets);
       return testSheets;
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      console.log(err);
+      return null;
     }
   }
 
@@ -216,8 +219,9 @@ export class TestService {
       const testSheet = await query.toPromise();
       console.log(`TestSheet uid: ${uid} \n`, testSheet);
       return testSheet;
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      console.log(err);
+      return null;
     }
   }
   public async getAnswerSheet(): Promise < AnswerSheet[] > {

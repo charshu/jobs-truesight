@@ -16,7 +16,7 @@ type Profile {
     age_range: Int
     location: String
     picture: String
-    jobId: Int
+    job: Job
     workPlaceId: String
     salary: Int
 }
@@ -26,11 +26,13 @@ type TestSheet {
   title: String
   picture: String
   doneCounter: Int
+  instruction: String
   criterias: [Criteria]
   questions: [Question]
 }
 type Criteria {
   factorName: String!
+  factorNameTH: String
   ranges: [Range]!
 }
 type Range {
@@ -66,8 +68,8 @@ type AnswerSheet {
   answers: [Answer]
 }
 type Factor {
-  name: String
-  value: Float
+  name: String!
+  value: Float!
   question_counter: Int
   min: Float
   max: Float
@@ -103,7 +105,6 @@ type Query {
   getUser: User
   getTestSheet: [TestSheet]
   getTestSheetByUid(uid:String!): TestSheet
-
   getJobsChoice: [Job]
   getJob(id:Int!): Job
   getWorkPlace(id:String!): WorkPlace

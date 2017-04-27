@@ -1,60 +1,117 @@
 <div *ngIf="loaded" id="testboard-section" class="container">
-
+    <alert *ngIf="info" type="info">
+         {{info}}
+    </alert>
     <masonry [options]="{ transitionDuration: '0.8s',gutter: 30 }" [useImagesLoaded]="true">
         <masonry-brick *ngFor="let testSheet of testSheets">
-            <div class="testsheet-card">
-                
-            
-            <div class="title">
-                {{testSheet.title}}
-            </div>
-            <div class="image-container" [ngStyle]="{'background-image': 'url('+testSheet.picture+')'}">
-                
-            </div>
-            <!--<img [src]="testSheet.picture" alt="">-->
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="number-box">
-                        <div class="number-label">
-                            Questions
+            <div class="testsheet-card" (click)="lgModal.show(); getPastAnswerSheetByUid(testSheet.uid)">
+                <div class="title">
+                    {{testSheet.title}}
+                </div>
+                <div class="image-container" [ngStyle]="{'background-image': 'url('+testSheet.picture+')'}">
+
+                </div>
+                <!--<img [src]="testSheet.picture" alt="">-->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="number-box">
+                            <div class="number-label">
+                                Questions
+                            </div>
+                            <div class="number">
+                                {{testSheet.questions.length}}
+                            </div>
                         </div>
-                        <div class="number">
-                            {{testSheet.questions.length}}
+                    </div>
+                    <div class="col-md-4">
+                        <div class="number-box">
+                            <div class="number-label">
+                                Factor
+                            </div>
+                            <div class="number">
+                                {{getFactorNumber(testSheet.questions)}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="number-box">
+                            <div class="number-label">
+                                Done
+                            </div>
+                            <div class="number">
+                                {{testSheet.doneCounter}}
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="number-box">
-                        <div class="number-label">
-                            Factor
+                <!--<div class="row">
+                    <div class="col-md-6">
+                        <button type="button" (click)="lgModal.show()" class="btn btn-large btn-block btn-default">ทำแบบทดสอบ</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="button" [routerLink]="['/result',testSheet.uid]" class="btn btn-large btn-block btn-default">Past result</button>
+                    </div>
+                </div>-->
+            </div>
+
+            <div bsModal #lgModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title pull-left">
+                                ประวัติการทำแบบสอบถาม <b>{{testSheet.title}}</b>
+                            </h4>
+                            <button type="button" class="close pull-right" (click)="lgModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
                         </div>
-                        <div class="number">
-                            {{getFactorNumber(testSheet.questions)}}
+                        <div class="modal-body">
+                            <table *ngIf="chunkAnswerSheets.length>0" class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <td>#</td>
+                                        <td>อาชีพที่ทดสอบ</td>
+                                        <td>บริษัทที่ทดสอบ</td>
+                                        <td>วันที่ทำที่ทดสอบ</td>
+                                    </tr>
+
+                                </thead>
+                                <tr [routerLink]="['/result',testSheet.uid,answerSheet.id]" 
+                                *ngFor="let answerSheet of chunkAnswerSheets;let i = index">
+                                    <td>{{page*3+i+1}}</td>
+                                    <td>{{answerSheet.job.name}}</td>
+                                    <td>{{answerSheet.workPlace.name}}</td>
+                                    <td>{{answerSheet.createdAt | amTimeAgo}}</td>
+                                </tr>
+                                
+                            </table>
+                            <div class="row" *ngIf="chunkAnswerSheets.length>0">
+                                <div class="col-md-12">
+                                    <button [disabled]="page == 0" class="btn btn-default pull-left"  (click)="previousPage()">Previos</button>
+                                    <button [disabled]="page == allAnswerSheets.length-1" class="btn btn-default pull-right" (click)="nextPage()">Next</button>
+                                </div>
+                                
+                            </div>
+                            
+                            <alert *ngIf="chunkAnswerSheets.length===0" type="info">
+                               ไม่มีข้อมูลการทำแบบสอบถาม
+                            </alert>
+                            <div class="row justify-content-center">
+                                <button type="button" *ngIf="pid" [routerLink]="['/questionnaire',testSheet.uid,pid]" class="btn btn-large btn-success">
+                                {{chunkAnswerSheets.length>0?'ทำแบบสอบถามอีกครั้ง':'เริ่มทำแบบสอบถาม'}}</button>
+                                 <button type="button" *ngIf="!pid" [routerLink]="['/questionnaire',testSheet.uid]" class="btn btn-large btn-success">
+                                {{chunkAnswerSheets.length>0?'ทำแบบสอบถามอีกครั้ง':'เริ่มทำแบบสอบถาม'}}</button>
+                            </div>
+                            
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="number-box">
-                        <div class="number-label">
-                            Done
-                        </div>
-                        <div class="number">
-                            {{testSheet.doneCounter}}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">    
-                    <button type="button" [routerLink]="[testSheet.uid]" class="btn btn-large btn-block btn-default">Start</button>
-                </div>
-                <div class="col-md-6">    
-                    <button type="button" [routerLink]="['/result',testSheet.uid]" class="btn btn-large btn-block btn-default">Past result</button>
-                </div>
-            </div>
             </div>
         </masonry-brick>
     </masonry>
+
+
+
 
     <!--<table class="table">
         <thead>

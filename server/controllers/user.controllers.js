@@ -27,7 +27,7 @@ module.exports = () => {
           gender: req.body.profile.gender,
           location: req.body.profile.location,
           age_range: req.body.profile.age_range,
-          jobId: req.body.profile.jobId,
+          jobId: req.body.profile.job.id,
           workPlaceId: req.body.profile.workPlaceId,
           salary: req.body.profile.salary
         }
@@ -55,7 +55,7 @@ module.exports = () => {
         if (req.body.gender)user.profile.gender = req.body.gender;
         if (req.body.age_range)user.profile.age_range = req.body.age_range;
         if (req.body.location)user.profile.location = req.body.location;
-        if (req.body.jobId)user.profile.jobId = req.body.jobId;
+        if (req.body.job.id)user.profile.jobId = req.body.job.id;
         if (req.body.workPlaceId)user.profile.workPlaceId = req.body.workPlaceId;
         if (req.body.salary)user.profile.salary = req.body.salary;
         await user.save();

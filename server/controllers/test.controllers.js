@@ -77,17 +77,18 @@ module.exports = () => {
       if (!req.user) {
         res.status(401).end();
       } else {
+        
         const newAnswerSheet = new req.context.AnswerSheet({
           testSheetUid: req.body.testSheetUid,
           gender: req.user.profile.gender,
           age_range: req.user.profile.age_range,
-          jobId: req.user.profile.jobId,
-          workPlaceId: req.user.profile.workPlaceId,
-          salary: req.user.profile.salary,
+          jobId: req.body.job.id,
+          workPlaceId: req.body.workPlace.id,
+          salary: req.body.salary,
           done: req.body.done,
           answers: req.body.answers
         });
-
+        console.log('\n',newAnswerSheet);
         if (!newAnswerSheet.done) {
           throw new Error('answer sheet is not done');
         }
@@ -156,6 +157,25 @@ module.exports = () => {
           throw new Error(`job id: ${req.body.jobId} not found`);
         }
 
+        /*
+          calculating job salary
+        */
+        console.log('salary: ' + newAnswerSheet.salary);
+        console.log(job['salary']);
+
+        if (!job['salary'].average === 0) {
+          job['salary'] = { 
+              average:newAnswerSheet.salary,
+              min:newAnswerSheet.salary,
+              max:newAnswerSheet.salary
+          };
+          console.log('job: ' + job);
+        } else {
+          job.salary.average = _.round((job.salary.average + newAnswerSheet.salary) / 2);
+          job.salary.min = _.min([job.salary.min,newAnswerSheet.salary]);
+          job.salary.max = _.max([job.salary.max,newAnswerSheet.salary]);
+        }
+       
         /*
           calculating result for same test sheet and same job
         */
@@ -275,7 +295,12 @@ module.exports = () => {
       console.log(req.body.jobs);
       async.each(req.body.jobs, (job, next) => {
         const newJob = new req.context.Job({
-          name: job
+          name: job,
+          salary: {
+            average: 0,
+            min: 0,
+            max: 0
+          }
         });
         newJob.save((err, doc) => {
           next();

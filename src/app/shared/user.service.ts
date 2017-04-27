@@ -40,7 +40,10 @@ const getUser = gql `
             gender
             age_range
             location
-            jobId
+            job{
+                id
+                name
+            }
             workPlaceId
             picture
             salary
@@ -57,6 +60,7 @@ const getUser = gql `
             }
         }
 answerSheets {
+      id
       testSheetUid
       job {
         id
@@ -89,6 +93,7 @@ answerSheets {
           }
         }
       }
+      salary
       createdAt
       answers {
         questionId
@@ -108,7 +113,6 @@ export class UserService {
     public redirectUrl: string;
     private user: BehaviorSubject < User > = new BehaviorSubject < User > (null);
     private observableUser: Observable < User > = this.user.asObservable();
-    private firstLoaded: boolean = false;
     constructor(private apollo: Apollo, private http: Http, private router: Router, ) {
         console.log('User services init');
         this.isLoggedIn();
@@ -203,11 +207,9 @@ export class UserService {
                 data
             }) => data.getUser);
             let user: User = await query.toPromise();
-            if (!user) {
-                console.log('user not found');
-                return null;
-            }
             user = JSON.parse(JSON.stringify(user));
+            console.log(user);
+            // save in local memory
             this.user.next(user);
             return user;
         } catch (err) {
@@ -216,14 +218,10 @@ export class UserService {
         }
     }
     public async isLoggedIn(): Promise<boolean> {
-
-        if (!this.user.value) {
-          // check if user still have session on server
-          const user = await this.getUser();
-          console.log(`User session ? ${user ? 'FOUND' : 'NOT FOUND'}`);
-        }
-        console.log(`LoggedIn ? ${this.user.value ? 'YES' : 'NO'} `);
-        return this.user.value ? true : false;
+        const user = await this.getUser();
+        console.log(`User session ? ${user ? 'FOUND' : 'NOT FOUND'}`);
+        console.log(`User local data ? ${this.user.value ? 'FOUND' : 'NOT FOUND'} `);
+        return user ? true : false;
     }
     public getCurrentUser(): User {
         return this.user.value;
@@ -235,19 +233,22 @@ export class UserService {
         return this.user.value ? this.user.value.id : null;
     }
     public getJobId(): number {
-        return this.user.value ? this.user.value.profile.jobId : -1;
+        return this.user.value ? this.user.value.profile.job.id : -1;
+    }
+    public getJobName(): string {
+        return this.user.value ? this.user.value.profile.job.name : null;
     }
     public getWorkPlaceId(): string {
         return this.user.value ? this.user.value.profile.workPlaceId : null;
     }
     public setJobId(jobId): void {
         if (this.user.value) {
-            this.user.value.profile.jobId = jobId;
+            this.user.value.profile.job.id = jobId;
         }
     }
     // tslint:disable-next-line:max-line-length
     public async getAnswerSheetByUid(uid: string, option?: {forceFetch?: boolean}): Promise<AnswerSheet[]> {
-        if (option.forceFetch) {
+        if (option && option.forceFetch) {
             await this.getUser();
         }
         let answerSheets: AnswerSheet[] = filter(this.user.value.answerSheets, {
@@ -256,6 +257,7 @@ export class UserService {
         console.log('Get answer sheet by uid: ' + uid + '\n', answerSheets);
         return answerSheets;
     }
+
     public async updateProfile(profile): Promise < boolean > {
         let headers = new Headers({
             'Content-Type': 'application/json'

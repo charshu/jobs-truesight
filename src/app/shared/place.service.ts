@@ -1,12 +1,7 @@
 import {
-    Injectable
+    Injectable,
+    OnInit
 } from '@angular/core';
-import {
-    Http
-} from '@angular/http';
-import {
-    Router
-} from '@angular/router';
 
 // import { AuthenticationService } from '../shared/authentication.service';
 import {
@@ -67,7 +62,9 @@ interface QueryResponse {
 }
 
 @Injectable()
-export class PlaceService {
+export class PlaceService implements OnInit {
+    private googlePlaceService: any;
+    private placeDict: any = {};
     constructor(private apollo: Apollo ) {}
 
     public async getWorkPlace(id: string): Promise <WorkPlace> {
@@ -91,17 +88,25 @@ export class PlaceService {
     }
     public getPlace(id: string): Promise<any> {
         console.log(`Get work place details by place id : ${id}`);
-        let service = new google.maps.places.PlacesService(document.createElement('div'));
+        if (!this.googlePlaceService) {
+             this.googlePlaceService = new google.maps.places.PlacesService(document.createElement('div'));
+        }
+        // try to use old data
+        if (this.placeDict[id]) {
+            return this.placeDict[id];
+        }
         return new Promise((resolve, reject) => {
             if (!id) {
             reject(null);
             }
-            service.getDetails({
+            this.googlePlaceService.getDetails({
                  placeId : id
             }, (place, status) => {
                 console.log(`Status: `, status);
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                     console.log(`Place details: `, place);
+                    this.placeDict[id] = place;
+                    console.log(`Save ${place.name} to dict`);
                     resolve(place);
                 } else {
                     reject(null);
@@ -109,5 +114,9 @@ export class PlaceService {
             });
 
         });
+    }
+    public ngOnInit() {
+        console.log('setup google service');
+
     }
 }

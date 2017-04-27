@@ -17,12 +17,13 @@ export type TestSheet = {
   uid : string
   title: string
   picture: string
-  criterias: Criteria
+  criterias: Criteria[]
   doneCounter: number
   questions: Question[]
 }
 export type Criteria = {
   factorName: string
+  factorNameTH: string
   ranges: Range[]
 }
 export type Range = {
@@ -48,8 +49,9 @@ export type AnswerSheet = {
   workPlace?: WorkPlace
   createdAt?:number
   updatedAt?:number
-  done: boolean
-  answers: Answer[]
+  salary?:number
+  done?: boolean
+  answers?: Answer[]
 }
 export type Answer = {
   questionId: string
@@ -63,14 +65,14 @@ export type Factor = {
   min:number
 }
 export type Result = {
-  testSheetUid: string
+  testSheetUid?: string
   jobId?: number
   job?: Job
-  factors:Factor[]
+  factors?:Factor[]
 }
 export type Job = {
-  id: number
-  name: string
+  id?: number
+  name?: string
   createdAt?:Date
   updatedAt?:Date
   results?:Result[]
@@ -78,14 +80,15 @@ export type Job = {
 }
 
 export type WorkPlace = {
-  id:string
-  viewCount:number
-  participant:{
+  id?:string
+  name?:string
+  viewCount?:number
+  participant?:{
     male:number
     female:number
     ages:number[]
   }
-  factorsAvailable:string[]
+  factorsAvailable?:string[]
   results?:Result[]
   answerSheets?:AnswerSheet[]
 }

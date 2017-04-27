@@ -24,7 +24,9 @@ h1 {
 .round-container>form>.row:not(:nth-child(1)) {
     margin-top: 20px;
 }
-
+.input-group {
+    width: 100%;
+}
 #question-section {}
 
 .question-bg {

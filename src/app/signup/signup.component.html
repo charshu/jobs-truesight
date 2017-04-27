@@ -1,7 +1,7 @@
 <div id="signup-section">
 
     <div class="container">
-        <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+        <!--<div *ngIf="error" class="alert alert-danger">{{error}}</div>-->
         <div *ngIf="success" class="alert alert-success">{{success}}</div>
         <div class="row justify-content-center ">
             <div class="col-md-5 round-container">
@@ -66,7 +66,7 @@
                         <label for="job">Job</label>
 
                         <div class="input-group">
-                            <select [(ngModel)]="user.profile.jobId" class="form-control" name="job" #job="ngModel" [ngClass]="{'black':user.profile.jobId >= 0}"
+                            <select [(ngModel)]="user.profile.job.id" class="form-control" name="job" #job="ngModel" [ngClass]="{'black':user.profile.job.id >= 0}"
                                 required>
                                 <option [disabled]="true" [value]="undefined">อาชีพปัจจุบันของคุณ</option>
                                     
@@ -104,6 +104,7 @@
                     </div>
 
                     <button id="submit-button" type="submit" class="btn btn-success btn-lg btn-block">สร้างบัญชี</button>
+                    <div *ngIf="error" class="alert alert-danger">{{error}}</div>
                 </form>
                
             </div>

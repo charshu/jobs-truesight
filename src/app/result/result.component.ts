@@ -14,14 +14,12 @@ import {
   AnswerSheet,
   TestSheet,
   Job,
-  Result,
-  WorkPlace
+  WorkPlace,
+  Criteria
 } from './../../type.d';
 import {
   find,
   orderBy,
-  maxBy,
-  minBy,
   max,
   min
 } from 'lodash';
@@ -39,11 +37,12 @@ export class ResultComponent implements OnInit {
   private place: any;
   private job: Job;
   private testSheetUid: string;
-  private answerSheets: AnswerSheet[] = [];
+  private answerSheet: AnswerSheet;
   private evaluations = [];
   private testSheet: TestSheet;
   private loaded: boolean = false;
   private googleLoaded: boolean = false;
+  private answerSheetId: number;
 
   // Radar
   private radarChartLabels: string[] = [];
@@ -78,7 +77,12 @@ export class ResultComponent implements OnInit {
       private placeService: PlaceService) {
       this.route.params.subscribe((params) => {
         // console.log(params['uid']);
-        this.testSheetUid = params['uid'];
+        if (params['uid']) {
+          this.testSheetUid = params['uid'];
+        }
+        if (params['id']) {
+          this.answerSheetId = params['id'];
+        }
       });
 
     }
@@ -100,18 +104,27 @@ export class ResultComponent implements OnInit {
     try {
       this.testSheet = await this.testService.getTestSheetByUid(this.testSheetUid);
       /*
-        load lastest user answer sheet
+        load user's answer sheets
       */
       let answerSheets = await this.userService.getAnswerSheetByUid(this.testSheetUid
       , {forceFetch : true} );
-      this.answerSheets = answerSheets;
+      let answerSheet: AnswerSheet;
+      if (this.answerSheetId) {
+        console.log(`find answer sheet id : ${this.answerSheetId}`);
+        answerSheet = find(answerSheets, {id : Number(this.answerSheetId)});
+        console.log(`found answer sheet id : ${this.answerSheetId}`, answerSheet);
+        this.answerSheet = answerSheet;
+      } else {
+        answerSheet = answerSheets[0];
+        this.answerSheet = answerSheets[0];
+      }
       /*
         calculating result offline for an user's answer sheet
         (Because this answer sheet result don't have to save in database)
       */
-      if (answerSheets) {
+      if (answerSheet) {
         let factorCount = [];
-        for (let answer of answerSheets[0].answers) {
+        for (let answer of answerSheet.answers) {
           let question = find(this.testSheet.questions, {
             id: answer.questionId
           });
@@ -143,10 +156,12 @@ export class ResultComponent implements OnInit {
             Evaluating each factors using the criteria
           */
           let factorName = this.radarChartLabels[i];
-          let criteria = find(this.testSheet.criterias, {factorName});
+          let criteria: Criteria = find(this.testSheet.criterias, {factorName});
+          let factorNameTH = criteria.factorNameTH || '-';
           let value = this.radarChartData[0].data[i];
           evaluations.push({
             factorName,
+            factorNameTH,
             value,
             result: this.evaluate(criteria, value)
           });
@@ -158,11 +173,11 @@ export class ResultComponent implements OnInit {
         /*
             Loading results from the work place
         */
-        this.workPlace = answerSheets[0].workPlace;
+        this.workPlace = answerSheet.workPlace;
         let workPlaceResult = find(this.workPlace.results, {
           testSheetUid: this.testSheetUid,
           job: {
-            id : answerSheets[0].job.id
+            id : answerSheet.job.id
           }
         });
         if (workPlaceResult) {
@@ -176,7 +191,7 @@ export class ResultComponent implements OnInit {
         /*
             Loading results from job
         */
-        this.job = answerSheets[0].job;
+        this.job = answerSheet.job;
         let jobResult = find(this.job.results, {
           testSheetUid: this.testSheetUid
         });
@@ -198,6 +213,11 @@ export class ResultComponent implements OnInit {
           , this.testService.getMinTick(workPlaceResult)]);
         }
 
+        /*
+            salary average
+        */
+        this.averageSalary = answerSheet.job.results
+
         this.loaded = true;
 
         /*
@@ -211,7 +231,7 @@ export class ResultComponent implements OnInit {
           zoom: 10
         });
         let infowindow = new google.maps.InfoWindow();
-        let place = await this.placeService.getPlace(answerSheets[0].workPlace.id);
+        let place = await this.placeService.getPlace(answerSheet.workPlace.id);
         if (place) {
           let latitude = place.geometry.location.lat();
           let longitude = place.geometry.location.lng();

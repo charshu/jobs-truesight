@@ -25,6 +25,11 @@ const jobSchema = new Schema({
     unique: true
   },
   name: String,
+  salary: {
+    average: Number,
+    min: Number,
+    max: Number
+  },
   results: [resultSchema],
   answerSheetsId: [{ type: Number, ref: 'AnswerSheet' }]
 }, { timestamps: true });

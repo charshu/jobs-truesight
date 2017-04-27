@@ -1,6 +1,5 @@
 import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core';
 import { Question, Answer } from './../../type.d';
-import { TestService } from '../shared';
 
 @Component({
   selector: 'my-question',
@@ -15,7 +14,6 @@ export class QuestionComponent implements OnInit {
   @Input() number: Number;
   @Output() clickChoice = new EventEmitter();
 
-  constructor(private testService: TestService) {}
   emitNewAnswer(questionId, choiceId) {
     if (this.answer.selectedChoiceId === choiceId) {
       // same answer
