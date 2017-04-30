@@ -82,11 +82,17 @@ type Result {
 type Job {
   id: Int
   name: String
+  salary: Salary
   createdAt: Date
   updatedAt: Date
   results: [Result] 
   answerSheets: [AnswerSheet]
   
+}
+type Salary {
+  average:Float
+  min:Float
+  max:Float
 }
 type WorkPlace {
   id: String

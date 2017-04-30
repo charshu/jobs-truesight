@@ -1,4 +1,4 @@
-$coverHeight:500px;
+$coverHeight:100vh;
 .mycover {
     position: relative;
     height: $coverHeight;
@@ -40,6 +40,28 @@ $coverHeight:500px;
     opacity: 0;
 
 }
+#icon-section {
+    margin-top: 150px;
+}
+.icon-box {
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+    font-size: 1.2em;
+    font-weight: 700;
+    text-shadow: 1px 1px 1px black;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    
+    img.icon {
+        width: 100px;
+        height: 100px;
+        object-fit: contain;
+        margin: 10px;
+    }
+}
+
 .cover-content .input-group {
     width: 100%;
 }
@@ -68,13 +90,17 @@ $coverHeight:500px;
     height: 100px;
     object-fit: contain;
 }
+masonry-brick {
+    margin-bottom: 20px;
+    width: 100%;
+}
 .result-block {
     background-color: white;
     border: 1px solid #CCC;
     padding: 20px;
     box-shadow: 1px 2px 1px rgba(0,0,0,0.1);
-    width: 100%;
-    margin-bottom: 20px;
+    min-height: 100px;
+   
 }
 .result-block .field-label {
     display: block;

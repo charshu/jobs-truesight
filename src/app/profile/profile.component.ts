@@ -14,6 +14,9 @@ import {
 import {
     Job
 } from '../../type.d';
+import {
+    find
+} from 'lodash';
 declare var google: any;
 
 @Component({
@@ -71,7 +74,12 @@ export class ProfileComponent implements OnInit {
         this.jobs = await this.testService.getJobsChoice();
         // load user profile
         this.user = await this.userService.getCurrentUser();
-
+        if (this.user.profile.job.id) {
+            let _job = find(this.jobs, { id : this.user.profile.job.id});
+            if (!_job) {
+                this.user.profile.job.id = -1;
+            }
+        }
         if (this.user.profile.workPlaceId) {
             let place = await this.placeService.getPlace(this.user.profile.workPlaceId);
             this.user.profile.workPlaceName = place.name;

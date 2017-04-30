@@ -65,6 +65,11 @@ answerSheets {
       job {
         id
         name
+        salary{
+            average
+            min
+            max
+        }
         results {
           testSheetUid
           factors {

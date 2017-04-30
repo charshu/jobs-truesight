@@ -213,11 +213,6 @@ export class ResultComponent implements OnInit {
           , this.testService.getMinTick(workPlaceResult)]);
         }
 
-        /*
-            salary average
-        */
-        this.averageSalary = answerSheet.job.results
-
         this.loaded = true;
 
         /*

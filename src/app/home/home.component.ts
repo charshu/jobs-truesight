@@ -43,12 +43,23 @@ export class HomeComponent implements OnInit, OnDestroy {
   private chartLoaded: boolean = false;
   private user: User;
   private selectedJob: number = JobEnum.ALL_JOB;
+  private selectedJobSalary: number = JobEnum.ALL_JOB;
+  private salaryLoaded: boolean = false;
   private selectedTestSheet: string;
+  private salary = {
+    average: 0,
+    max: -99999999,
+    min: 999999999
+  };
   private testSheetList: [{
     uid: string,
     title: string
   }];
   private jobList: [{
+    id: number,
+    name: string
+  }];
+  private jobListSalary: [{
     id: number,
     name: string
   }];
@@ -162,7 +173,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       }
       console.log('return unique job list\n', jobList);
-      return jobList;
+      return JSON.parse(JSON.stringify(jobList));
   }
 
   public async searchWorkPlace(placeId: string) {
@@ -177,6 +188,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.averageAge = _.round(_.mean(this.workPlace.participant.ages), 2);
         this.testSheetList = this.getTestSheetList(this.workPlace.results);
       }
+      // this.jobListSalary = this.getJobList(this.workPlace.results);
       this.place = await this.placeService.getPlace(placeId);
        // minimum loading time 1s
       setTimeout( () => {
@@ -234,6 +246,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     console.log('change test sheet uid: ' + uid);
     this.selectedTestSheet = uid;
     this.jobList = this.getJobList(this.workPlace.results, uid);
+
+    // update chart
     let mergedResult = this.findAndMergeResult(this.workPlace.results, this.selectedTestSheet, this.selectedJob);
     this.barChartLabels = [];
     this.barChartLabels = _.map(mergedResult.factors, 'name') as string[];
@@ -248,7 +262,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
     console.log('bar chart : ', this.barChartData);
     this.chartLoaded = true;
-    // this.chart.chart.update();
   }
   public onChangeJob(jobId: number) {
     this.chartLoaded = false;
@@ -257,7 +270,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.testSheetList = this.getTestSheetList(this.workPlace.results, jobId);
     let mergedResult = this.findAndMergeResult(this.workPlace.results, this.selectedTestSheet, this.selectedJob);
     this.barChartLabels = [];
-    this.barChartLabels = _.map(mergedResult.factors, 'name');
+    this.barChartLabels = <string[]> _.map(mergedResult.factors, 'name');
     let data = this.testService.getChartData(mergedResult, this.barChartLabels, {method : 'percentage'});
     data = _.map(data, (val) => {
       return _.round(val * 100, 2);
@@ -272,6 +285,46 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.chartLoaded = true;
     // this.chart.chart.update();
   }
+
+  // public findAndMergeSalary(results, selectedJobId?) {
+  //     let salary = {
+  //       average: 0,
+  //       min: 9999999,
+  //       max: -9999999
+  //     };
+  //     console.log('input results: ', results);
+  //     console.log('selectedJobId: ' + selectedJobId);
+  //     if (selectedJobId && selectedJobId != JobEnum.ALL_JOB) {
+  //       results = _.filter(results, { job: {id: Number(selectedJobId)}});
+  //       console.log(results);
+  //     }
+
+  //     _.forEach(results, (result) => {
+  //         console.log(result);
+  //         if (salary.average == 0) {
+  //           salary.average = result.job.salary.average;
+  //         } else {
+  //           salary.average = _.mean([salary.average, result.job.salary.average]);
+  //         }
+  //         salary.min = _.min([salary.min, result.job.salary.min]);
+  //         salary.max = _.max([salary.max, result.job.salary.max]);
+  //     });
+  //     console.log('merge salary: ', salary);
+  //     return salary;
+  // }
+  // public onChangeJobSalary(jobId: number) {
+  //   this.salaryLoaded = false;
+  //   console.log('change job id: ' + jobId);
+  //   this.selectedJobSalary = jobId;
+  //   if (jobId == JobEnum.ALL_JOB) {
+  //       this.salary = this.findAndMergeSalary(this.workPlace.results);
+  //   } else {
+  //       this.salary = this.findAndMergeSalary(this.workPlace.results, jobId);
+  //   }
+
+  //   this.salaryLoaded = true;
+  //   // this.chart.chart.update();
+  // }
 
   public async ngOnInit() {
     this.testSheets = await this.testService.getTestSheet({ small : true });

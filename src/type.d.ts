@@ -73,6 +73,11 @@ export type Result = {
 export type Job = {
   id?: number
   name?: string
+  salary?: {
+    average:number
+    min:number
+    max:number
+  }
   createdAt?:Date
   updatedAt?:Date
   results?:Result[]

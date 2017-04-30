@@ -42,7 +42,7 @@
                                     {{evaluation.value}}
                             </td>
                             <td>
-                                    {{evaluation.result}}
+                                    {{evaluation.result | capitalizeFirst}}
                             </td>
                         </tr>
 
@@ -61,9 +61,17 @@
                                 <td>ตำแหน่ง</td>
                                 <td>{{job.name}}</td>
                             </tr>
-                            <tr *ngIf="salary">
+                            <tr *ngIf="job.salary.average">
                                 <td>เงินเดือนเฉลี่ย</td>
-                                <td>{{salary}}</td>
+                                <td>{{job.salary.average}}</td>
+                            </tr>
+                            <tr *ngIf="job.salary.average">
+                                <td>เงินเดือนสูงสุด</td>
+                                <td>{{job.salary.max}}</td>
+                            </tr>
+                            <tr *ngIf="job.salary.average">
+                                <td>เงินเดือนต่ำสุด</td>
+                                <td>{{job.salary.min}}</td>
                             </tr>
 
                         </tbody>

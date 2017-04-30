@@ -290,6 +290,7 @@ export class TestService {
         data
       }) => data.getJobsChoice);
       const jobs = await query.toPromise();
+      console.log(`loading jobs choices\n`, jobs);
       return jobs;
     } catch (e) {
       console.log(e);

@@ -76,7 +76,7 @@
                                     </tr>
 
                                 </thead>
-                                <tr [routerLink]="['/result',testSheet.uid,answerSheet.id]" 
+                                <tr style="cursor: pointer" [routerLink]="['/result',testSheet.uid,answerSheet.id]" 
                                 *ngFor="let answerSheet of chunkAnswerSheets;let i = index">
                                     <td>{{page*3+i+1}}</td>
                                     <td>{{answerSheet.job.name}}</td>

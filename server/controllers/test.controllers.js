@@ -160,14 +160,11 @@ module.exports = () => {
         /*
           calculating job salary
         */
-        console.log('salary: ' + newAnswerSheet.salary);
-        console.log(job['salary']);
-
-        if (!job['salary'].average === 0) {
-          job['salary'] = { 
-              average:newAnswerSheet.salary,
-              min:newAnswerSheet.salary,
-              max:newAnswerSheet.salary
+        if (Number(job.salary.average) == 0) {
+          job.salary = { 
+              average: newAnswerSheet.salary,
+              min: newAnswerSheet.salary,
+              max: newAnswerSheet.salary
           };
           console.log('job: ' + job);
         } else {
@@ -298,8 +295,8 @@ module.exports = () => {
           name: job,
           salary: {
             average: 0,
-            min: 0,
-            max: 0
+            min: 9999999999,
+            max: -9999999999
           }
         });
         newJob.save((err, doc) => {

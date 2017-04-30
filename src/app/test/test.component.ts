@@ -259,9 +259,8 @@ export class TestComponent implements OnInit {
       const place = await autocomplete.getPlace();
       console.log(place);
       searchBox.value = place.name;
-      this.user.profile.workPlaceName = place.name;
       console.log('change work place name', this.user.profile.workPlaceName);
-      this.user.profile.workPlaceId = place.place_id;
+      this.workPlaceId = place.place_id;
       console.log('change work place id', this.user.profile.workPlaceId);
     });
 

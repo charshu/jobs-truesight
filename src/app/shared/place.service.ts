@@ -45,6 +45,11 @@ query getWorkPlace($id:String!){
       job{
           id
           name
+          salary{
+              average
+              min
+              max
+          }
       }
       factors {
         name

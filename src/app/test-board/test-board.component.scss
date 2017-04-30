@@ -76,3 +76,6 @@ img {
 .table {
     margin-bottom: 10px;
 }
+.table > tr > td {
+    cursor:pointer!important;
+}
